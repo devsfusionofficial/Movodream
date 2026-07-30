@@ -7,6 +7,10 @@
     "strict": true,
     "noEmit": true,
     "esModuleInterop": true,
+    // gsap's own package ships Flip.js next to types/flip.d.ts (mismatched
+    // casing) — this trips TS1149 on case-insensitive filesystems. It's an
+    // upstream packaging issue, not ours; this is the documented workaround.
+    "forceConsistentCasingInFileNames": false,
     "module": "esnext",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,

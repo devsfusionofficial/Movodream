@@ -1,0 +1,41 @@
+/**
+ * Design tokens extracted from the live site's assets/css/styles.css and
+ * form.css — organizing values that already exist in production into one
+ * source of truth. No visual values changed; see docs/01-architecture.md §8.
+ */
+:root {
+  /* Brand */
+  --md-brand-pink: #d71789;
+  --md-brand-pink-light: #ff7294;
+  --md-brand-crimson: #be123c;
+  --md-brand-gradient: linear-gradient(105.63deg, var(--md-brand-pink) 0%, var(--md-brand-pink-light) 100%);
+
+  /* "How it works" section palette (script.js --purple-accent etc.) */
+  --md-purple-accent: #d0006f;
+  --md-purple-light: #9d4edd;
+  --md-pink-light: #ff8cba;
+  --md-chat-bg: #d392b2;
+  --md-card-bg-start: #241235;
+  --md-card-bg-end: #160a21;
+
+  /* Surfaces */
+  --md-bg-page: #f5f6f7;
+  --md-bg-section: #f9f9fb;
+  --md-bg-white: #ffffff;
+
+  /* Text */
+  --md-text-primary: #1a1a1a;
+  --md-text-secondary: #4a4a4a;
+  --md-text-nav: #475569;
+
+  /* Type */
+  --md-font-sans: 'Manrope', sans-serif;
+
+  /* Breakpoints (reference only — CSS can't consume these as media query
+     values directly; Tailwind config mirrors them for utility classes) */
+  --md-bp-xs: 450px;
+  --md-bp-sm: 480px;
+  --md-bp-md: 768px;
+  --md-bp-lg: 900px;
+  --md-bp-xl: 1149px;
+}

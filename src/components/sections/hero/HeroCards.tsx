@@ -1,0 +1,208 @@
+'use client'
+
+import Image from 'next/image'
+import Atropos from 'atropos/react'
+import { useGSAP } from '@gsap/react'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import 'atropos/css'
+
+/**
+ * Ported from script.js lines 909–977: cards "deal" in with a
+ * rotate+translate+fade entrance, then — once dealt — card2/card3 animate
+ * on scroll toward card1's on-screen center (computed via
+ * getBoundingClientRect after the deal completes), matching the original's
+ * exact scrub/easing values for mobile vs desktop.
+ *
+ * Atropos init (highlight/shadow disabled) matches script.js line 1130:
+ * `Atropos({ el, highlight: false, shadow: false })`.
+ */
+export function HeroCards() {
+  useGSAP(() => {
+    gsap.registerPlugin(ScrollTrigger)
+
+    const card1 = document.querySelector<HTMLElement>('.card1')
+    const card2 = document.querySelector<HTMLElement>('.card2')
+    const card3 = document.querySelector<HTMLElement>('.card3')
+    if (!card1 || !card2 || !card3) return
+
+    const isMobile = window.innerWidth <= 768
+
+    gsap.set(card1, { opacity: 0, rotation: 0, y: 20, x: -30 })
+    gsap.set(card2, { opacity: 0, rotation: 0, y: 30, x: 40 })
+    gsap.set(card3, { opacity: 0, rotation: 0, y: 40, x: -20 })
+
+    const deal = gsap.timeline({ delay: 0.25 })
+
+    deal
+      .to(card1, { opacity: 1, rotation: 3, y: 0, x: 0, duration: 1.15, ease: 'expo.out' }, 0.1)
+      .to(card2, { opacity: 1, rotation: -6, y: 0, x: 0, duration: 1.25, ease: 'expo.out' }, 1)
+      .to(card3, { opacity: 1, rotation: 6, y: 0, x: 0, duration: 1.2, ease: 'expo.out' }, 2)
+
+    deal.eventCallback('onComplete', () => {
+      const r1 = card1.getBoundingClientRect()
+      const r2 = card2.getBoundingClientRect()
+      const r3 = card3.getBoundingClientRect()
+
+      const cx = r1.left + r1.width / 2
+      const cy = r1.top + r1.height / 2
+
+      const dx2 = cx - (r2.left + r2.width / 2)
+      const dy2 = cy - (r2.top + r2.height / 2)
+      const dx3 = cx - (r3.left + r3.width / 2)
+      const dy3 = cy - (r3.top + r3.height / 2)
+
+      gsap.to(card1, {
+        rotation: 1,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: '.hero-section',
+          scroller: document.body,
+          start: isMobile ? 'top -70%' : 'top top',
+          end: 'bottom top',
+          scrub: isMobile ? 0.5 : 2,
+        },
+      })
+
+      gsap.to(card2, {
+        x: dx2,
+        y: dy2,
+        rotation: -2,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: '.hero-section',
+          scroller: document.body,
+          start: isMobile ? 'top -70%' : 'top top',
+          end: isMobile ? 'top -100%' : 'bottom 85%',
+          scrub: isMobile ? 0.5 : 1.4,
+        },
+      })
+
+      gsap.to(card3, {
+        x: dx3,
+        y: dy3,
+        rotation: 3,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: '.hero-section',
+          scroller: document.body,
+          start: isMobile ? 'top -70%' : 'top top',
+          end: isMobile ? 'top -100%' : 'bottom 85%',
+          scrub: isMobile ? 0.5 : 2.6,
+        },
+      })
+    })
+  }, [])
+
+  return (
+    <div className="cards-wrapper">
+      <Atropos className="card1" highlight={false} shadow={false}>
+        <div className="card">
+          <div data-atropos-offset="3" className="card-header">
+            <Image src="/assets/icons/hero-card1-live-travel.svg" alt="" width={40} height={40} />
+            <div className="text">
+              <h3>Live Travel Mode</h3>
+              <p className="sub">ACTIVE</p>
+            </div>
+          </div>
+          <div data-atropos-offset="4" className="m2">
+            Real food near me. Not tourist traps.
+          </div>
+          <div data-atropos-offset="4" className="m1">
+            Three expert-verified spots within 2 minutes. Ride Inn Cafe (4.9⭐) — view shows the kitchen. Open now.
+            Walk with AR?
+          </div>
+          <div data-atropos-offset="4" className="m2 last">
+            Let&apos;s go.
+          </div>
+          <div data-atropos-offset="3" className="process" />
+        </div>
+      </Atropos>
+
+      <Atropos className="card2" highlight={false} shadow={false}>
+        <span data-atropos-offset="2" className="tag">
+          <Image src="/assets/icons/hero-card2-tag.svg" alt="" width={12} height={13} />
+          See Before You Go
+        </span>
+        <Image
+          data-atropos-offset="-2"
+          src="/assets/images/ar-guide.jpeg.webp"
+          draggable={false}
+          alt="Travel Planner AI Lake"
+          width={288}
+          height={200}
+          style={{ width: '100%', height: 'auto' }}
+        />
+        <h2 data-atropos-offset="0">
+          <i style={{ fontSize: '0.9em' }} className="fa-solid fa-vr-cardboard" /> AR/VR interface overlay
+        </h2>
+        <p data-atropos-offset="0" className="desc">
+          Preview hotel room <span className="dot">·</span> Walk the trail <span className="dot">·</span> Stand at
+          landmark
+        </p>
+        <p data-atropos-offset="0" className="sub">
+          What you see is what you get.
+        </p>
+        <div data-atropos-offset="4" className="card-bottom">
+          <div className="circles">
+            <span className="circle circle1" />
+            <span className="circle circle2" />
+          </div>
+          <button type="button" className="icon">
+            <Image src="/assets/icons/hero-card2-expand.svg" alt="" width={20} height={20} />
+          </button>
+        </div>
+      </Atropos>
+
+      <Atropos className="card3" highlight={false} shadow={false}>
+        <Image
+          data-atropos-offset="2"
+          className="green-tick-stamp"
+          src="/assets/images/green-tick.webp"
+          alt="Green Tick"
+          width={60}
+          height={60}
+        />
+        <div data-atropos-offset="2" className="header">
+          <h3>Journey Intelligence</h3>
+          <Image src="/assets/icons/hero-card3-dots.svg" alt="" width={16} height={4} />
+          <Image src="/assets/images/expert-verified-badge.webp" alt="expert verified" width={80} height={24} />
+        </div>
+
+        <p data-atropos-offset="2" className="sub">
+          Delhi → Manali | 7h 20m
+        </p>
+        <div data-atropos-offset="3" className="points">
+          <div className="p1">
+            <div className="circle" />
+            <div className="text">
+              <span className="time">Traffic</span>
+              <h3>Clear</h3>
+            </div>
+          </div>
+          <div className="p2">
+            <div className="circle" />
+            <div className="text">
+              <span className="time">Expert-Verified stops en route</span>
+              <h3>6</h3>
+            </div>
+          </div>
+          <div className="p3">
+            <div className="circle" />
+            <div className="text">
+              <span className="time">Your guide</span>
+              <h3>Active</h3>
+            </div>
+          </div>
+          <div className="p1">
+            <div className="circle" />
+            <div className="text">
+              <span className="time">Next alert</span>
+              <h3>Scenic point in 18 min</h3>
+            </div>
+          </div>
+        </div>
+      </Atropos>
+    </div>
+  )
+}
