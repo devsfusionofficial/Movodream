@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import { Hero } from '@/components/sections/Hero'
 import { ImmersiveBooking } from '@/components/sections/ImmersiveBooking'
 import { PlatformSlides } from '@/components/sections/PlatformSlides'
@@ -7,6 +8,14 @@ import { CompanionModules } from '@/components/sections/CompanionModules'
 import { ClosingCta } from '@/components/sections/ClosingCta'
 import { TechnologyShowcase } from '@/components/sections/TechnologyShowcase'
 import { PartnersSection } from '@/components/sections/PartnersSection'
+
+// Title/description are inherited from the root layout's default (they
+// already match the live site's <title>/<meta description> exactly) —
+// only the canonical needs to be set here since every other route sets
+// its own.
+export const metadata: Metadata = {
+  alternates: { canonical: '/' },
+}
 
 // Real 12-section homepage — see docs/01-architecture.md §3 for the full
 // section order. Hero + ImmersiveBooking + PlatformSlides + ClarityIntel +

@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { getPublicPartners } from '@/lib/queries/partners'
 
 // Content verbatim from the client's content doc. Logo grid uses flex-wrap
@@ -21,8 +22,9 @@ export async function PartnersSection() {
         <div className="partners-logos">
           {partners.map((partner) => {
             const content = partner.logo?.url ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={partner.logo.url} alt={partner.name} />
+              <div className="partners-logo-box">
+                <Image src={partner.logo.url} alt={partner.name} fill sizes="140px" />
+              </div>
             ) : (
               <span className="partner-name-fallback">{partner.name}</span>
             )

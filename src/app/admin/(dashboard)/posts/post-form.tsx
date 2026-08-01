@@ -1,6 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
@@ -84,8 +85,7 @@ export function PostForm({ postId, defaultValues, authors, categories, tags }: P
           <FieldLabel>Hero image</FieldLabel>
           <div className="flex items-center gap-3">
             {heroImageUrl && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={heroImageUrl} alt="" className="h-16 w-28 rounded object-cover" />
+              <Image src={heroImageUrl} alt="" width={112} height={64} className="h-16 w-28 rounded object-cover" />
             )}
             <FileUpload
               label={heroImageUrl ? 'Replace image' : 'Upload image'}

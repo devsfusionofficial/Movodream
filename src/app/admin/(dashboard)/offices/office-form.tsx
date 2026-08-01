@@ -1,6 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
@@ -94,8 +95,7 @@ export function OfficeForm({ officeId, defaultValues }: OfficeFormProps) {
           <FieldLabel>Photo</FieldLabel>
           <div className="flex items-center gap-3">
             {imageUrl && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={imageUrl} alt="" className="h-12 w-12 rounded object-cover" />
+              <Image src={imageUrl} alt="" width={48} height={48} className="h-12 w-12 rounded object-cover" />
             )}
             <FileUpload
               label={imageUrl ? 'Replace photo' : 'Upload photo'}

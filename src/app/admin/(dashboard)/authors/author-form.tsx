@@ -1,6 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
@@ -61,8 +62,7 @@ export function AuthorForm({ authorId, defaultValues }: AuthorFormProps) {
           <FieldLabel>Avatar</FieldLabel>
           <div className="flex items-center gap-3">
             {avatarUrl && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={avatarUrl} alt="" className="h-12 w-12 rounded-full object-cover" />
+              <Image src={avatarUrl} alt="" width={48} height={48} className="h-12 w-12 rounded-full object-cover" />
             )}
             <FileUpload
               label={avatarUrl ? 'Replace avatar' : 'Upload avatar'}

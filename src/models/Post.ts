@@ -32,7 +32,9 @@ postSchema.index({ title: 'text', excerpt: 'text' })
 
 type PostDocument = HydratedDocument<InferSchemaType<typeof postSchema>>
 
-postSchema.pre<PostDocument>('save', function () {
+// Slug must exist before Mongoose validates the required `slug` path, so
+// this runs pre('validate'), not pre('save') — validation happens first.
+postSchema.pre<PostDocument>('validate', function () {
   if (!this.slug && this.title) this.slug = slugify(this.title)
   if (this.isModified('contentHtml')) this.readingTime = computeReadingTime(this.contentHtml ?? '')
 
@@ -55,8 +57,23 @@ postSchema.post<PostDocument>('save', async function (doc) {
     // Not in a request scope (e.g. seed script) — nothing to revalidate.
   }
 
-  // TODO(Phase 6): trigger the subscriber-broadcast email job here once the
-  // Subscriber model + broadcast job exist.
+  try {
+    const { sendPostPublishedBroadcast } = await import('@/lib/mailer')
+    const { Subscriber } = await import('@/models/Subscriber')
+
+    const subscribers = await Subscriber.find({ status: 'active' }).select('email').lean<{ email: string }[]>()
+    if (subscribers.length > 0) {
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://movodream.com'
+      await sendPostPublishedBroadcast({
+        postTitle: doc.title,
+        postExcerpt: doc.excerpt ?? undefined,
+        postUrl: `${siteUrl}/blog/${doc.slug}`,
+        subscriberEmails: subscribers.map((s) => s.email),
+      })
+    }
+  } catch (err) {
+    console.error('Failed to send post-published subscriber broadcast:', err)
+  }
 })
 
 export type PostDoc = InferSchemaType<typeof postSchema>

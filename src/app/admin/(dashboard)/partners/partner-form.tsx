@@ -1,6 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
@@ -66,8 +67,7 @@ export function PartnerForm({ partnerId, defaultValues }: PartnerFormProps) {
           <FieldLabel>Logo</FieldLabel>
           <div className="flex items-center gap-3">
             {logoUrl && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={logoUrl} alt="" className="h-12 w-12 rounded object-contain bg-muted" />
+              <Image src={logoUrl} alt="" width={48} height={48} className="h-12 w-12 rounded object-contain bg-muted" />
             )}
             <FileUpload
               label={logoUrl ? 'Replace logo' : 'Upload logo'}

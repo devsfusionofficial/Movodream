@@ -155,6 +155,9 @@ export function Header() {
         <li>
           <Link href="/blog">Blog</Link>
         </li>
+        <li>
+          <Link href="/careers">Careers</Link>
+        </li>
         <div className="nav-right-mobile">
           <button type="button" className="qzv-launcher" onClick={openContactModal}>
             Start Planning

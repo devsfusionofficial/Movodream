@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import Image from 'next/image'
 import { getPostBySlug, getRelatedPosts } from '@/lib/queries/posts'
 import { PostCard } from '../post-card'
 
@@ -81,8 +82,9 @@ export default async function BlogPostPage({ params }: PageProps) {
       </section>
 
       {post.heroImage?.url && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={post.heroImage.url} alt="" className="post-detail-image" />
+        <div className="post-detail-image">
+          <Image src={post.heroImage.url} alt="" fill sizes="(max-width: 900px) 100vw, 900px" priority />
+        </div>
       )}
 
       <main
@@ -123,8 +125,7 @@ export default async function BlogPostPage({ params }: PageProps) {
       {author?.name && (
         <div className="post-detail-author">
           {author.avatar?.url ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={author.avatar.url} alt="" />
+            <Image src={author.avatar.url} alt="" width={56} height={56} />
           ) : (
             <div style={{ width: 56, height: 56, borderRadius: '50%', background: '#e5e5e8' }} />
           )}

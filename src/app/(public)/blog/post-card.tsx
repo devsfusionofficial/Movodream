@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 
 type PostCardPost = {
   _id: string
@@ -16,8 +17,9 @@ export function PostCard({ post }: { post: PostCardPost }) {
   return (
     <Link href={`/blog/${post.slug}`} className="post-card">
       {post.heroImage?.url ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={post.heroImage.url} alt="" className="post-card-image" />
+        <div className="post-card-image">
+          <Image src={post.heroImage.url} alt="" fill sizes="(max-width: 768px) 100vw, 33vw" />
+        </div>
       ) : (
         <div className="post-card-image" />
       )}

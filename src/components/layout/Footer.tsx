@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ComingSoonModal } from './ComingSoonModal'
+import { NewsletterForm } from './NewsletterForm'
 
 export type FooterOffice = {
   _id: string
@@ -57,6 +58,11 @@ export function Footer({ offices = [] }: { offices?: FooterOffice[] }) {
               </div>
             </div>
           )}
+
+          <div className="footer-newsletter-block">
+            <p className="footer-offices-title">Get travel &amp; product updates</p>
+            <NewsletterForm />
+          </div>
 
           <div className="footer-bottom">
             <div className="social-icons">

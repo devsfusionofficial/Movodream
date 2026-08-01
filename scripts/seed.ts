@@ -10,6 +10,7 @@ import { Office } from '../src/models/Office'
 import { Category } from '../src/models/Category'
 import { Author } from '../src/models/Author'
 import { Post } from '../src/models/Post'
+import { Job } from '../src/models/Job'
 import { slugify } from '../src/lib/utils'
 
 // Node 20.12+/22 built-in — avoids adding a dotenv dependency for one script.
@@ -130,12 +131,42 @@ async function seedBlogSamples() {
   }
 }
 
+async function seedJobSamples() {
+  const samples = [
+    {
+      title: 'Frontend Engineer (Next.js)',
+      department: 'Engineering',
+      location: 'Delhi',
+      employmentType: 'Full-time' as const,
+      experience: '2-4 years',
+      qualification: "Bachelor's in Computer Science or equivalent experience",
+      skills: ['React', 'Next.js', 'TypeScript'],
+      descriptionHtml:
+        '<p>We are looking for a Frontend Engineer to help build the next generation of Movodream’s AI travel platform.</p>',
+      responsibilitiesHtml:
+        '<ul><li>Build and maintain user-facing features in Next.js</li><li>Collaborate with design and backend teams</li><li>Write clean, tested, maintainable code</li></ul>',
+    },
+  ]
+
+  for (const sample of samples) {
+    const existing = await Job.findOne({ title: sample.title })
+    if (existing) {
+      console.log(`Job "${sample.title}" already exists — skipping.`)
+      continue
+    }
+    const job = new Job({ ...sample, status: 'published' })
+    await job.save()
+    console.log(`Created job: ${sample.title}`)
+  }
+}
+
 async function main() {
   await connectDB()
   await seedAdminUser()
   await seedOffices()
   await seedCategories()
   await seedBlogSamples()
+  await seedJobSamples()
   console.log('Seed complete.')
   process.exit(0)
 }
