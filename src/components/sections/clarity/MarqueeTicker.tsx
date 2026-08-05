@@ -9,6 +9,11 @@ type Pill = {
 // Ported from script.js's `pills` array (lines 622–651). Icons extracted to
 // static SVGs except "Real-time", which is simple enough to inline (matches
 // the original's plain stroke circle+polyline).
+//
+// Originally rendered as two counter-scrolling infinite marquee rows (each
+// pill duplicated 4x for a seamless loop). That read as restless ambient
+// motion with no real information gained from the scrolling, so this is now
+// one static, centered row of the actual unique pills.
 const PILLS: Pill[] = [
   { label: 'Intelligent Planning', colorClass: 'grey', icon: <Image src="/assets/icons/pill-planning.svg" alt="" width={13} height={13} /> },
   { label: 'AI-driven insights', colorClass: 'pink', icon: <Image src="/assets/icons/pill-insights.svg" alt="" width={14} height={13} /> },
@@ -29,27 +34,17 @@ const PILLS: Pill[] = [
   { label: 'Context memory', colorClass: 'yellow', icon: <Image src="/assets/icons/pill-context-memory.svg" alt="" width={15} height={15} /> },
 ]
 
-function TickerRow({ id, direction }: { id: string; direction: 'left' | 'right' }) {
-  // Ported from buildRow(): the pills array duplicated 4x so the CSS
-  // translateX(-50%) loop animation has no visible seam.
-  const doubled = [...PILLS, ...PILLS, ...PILLS, ...PILLS]
-  return (
-    <div id={id} className={`ticker-row ${direction === 'left' ? 'ticker-row-1' : 'ticker-row-2'}`}>
-      {doubled.map((pill, i) => (
-        <div key={i} className={`ticker-pill ${pill.colorClass}`}>
-          <span className={`pill-icon ${pill.colorClass}`}>{pill.icon}</span>
-          {pill.label}
-        </div>
-      ))}
-    </div>
-  )
-}
-
 export function MarqueeTicker() {
   return (
     <div className="s3-ticker-section">
-      <TickerRow id="row1" direction="left" />
-      <TickerRow id="row2" direction="right" />
+      <div className="ticker-row">
+        {PILLS.map((pill) => (
+          <div key={pill.label} className={`ticker-pill ${pill.colorClass}`}>
+            <span className={`pill-icon ${pill.colorClass}`}>{pill.icon}</span>
+            {pill.label}
+          </div>
+        ))}
+      </div>
     </div>
   )
 }

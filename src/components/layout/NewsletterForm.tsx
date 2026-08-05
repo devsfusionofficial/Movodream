@@ -40,18 +40,26 @@ export function NewsletterForm() {
 
   return (
     <form className="footer-newsletter" onSubmit={handleSubmit}>
-      <input
-        type="email"
-        required
-        placeholder="Your email address"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        className="footer-newsletter-input"
-      />
-      <button type="submit" className="footer-newsletter-submit" disabled={status === 'submitting'}>
-        {status === 'submitting' ? 'Subscribing…' : 'Subscribe'}
-      </button>
+      <div className="footer-newsletter-field">
+        <input
+          type="email"
+          required
+          placeholder="Your email address"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="footer-newsletter-input"
+        />
+        <button
+          type="submit"
+          className="footer-newsletter-submit"
+          disabled={status === 'submitting'}
+          aria-label={status === 'submitting' ? 'Subscribing…' : 'Subscribe'}
+        >
+          <i className="fa-solid fa-arrow-right" />
+        </button>
+      </div>
       {error && <div className="footer-newsletter-error">{error}</div>}
+      <p className="footer-newsletter-note">No spam. Unsubscribe anytime.</p>
     </form>
   )
 }

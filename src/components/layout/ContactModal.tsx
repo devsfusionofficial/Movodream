@@ -124,6 +124,17 @@ export function ContactModalProvider({ children }: { children: React.ReactNode }
     }, 2000)
   }, [])
 
+  const stopGreetingLoop = useCallback(() => {
+    if (greetingTimerRef.current) {
+      clearInterval(greetingTimerRef.current)
+      greetingTimerRef.current = null
+    }
+  }, [])
+
+  // Only ticks while the modal is actually open — this used to start on
+  // page load and run forever in the background (a setInterval animating a
+  // hidden DOM node every 2s for the entire visit), regardless of whether
+  // anyone ever opened the form.
   useEffect(() => {
     const overlay = overlayRef.current
     const dismiss = dismissRef.current
@@ -136,16 +147,16 @@ export function ContactModalProvider({ children }: { children: React.ReactNode }
       dismiss.style.visibility = 'hidden'
       dismiss.style.pointerEvents = 'none'
     }
-    startGreetingLoop()
     return () => {
       if (greetingTimerRef.current) clearInterval(greetingTimerRef.current)
     }
-  }, [startGreetingLoop])
+  }, [])
 
   const close = useCallback(() => {
     isOpenRef.current = false
     overlayRef.current?.setAttribute('aria-hidden', 'true')
     lenisRef.current?.start()
+    stopGreetingLoop()
 
     const overlay = overlayRef.current
     const dismiss = dismissRef.current
@@ -168,7 +179,7 @@ export function ContactModalProvider({ children }: { children: React.ReactNode }
         setSubmitting(false)
       },
     })
-  }, [lenisRef])
+  }, [lenisRef, stopGreetingLoop])
 
   const open = useCallback(() => {
     isOpenRef.current = true

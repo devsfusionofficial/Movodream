@@ -20,6 +20,7 @@ export const statement = {
   jobs: ['create', 'read', 'update', 'delete', 'publish'],
   applications: ['read', 'updateStatus'],
   subscribers: ['read', 'update', 'export'],
+  contacts: ['read', 'delete'],
   offices: ['create', 'read', 'update', 'delete'],
   partners: ['create', 'read', 'update', 'delete'],
   media: ['create', 'read', 'delete'],
@@ -37,6 +38,7 @@ export const roles = {
     jobs: ['create', 'read', 'update', 'delete', 'publish'],
     applications: ['read', 'updateStatus'],
     subscribers: ['read', 'update', 'export'],
+    contacts: ['read', 'delete'],
     offices: ['create', 'read', 'update', 'delete'],
     partners: ['create', 'read', 'update', 'delete'],
     media: ['create', 'read', 'delete'],
@@ -52,6 +54,7 @@ export const roles = {
     media: ['create', 'read', 'delete'],
     applications: ['read'],
     subscribers: ['read'],
+    contacts: ['read'],
   }),
   hr: ac.newRole({
     jobs: ['read'],

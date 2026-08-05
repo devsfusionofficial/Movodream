@@ -35,7 +35,13 @@ export const metadata: Metadata = {
     description: SITE_DESCRIPTION,
     url: SITE_URL,
     siteName: "Movodream",
-    images: ["/assets/images/logo2.png"],
+    images: [{ url: "/assets/images/social-share.png", width: 1200, height: 630, alt: SITE_TITLE }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+    images: ["/assets/images/social-share.png"],
   },
 };
 

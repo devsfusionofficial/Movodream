@@ -121,7 +121,7 @@ export function HeroCards() {
 
       <Atropos className="card2" highlight={false} shadow={false}>
         <span data-atropos-offset="2" className="tag">
-          <Image src="/assets/icons/hero-card2-tag.svg" alt="" width={12} height={13} />
+          <Image src="/assets/icons/hero-card2-tag.svg" alt="" width={14} height={14} />
           See Before You Go
         </span>
         <Image

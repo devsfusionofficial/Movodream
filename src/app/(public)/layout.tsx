@@ -4,17 +4,15 @@ import { ExploreAppModalProvider } from '@/components/layout/ExploreAppModal'
 import { ContactModalProvider } from '@/components/layout/ContactModal'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
-import { ComingSoonShutter } from '@/components/layout/ComingSoonShutter'
-import { getPublicOffices } from '@/lib/queries/offices'
 import '@/styles/homepage.css'
+import '@/styles/legal.css'
+import '@/styles/about.css'
 
 // Live site loads Manrope 200–800 via Google Fonts CDN; next/font self-hosts
 // the same variable range with no extra network request and no CLS.
 const manrope = Manrope({ subsets: ['latin'], weight: ['200', '300', '400', '500', '600', '700', '800'] })
 
-export default async function PublicLayout({ children }: { children: React.ReactNode }) {
-  const offices = await getPublicOffices()
-
+export default function PublicLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className={manrope.className}>
       <link
@@ -29,8 +27,7 @@ export default async function PublicLayout({ children }: { children: React.React
           <ExploreAppModalProvider>
             <Header />
             {children}
-            <Footer offices={offices} />
-            <ComingSoonShutter />
+            <Footer />
           </ExploreAppModalProvider>
         </ContactModalProvider>
       </SmoothScrollProvider>

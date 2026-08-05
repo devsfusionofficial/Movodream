@@ -6,35 +6,29 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Atropos from 'atropos/react'
 import 'atropos/css'
-import { useLenis } from '@/components/animation/SmoothScrollProvider'
 
 /**
- * Ported from index.html's section-4 + script.js lines 1367–1656. The
- * transition system: on desktop the whole section pins for `+=150%` of
- * scroll, and ScrollTrigger's onUpdate advances exactly one slide at a
- * time (never skips), snapping scroll to that slide's target progress via
- * Lenis while GSAP animates the slide content in/out. On mobile it's
- * natural-flow — each slide gets its own one-shot entrance ScrollTrigger,
- * reusing the same s4SlideIn animation. gsap.matchMedia handles the
- * desktop/mobile split and its own cleanup on breakpoint change.
+ * Product slides — normal scroll flow. Each slide gets a one-shot entrance
+ * animation (fade/slide-in) the first time it scrolls into view; all three
+ * are simply stacked in document flow like any other section.
  *
- * One faithful-but-odd detail: the idle tilt effect only targets the
- * *first* `.s4-card` in the DOM (slide 1's), because the original uses
- * `document.querySelector('.s4-card')` (singular). Slides 2 and 3 don't
- * get it — preserved as-is, not "fixed" to apply everywhere.
+ * This intentionally replaces the original site's pinned/scroll-jacked
+ * version (the whole section used to pin for 150% of scroll while
+ * ScrollTrigger stepped through slides one at a time) — a deliberate
+ * post-launch UX change, not a parity port. See docs/01-architecture.md
+ * for context if that pinned behavior is ever wanted back.
+ *
+ * One faithful-but-odd detail kept from the original: the idle tilt effect
+ * only targets the *first* `.s4-card` in the DOM (slide 1's), because the
+ * source uses `document.querySelector('.s4-card')` (singular). Slides 2
+ * and 3 don't get it — preserved as-is, not "fixed" to apply everywhere.
  */
 export function PlatformSlides() {
-  const lenisRef = useLenis()
-
   useGSAP(() => {
     gsap.registerPlugin(ScrollTrigger)
-    const isMobile = window.innerWidth <= 768
 
     const s4Slides = Array.from(document.querySelectorAll<HTMLElement>('.s4-slide'))
     if (s4Slides.length === 0) return
-
-    let s4CurrentSlide = -1
-    let s4IsAnimating = false
 
     function s4SlideIn(slideEl: HTMLElement) {
       const left = slideEl.querySelector('.s4-left')
@@ -65,10 +59,10 @@ export function PlatformSlides() {
       if (heading) {
         tl.fromTo(heading, { x: 90, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.5, ease: 'power3.out' }, '-=0.35')
       }
-      if (bullets.length && !isMobile) {
+      if (bullets.length) {
         tl.fromTo(bullets, { x: 70, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.4, stagger: 0.06, ease: 'power2.out' }, '-=0.3')
       }
-      if (tags.length && !isMobile) {
+      if (tags.length) {
         tl.fromTo(
           tags,
           { x: 50, autoAlpha: 0, scale: 0.88 },
@@ -83,43 +77,6 @@ export function PlatformSlides() {
         tl.fromTo(cta, { autoAlpha: 0, scale: 0.6 }, { autoAlpha: 1, scale: 1, duration: 0.5, ease: 'expo.out' }, '-=0.25')
       }
       return tl
-    }
-
-    function s4SlideOut(slideEl: HTMLElement, onDone: () => void) {
-      const children = slideEl.querySelectorAll('.s4-left, .s4-eyebrow, .s4-heading, .s4-bullets li, .s4-tags .s4-tag')
-      gsap.to(children, {
-        y: -50,
-        autoAlpha: 0,
-        scale: 0.94,
-        duration: 0.3,
-        stagger: 0.015,
-        ease: 'power2.in',
-        onComplete() {
-          gsap.set(slideEl, { opacity: 0, pointerEvents: 'none' })
-          slideEl.classList.remove('is-active')
-          gsap.set(children, { clearProps: 'all' })
-          onDone()
-        },
-      })
-    }
-
-    function s4GoToSlide(nextIdx: number, onComplete?: () => void) {
-      if (nextIdx === s4CurrentSlide) {
-        onComplete?.()
-        return
-      }
-      const prevIdx = s4CurrentSlide
-      s4CurrentSlide = nextIdx
-
-      if (prevIdx >= 0 && s4Slides[prevIdx]) {
-        s4SlideOut(s4Slides[prevIdx], () => {
-          const tl = s4SlideIn(s4Slides[nextIdx])
-          if (onComplete) tl.eventCallback('onComplete', onComplete)
-        })
-      } else {
-        const tl = s4SlideIn(s4Slides[nextIdx])
-        if (onComplete) tl.eventCallback('onComplete', onComplete)
-      }
     }
 
     // ── s4-card idle tilt (first .s4-card only — see doc comment) ──
@@ -149,92 +106,21 @@ export function PlatformSlides() {
       }
     }
 
-    const s4MM = gsap.matchMedia()
+    s4Slides.forEach((slideEl) => gsap.set(slideEl, { opacity: 0 }))
 
-    s4MM.add('(min-width: 769px)', () => {
-      const pinST = ScrollTrigger.create({
-        trigger: '.section-4',
+    const triggers = s4Slides.map((slideEl) =>
+      ScrollTrigger.create({
+        trigger: slideEl,
         scroller: document.body,
-        start: 'top top',
-        end: '+=150%',
-        pin: true,
-        pinSpacing: true,
-        onUpdate(self) {
-          if (s4IsAnimating) return
-          const p = self.progress
-          let rawIdx = 0
-          if (p > 0.33 && p <= 0.66) rawIdx = 1
-          else if (p > 0.66) rawIdx = 2
-
-          if (rawIdx !== s4CurrentSlide && rawIdx >= 0) {
-            const nextIdx = rawIdx > s4CurrentSlide ? s4CurrentSlide + 1 : s4CurrentSlide - 1
-            if (nextIdx >= 0 && nextIdx < 3 && nextIdx !== s4CurrentSlide) {
-              s4IsAnimating = true
-              lenisRef.current?.stop()
-              const targetProgress = nextIdx === 0 ? 0.15 : nextIdx === 1 ? 0.5 : 0.85
-              const targetScroll = self.start + (self.end - self.start) * targetProgress
-              lenisRef.current?.scrollTo(targetScroll, { duration: 0.5 })
-              s4GoToSlide(nextIdx)
-              setTimeout(() => {
-                s4IsAnimating = false
-                lenisRef.current?.start()
-              }, 700)
-            }
-          }
-        },
-        onEnter() {
-          if (s4CurrentSlide === -1) {
-            s4IsAnimating = true
-            s4GoToSlide(0)
-            setTimeout(() => {
-              s4IsAnimating = false
-            }, 700)
-          }
-        },
+        start: 'top 75%',
+        once: true,
+        onEnter: () => s4SlideIn(slideEl),
         invalidateOnRefresh: true,
       })
-
-      return () => {
-        pinST.kill()
-        s4Slides.forEach((sl) => {
-          sl.classList.remove('is-active')
-          gsap.set(sl, { clearProps: 'all' })
-        })
-        s4CurrentSlide = -1
-      }
-    })
-
-    s4MM.add('(max-width: 768px)', () => {
-      s4CurrentSlide = -1
-      s4Slides.forEach((slideEl) => {
-        slideEl.classList.remove('is-active')
-        gsap.set(slideEl, { opacity: 0 })
-      })
-
-      const mobileTriggers = s4Slides.map((slideEl) =>
-        ScrollTrigger.create({
-          trigger: slideEl,
-          scroller: document.body,
-          start: 'top 50%',
-          once: true,
-          onEnter: () => s4SlideIn(slideEl),
-          invalidateOnRefresh: true,
-        })
-      )
-
-      return () => {
-        mobileTriggers.forEach((t) => t.kill())
-        s4Slides.forEach((sl) => {
-          sl.classList.remove('is-active')
-          gsap.set(sl, { clearProps: 'all' })
-        })
-      }
-    })
-
-    ScrollTrigger.refresh()
+    )
 
     return () => {
-      s4MM.revert()
+      triggers.forEach((t) => t.kill())
       idleTilt?.kill()
       s4CardEl?.removeEventListener('mouseenter', onCardEnter)
       s4CardEl?.removeEventListener('mouseleave', onCardLeave)

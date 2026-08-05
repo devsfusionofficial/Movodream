@@ -1,0 +1,35 @@
+<svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
+  <defs>
+    <linearGradient id="pinBody" x1="60" y1="24" x2="140" y2="130" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F9A0DE" />
+      <stop offset="1" stop-color="#C031B0" />
+    </linearGradient>
+    <linearGradient id="pinCore" x1="78" y1="52" x2="122" y2="96" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#7C4BE0" />
+      <stop offset="1" stop-color="#5A2DD7" />
+    </linearGradient>
+    <linearGradient id="pinSlab" x1="45" y1="140" x2="155" y2="180" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#EADCFB" />
+      <stop offset="1" stop-color="#C3A8F0" />
+    </linearGradient>
+    <radialGradient id="pinGlow" cx="0" cy="0" r="1" gradientTransform="translate(100 130) scale(66 28)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F03984" stop-opacity="0.42" />
+      <stop offset="1" stop-color="#F03984" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+
+  <ellipse cx="100" cy="130" rx="66" ry="28" fill="url(#pinGlow)" />
+
+  <!-- pedestal -->
+  <path d="M100 118 L166 148 L100 178 L34 148 Z" fill="url(#pinSlab)" />
+  <path d="M34 148 L100 178 L100 188 L34 158 Z" fill="#B294E8" opacity="0.55" />
+  <path d="M166 148 L100 178 L100 188 L166 158 Z" fill="#9E7BDD" opacity="0.55" />
+
+  <!-- map pin -->
+  <path d="M100 22c-22 0-40 18-40 40 0 28 30 54 38 61a3 3 0 0 0 4 0c8-7 38-33 38-61 0-22-18-40-40-40z" fill="url(#pinBody)" />
+  <circle cx="100" cy="62" r="25" fill="url(#pinCore)" />
+  <path d="M89 62l8 8 15-16" stroke="#FFFFFF" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" />
+
+  <!-- verification ring -->
+  <ellipse cx="100" cy="122" rx="44" ry="13" stroke="#F472D0" stroke-opacity="0.6" stroke-width="2" />
+</svg>

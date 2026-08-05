@@ -27,12 +27,18 @@ const MODULES = [
 
 /**
  * Ported from index.html's "how-it-works" section + script.js lines
- * 1662–2085. A 3-slide auto-advancing showcase: clicking a module (or the
- * mobile prev/next arrows) jumps to its slide; a `--timer-pct` CSS custom
- * property drives the progress bar under the active module and triggers
- * auto-advance at 9s via a `gsap.ticker` callback (not a timeline — this
- * needed direct control over an accumulating `elapsed` counter that
- * `goTo()` resets).
+ * 1662–2085.
+ *
+ * The 9s auto-advance is restored (client request): the slideshow cycles
+ * module 1 -> 2 -> 3 -> 1 once the section scrolls into view, and the active
+ * module's top border fills as a countdown. Manual navigation — clicking a
+ * module, or the prev/next arrows — restarts that countdown rather than
+ * stopping it.
+ *
+ * Module 2's card stack is the one thing that stays user-driven. Its original
+ * `repeat: -1` timeline shuffled cards to the front forever, which was
+ * restless next to an already-cycling slideshow; hovering a card does the
+ * same thing on demand (see initSlide2Hover).
  */
 export function CompanionModules() {
   useGSAP(() => {
@@ -42,7 +48,10 @@ export function CompanionModules() {
     const modules = document.querySelectorAll<HTMLElement>('.modules-section .module')
     if (!slides.length || !modules.length) return
 
+    // Seconds each slide holds before advancing — matches the original site's
+    // SLIDE_DURATION (script.js:1665).
     const SLIDE_DURATION = 9
+
     let current = 0
     let elapsed = 0
     let slideshowTimer: ((time: number) => void) | null = null
@@ -97,27 +106,15 @@ export function CompanionModules() {
       gsap.set([back, mid, front], { autoAlpha: 0, y: 80, x: 0, rotation: 0, scale: 0.82, transformOrigin: 'center bottom' })
       gsap.set(frontContent, { autoAlpha: 0, y: 14 })
 
+      // Card stack settles here and stays put — no more auto-cycling back/mid
+      // to the front on a timer. initSlide2Hover() below already gives the
+      // same "bring a card forward" effect, driven by the user hovering it.
       gsap
         .timeline()
         .to(back, { autoAlpha: 0.45, y: -22, x: -22, rotation: -4, scale: 1, duration: 0.6, ease: 'back.out(1.8)' })
         .to(mid, { autoAlpha: 0.65, y: -11, x: -11, rotation: -2, scale: 1, duration: 0.54, ease: 'back.out(1.8)' }, '-=0.34')
         .to(front, { autoAlpha: 1, y: 0, x: 0, rotation: 0, scale: 1, duration: 0.6, ease: 'back.out(1.9)' }, '-=0.3')
         .to(frontContent, { autoAlpha: 1, y: 0, duration: 0.42, stagger: 0.1, ease: 'power2.out' }, '-=0.14')
-        .call(
-          () => {
-            gsap
-              .timeline({ repeat: -1 })
-              .to(back, { autoAlpha: 1, y: 0, x: 0, rotation: 0, scale: 1, zIndex: 4, duration: 0.8, ease: 'back.out(1.5)' })
-              .to({}, { duration: 1.5 })
-              .to(back, { autoAlpha: 0.45, y: -22, x: -22, rotation: -4, scale: 1, zIndex: 1, duration: 0.6, ease: 'power2.inOut' })
-              .to(mid, { autoAlpha: 1, y: 0, x: 0, rotation: 0, scale: 1, zIndex: 4, duration: 0.8, ease: 'back.out(1.5)' })
-              .to({}, { duration: 1.5 })
-              .to(mid, { autoAlpha: 0.65, y: -11, x: -11, rotation: -2, scale: 1, zIndex: 2, duration: 0.6, ease: 'power2.inOut' })
-              .to({}, { duration: 2.0 })
-          },
-          undefined,
-          '+=0.5'
-        )
     }
 
     function animateSlide3() {
@@ -177,6 +174,10 @@ export function CompanionModules() {
       animators[current]?.()
     }
 
+    // Auto-advance, driven off gsap's ticker (in seconds) so it stays in step
+    // with the slide animations and pauses with the rest of GSAP when the tab
+    // is backgrounded. Also publishes progress as --timer-pct, which the
+    // active module's top border renders as a countdown fill.
     function startSlideshowTimer() {
       if (slideshowTimer) return
       let lastTime: number | null = null
@@ -199,6 +200,15 @@ export function CompanionModules() {
         gsap.ticker.remove(slideshowTimer)
         slideshowTimer = null
       }
+    }
+
+    // Any manual navigation restarts the countdown from zero, so a slide the
+    // user just chose always gets its full dwell time rather than inheriting
+    // whatever was left on the previous one's clock.
+    function goToManually(idx: number) {
+      stopSlideshowTimer()
+      goTo(idx)
+      startSlideshowTimer()
     }
 
     function resetSlideshow() {
@@ -227,11 +237,7 @@ export function CompanionModules() {
 
     const moduleClickHandlers: Array<() => void> = []
     modules.forEach((mod, i) => {
-      const handler = () => {
-        stopSlideshowTimer()
-        goTo(i)
-        startSlideshowTimer()
-      }
+      const handler = () => goToManually(i)
       moduleClickHandlers.push(handler)
       mod.addEventListener('click', handler)
     })
@@ -256,16 +262,8 @@ export function CompanionModules() {
 
     const prevArrow = document.querySelector('.hiw-arrow--prev')
     const nextArrow = document.querySelector('.hiw-arrow--next')
-    const onPrev = () => {
-      stopSlideshowTimer()
-      goTo((current - 1 + slides.length) % slides.length)
-      startSlideshowTimer()
-    }
-    const onNext = () => {
-      stopSlideshowTimer()
-      goTo((current + 1) % slides.length)
-      startSlideshowTimer()
-    }
+    const onPrev = () => goToManually((current - 1 + slides.length) % slides.length)
+    const onNext = () => goToManually((current + 1) % slides.length)
     prevArrow?.addEventListener('click', onPrev)
     nextArrow?.addEventListener('click', onNext)
 

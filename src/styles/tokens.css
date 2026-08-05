@@ -22,6 +22,9 @@
   --md-bg-page: #f5f6f7;
   --md-bg-section: #f9f9fb;
   --md-bg-white: #ffffff;
+  /* Shared by the closing CTA + footer, which read as one continuous dark
+     panel — must stay a single flat value so the join is seamless. */
+  --md-dark-panel: #1a0e28;
 
   /* Text */
   --md-text-primary: #1a1a1a;

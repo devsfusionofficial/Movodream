@@ -1,0 +1,47 @@
+<svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
+  <defs>
+    <linearGradient id="barA" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#D8BEFB" />
+      <stop offset="1" stop-color="#A97DEF" />
+    </linearGradient>
+    <linearGradient id="barB" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#C79BF7" />
+      <stop offset="1" stop-color="#8B5CF6" />
+    </linearGradient>
+    <linearGradient id="barC" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#F9A0DE" />
+      <stop offset="1" stop-color="#C031B0" />
+    </linearGradient>
+    <linearGradient id="growthSlab" x1="45" y1="140" x2="155" y2="180" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#EADCFB" />
+      <stop offset="1" stop-color="#C3A8F0" />
+    </linearGradient>
+    <linearGradient id="arrowLine" x1="34" y1="118" x2="170" y2="30" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F9A0DE" />
+      <stop offset="1" stop-color="#F03984" />
+    </linearGradient>
+    <radialGradient id="growthGlow" cx="0" cy="0" r="1" gradientTransform="translate(100 134) scale(72 28)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#8B5CF6" stop-opacity="0.38" />
+      <stop offset="1" stop-color="#8B5CF6" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+
+  <ellipse cx="100" cy="134" rx="72" ry="28" fill="url(#growthGlow)" />
+
+  <!-- bars -->
+  <rect x="40" y="94" width="24" height="42" rx="7" fill="url(#barA)" />
+  <rect x="72" y="76" width="24" height="60" rx="7" fill="url(#barB)" />
+  <rect x="104" y="56" width="24" height="80" rx="7" fill="url(#barB)" />
+  <rect x="136" y="34" width="24" height="102" rx="7" fill="url(#barC)" />
+
+  <!-- trend arrow -->
+  <path d="M36 116 L74 92 L110 66 L158 26" stroke="url(#arrowLine)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+  <path d="M138 24h22v22" stroke="#F03984" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+  <circle cx="74" cy="92" r="5" fill="#FFFFFF" stroke="#F03984" stroke-width="3" />
+  <circle cx="110" cy="66" r="5" fill="#FFFFFF" stroke="#F03984" stroke-width="3" />
+
+  <!-- pedestal -->
+  <path d="M100 126 L170 152 L100 178 L30 152 Z" fill="url(#growthSlab)" />
+  <path d="M30 152 L100 178 L100 188 L30 162 Z" fill="#B294E8" opacity="0.55" />
+  <path d="M170 152 L100 178 L100 188 L170 162 Z" fill="#9E7BDD" opacity="0.55" />
+</svg>

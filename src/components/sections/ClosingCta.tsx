@@ -5,32 +5,32 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { SplitText } from 'gsap/SplitText'
 import { useOpenContactModal } from '@/components/layout/ContactModal'
+import { useOpenExploreModal } from '@/components/layout/ExploreAppModal'
 
 /**
- * Ported from index.html's "ready-section" + script.js lines 1043–1120.
- * Only the subtext word-cascade and the button's scale-pop are live in the
- * original — a headline char-split entrance exists in script.js but is
- * entirely commented out there, so the headline just renders statically
- * here too (not "finishing" an animation that was never shipped).
- * `.gradient-text` and `.demo-button-utext` have zero CSS rules in the
- * live site (misleading class names, no actual gradient) — left unstyled
- * to match, not invented.
+ * Redesigned per client-approved reference: a dark gradient closing CTA
+ * card instead of the previous full-bleed light "Ready to see..." section.
+ * Both buttons route to real, already-wired flows — there's no separate
+ * "free signup" or "book a demo" flow on this site, so "Start Planning"
+ * opens the same contact modal used site-wide and "Explore the App" opens
+ * the existing iOS/Android chooser modal, rather than inventing new ones.
  */
 export function ClosingCta() {
   const openContactModal = useOpenContactModal()
+  const openExploreModal = useOpenExploreModal()
 
   useGSAP(() => {
     gsap.registerPlugin(ScrollTrigger, SplitText)
 
     const readySubtext = document.querySelector<HTMLElement>('.ready-subtext')
-    const demoButton = document.querySelector<HTMLElement>('.ready-section .demo-button')
+    const readyActions = document.querySelector<HTMLElement>('.ready-actions')
     if (!readySubtext) return
 
     const readyTl = gsap.timeline({
       scrollTrigger: {
         trigger: '.ready-section',
         scroller: document.body,
-        start: 'top -50%',
+        start: 'top 70%',
         once: true,
         invalidateOnRefresh: true,
       },
@@ -45,35 +45,39 @@ export function ClosingCta() {
       { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out', stagger: { each: 0.025, from: 'start' } }
     )
 
-    if (demoButton) {
-      readyTl.fromTo(demoButton, { scale: 0.5, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.8, ease: 'expo.out' }, '-=0.3')
+    if (readyActions) {
+      readyTl.fromTo(
+        readyActions,
+        { opacity: 0, y: 16 },
+        { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' },
+        '-=0.3'
+      )
     }
   }, [])
 
   return (
-    <>
-      <section className="ready-section">
-        <div className="ready-content">
+    <section className="ready-section">
+      <div className="ready-card">
+        <div className="ready-text">
+          <p className="ready-eyebrow">Ready to travel smarter?</p>
           <h2 className="ready-headline">
-            Ready to see what real
-            <span className="gradient-text"> AI travel looks like?</span>
+            Let <span className="gradient-text">AI</span> plan. You explore.
           </h2>
           <p className="ready-subtext">
-            Your dream trip shouldn&apos;t come from a template. Movodream learns your style. Local experts verify
-            every place. AI plans, books, and guides — with 360° previews, AR/VR navigation, and live real-time
-            guidance.
-          </p>
-
-          <button type="button" className="demo-button qzv-launcher" onClick={openContactModal}>
-            GET A DEMO
-          </button>
-
-          <p className="demo-button-utext" style={{ fontWeight: 800, marginTop: 28 }}>
-            Just a conversation about travel that actually works.
+            Smart itineraries, real-time recommendations, and local insights crafted by AI — so you can focus on the
+            journey.
           </p>
         </div>
-      </section>
-      <p className="demo-button-sub">Built for travelers. Trusted by partners. Verified by locals.</p>
-    </>
+
+        <div className="ready-actions">
+          <button type="button" className="demo-button qzv-launcher" onClick={openContactModal}>
+            Start Planning
+          </button>
+          <button type="button" className="ready-secondary-button" onClick={openExploreModal}>
+            Explore the App
+          </button>
+        </div>
+      </div>
+    </section>
   )
 }

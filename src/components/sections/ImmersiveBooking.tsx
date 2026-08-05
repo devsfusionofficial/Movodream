@@ -6,7 +6,6 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { Flip } from 'gsap/Flip'
 import { SplitText } from 'gsap/SplitText'
 import { PanoramaViewer } from './hero/PanoramaViewer'
-import { homepageScrollState } from '@/lib/homepage-scroll-state'
 
 const isLowEndDevice = () => {
   const isMobile = window.innerWidth <= 768
@@ -209,11 +208,17 @@ export function ImmersiveBooking() {
     }
 
     let contentShown = false
+    let cardExpanded = false
     let s2RefreshQueued = false
 
+    // Layout changes (card going full-bleed) can shift where later sections'
+    // ScrollTriggers should start, so a refresh is queued on each real
+    // transition. This used to also write to a cross-component shared state
+    // module read by the "Movodream Advantage" ring's mobile pin-start
+    // position — that section is a static grid now, nothing reads it.
     function syncCardExpandedState(expanded: boolean) {
-      if (homepageScrollState.cardExpanded === expanded) return
-      homepageScrollState.cardExpanded = expanded
+      if (cardExpanded === expanded) return
+      cardExpanded = expanded
       if (s2RefreshQueued) return
       s2RefreshQueued = true
       requestAnimationFrame(() => {

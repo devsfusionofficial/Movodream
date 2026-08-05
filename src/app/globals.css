@@ -128,4 +128,36 @@
   html {
     @apply font-sans;
   }
+  /* Hard safety net: no section on this site intentionally scrolls
+     horizontally. Without this, a single decorative element a pixel wider
+     than the viewport (common with 100vw on a page that already has a
+     vertical scrollbar) makes the whole document horizontally scrollable,
+     which reads as the page "shifting" during scroll/resize.
+
+     `clip` rather than `hidden`: `overflow-x: hidden` forces the computed
+     `overflow-y` to `auto`, which turns <body> into a scroll container. Any
+     `position: sticky` descendant then resolves against <body> — which never
+     scrolls internally, the viewport does — so sticky silently never engages
+     (this broke the docs sidebar on the policy pages). `clip` does the same
+     clipping without creating a scroll container, so sticky keeps working. */
+  html,
+  body {
+    max-width: 100%;
+  }
+
+  @supports (overflow: clip) {
+    html,
+    body {
+      overflow-x: clip;
+    }
+  }
+
+  /* Safari < 16 has no `overflow: clip`. Keep the guard there and accept that
+     sticky degrades to static on those versions. */
+  @supports not (overflow: clip) {
+    html,
+    body {
+      overflow-x: hidden;
+    }
+  }
 }

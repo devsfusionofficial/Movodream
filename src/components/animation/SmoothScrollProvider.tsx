@@ -35,13 +35,33 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger)
 
+    // Drop 'load' from ScrollTrigger's auto-refresh events (default is
+    // "visibilitychange,DOMContentLoaded,load,resize").
+    //
+    // A refresh calls the scrollerProxy's scrollTop setter below, which does
+    // `lenis.scrollTo(..., immediate: true)` — that hard-cuts Lenis's running
+    // animation. Every late-arriving image fires 'load', so an image
+    // finishing mid-scroll stops the scroll dead partway. With ~40 images
+    // across the homepage sections that fires often and at random points,
+    // which is exactly how the stall presents.
+    //
+    // Safe to drop here because every image is a next/image with explicit
+    // width/height, so layout is reserved up front and doesn't shift when
+    // the bytes land — there is nothing for the 'load' refresh to correct.
+    ScrollTrigger.config({ autoRefreshEvents: 'visibilitychange,DOMContentLoaded,resize' })
+
     const isMobile = window.innerWidth <= 768
 
     if (!isMobile) {
       const instance = new Lenis({
         duration: 1.2,
         easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-        prevent: (node: HTMLElement) => node.closest('#qzvOverlay') !== null,
+        // Passing `prevent` replaces Lenis's built-in [data-lenis-prevent]
+        // handling, so re-add it — anything that scrolls internally (the
+        // pinned docs sidebar) needs its own wheel events back, otherwise
+        // Lenis scrolls the page underneath it instead.
+        prevent: (node: HTMLElement) =>
+          node.closest('#qzvOverlay') !== null || node.closest('[data-lenis-prevent]') !== null,
         syncTouch: true,
       })
       lenisRef.current = instance

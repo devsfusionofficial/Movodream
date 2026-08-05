@@ -11,6 +11,7 @@ import { Category } from '../src/models/Category'
 import { Author } from '../src/models/Author'
 import { Post } from '../src/models/Post'
 import { Job } from '../src/models/Job'
+import { Partner } from '../src/models/Partner'
 import { slugify } from '../src/lib/utils'
 
 // Node 20.12+/22 built-in — avoids adding a dotenv dependency for one script.
@@ -160,6 +161,46 @@ async function seedJobSamples() {
   }
 }
 
+// Logo files came directly from the client (client-docs/Partner Logos) —
+// converted to webp and placed in public/assets/partners. No partner
+// website URLs or categories were provided, so those fields are left unset
+// rather than guessed.
+//
+// The `-v2` suffix is a cache buster. Several of the client's originals were
+// square canvases with the wordmark in a thin band and large dead margins,
+// which made them render far smaller than the rest of the row once the logo
+// grid sized logos by width. They were re-cropped to their ink bounds; the
+// filenames had to change so browsers and CDNs holding the old bitmaps at
+// the previous URLs pick up the new ones. Bump the suffix again if these
+// files are ever re-cropped.
+const PARTNERS = [
+  { name: 'AviationStack', logoFile: 'aviationstack-v2.webp' },
+  { name: 'CleverTap', logoFile: 'clevertap-v2.webp' },
+  { name: 'Embark', logoFile: 'embark-v2.webp' },
+  { name: 'Equence', logoFile: 'equence-v2.webp' },
+  { name: 'Gozo Cabs', logoFile: 'gozo-v2.webp' },
+  { name: 'NetworkTechLab', logoFile: 'networktechlab-v2.webp' },
+  { name: 'Novus Loyalty', logoFile: 'novus-v2.webp' },
+  { name: 'Razorpay', logoFile: 'razorpay-v2.webp' },
+  { name: 'Lepton', logoFile: 'lepton-v2.webp' },
+]
+
+async function seedPartners() {
+  for (const [index, partner] of PARTNERS.entries()) {
+    const existing = await Partner.findOne({ name: partner.name })
+    if (existing) {
+      console.log(`Partner "${partner.name}" already exists — skipping.`)
+      continue
+    }
+    await Partner.create({
+      name: partner.name,
+      logo: { url: `/assets/partners/${partner.logoFile}` },
+      order: index + 1,
+    })
+    console.log(`Created partner: ${partner.name}`)
+  }
+}
+
 async function main() {
   await connectDB()
   await seedAdminUser()
@@ -167,6 +208,7 @@ async function main() {
   await seedCategories()
   await seedBlogSamples()
   await seedJobSamples()
+  await seedPartners()
   console.log('Seed complete.')
   process.exit(0)
 }

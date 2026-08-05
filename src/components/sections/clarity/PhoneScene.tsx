@@ -3,8 +3,6 @@
 import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
-import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 /**
  * Ported from index.html's inline Three.js script (lines 1611–1795). The
@@ -211,49 +209,6 @@ export function PhoneScene() {
       cleanupFns.forEach((fn) => fn())
       renderer.dispose()
     }
-  }, [])
-
-  // Ported from script.js lines 2049–2083: once section-3 scrolls past,
-  // the same canvas keeps drifting (sine/cosine x/y/rotation/scale) through
-  // the following sections' scroll range, matching the original's
-  // "FLOATING 3D PHONE" effect. Separate effect from the Three.js setup
-  // above since it's a plain DOM/GSAP concern, not a WebGL one.
-  useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-
-    gsap.registerPlugin(ScrollTrigger)
-    gsap.set(canvas, { position: 'relative', zIndex: 'auto' })
-
-    let lastP = -1
-    const trigger = ScrollTrigger.create({
-      trigger: '.section-3',
-      scroller: document.body,
-      start: 'bottom top',
-      end: '+=300%',
-      scrub: true,
-      invalidateOnRefresh: true,
-      onEnter: () => {
-        canvas.classList.add('floating-phone')
-      },
-      onUpdate: (self) => {
-        const p = Math.round(self.progress * 200) / 200
-        if (p === lastP) return
-        lastP = p
-        gsap.set(canvas, {
-          x: 60 * Math.sin(p * Math.PI * 3),
-          y: 40 * Math.cos(p * Math.PI * 2.5),
-          rotation: 15 * Math.sin(p * Math.PI * 1.5),
-          scale: 0.75 + 0.25 * Math.sin(p * Math.PI * 4),
-        })
-      },
-      onLeaveBack: () => {
-        canvas.classList.remove('floating-phone')
-        gsap.set(canvas, { x: 0, y: 0, rotation: 0, scale: 1 })
-      },
-    })
-
-    return () => trigger.kill()
   }, [])
 
   return <canvas id="phone-3d-canvas" ref={canvasRef} />

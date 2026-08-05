@@ -1,96 +1,96 @@
-'use client'
-
-import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { ComingSoonModal } from './ComingSoonModal'
 import { NewsletterForm } from './NewsletterForm'
 
-export type FooterOffice = {
-  _id: string
-  city: string
-  slug: string
-  status: 'live' | 'comingSoon'
-}
+const SOCIAL_LINKS = [
+  { href: 'https://x.com/movodream', label: 'X (Twitter)', icon: 'fa-x-twitter' },
+  { href: 'https://www.instagram.com/movodreamofficial/', label: 'Instagram', icon: 'fa-instagram' },
+  { href: 'https://www.linkedin.com/company/movodream', label: 'LinkedIn', icon: 'fa-linkedin' },
+  { href: 'https://www.facebook.com/movodreamofficial/', label: 'Facebook', icon: 'fa-facebook' },
+]
 
-/** Ported from index.html's <footer class="movodream-footer"> (lines 1396–1465). */
-export function Footer({ offices = [] }: { offices?: FooterOffice[] }) {
-  const [comingSoonOpen, setComingSoonOpen] = useState(false)
-
+/**
+ * Redesigned per client-approved reference: dark theme, a real column grid
+ * (brand, Product, Company, Legal), and the newsletter signup as its own
+ * card. Offices no longer get their own footer column or route — client
+ * request — office details now live entirely on /about instead.
+ */
+export function Footer() {
   return (
-    <>
-      <footer className="movodream-footer">
-        <div className="footer-container">
-          <div className="footer-top">
-            <div className="footer-logo">
-              <div className="logo-icon">
-                <Link href="/">
-                  <Image src="/assets/images/logo.png" alt="movodream logo" width={120} height={85} />
-                </Link>
-              </div>
+    <footer className="movodream-footer">
+      <div className="footer-container">
+        <div className="footer-columns">
+          <div className="footer-col footer-col-brand">
+            <Link href="/" className="footer-logo-link">
+              <Image src="/assets/images/logo2.webp" alt="Movodream logo" width={150} height={39} />
+            </Link>
+            <p className="footer-tagline">
+              Your AI travel companion — smarter planning, live guidance, and one connection to everything your trip
+              needs.
+            </p>
+            <div className="social-icons">
+              {SOCIAL_LINKS.map((social) => (
+                <a
+                  key={social.href}
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="social-icon"
+                  aria-label={social.label}
+                >
+                  <i className={`fa-brands ${social.icon}`} />
+                </a>
+              ))}
             </div>
-
-            <div className="footer-links">
-              <Link href="/privacy-policy">PRIVACY</Link>
-              <Link href="/terms">TERMS</Link>
-              <Link href="/support">SUPPORT</Link>
-            </div>
-
-            <h3 className="shutter-cta-h3 ftr">Coming Soon!</h3>
           </div>
 
-          {offices.length > 0 && (
-            <div className="footer-offices">
-              <p className="footer-offices-title">Our Offices</p>
-              <div className="footer-offices-list">
-                {offices.map((office) =>
-                  office.status === 'live' ? (
-                    <Link key={office._id} href={`/offices/${office.slug}`} className="footer-office-item">
-                      <span className="footer-office-city">{office.city}</span>
-                    </Link>
-                  ) : (
-                    <span key={office._id} className="footer-office-item">
-                      <span className="footer-office-city">{office.city}</span>
-                      <span className="footer-office-status">Coming Soon</span>
-                    </span>
-                  )
-                )}
-              </div>
-            </div>
-          )}
+          <div className="footer-col">
+            <p className="footer-col-title">Product</p>
+            <Link href="/product">Overview</Link>
+            <Link href="/product#features">Features</Link>
+            <Link href="/product#technology">Technology</Link>
+          </div>
 
-          <div className="footer-newsletter-block">
-            <p className="footer-offices-title">Get travel &amp; product updates</p>
+          <div className="footer-col">
+            <p className="footer-col-title">Company</p>
+            <Link href="/about">About</Link>
+            <Link href="/blog">Blog</Link>
+            <Link href="/careers">Careers</Link>
+          </div>
+
+          <div className="footer-col">
+            <p className="footer-col-title">Legal</p>
+            <Link href="/privacy-policy">Privacy Policy</Link>
+            <Link href="/terms">Terms of Use</Link>
+            <Link href="/cancellation-policy">Cancellation Policy</Link>
+            <Link href="/support">Support</Link>
+          </div>
+
+          <div className="footer-col footer-newsletter-col">
+            <div className="footer-newsletter-heading">
+              <span className="footer-newsletter-icon">
+                <i className="fa-solid fa-paper-plane" />
+              </span>
+              <p className="footer-newsletter-card-title">Stay in the loop</p>
+            </div>
+            <p className="footer-newsletter-sub">
+              Get travel &amp; product updates. Occasional news, no spam.
+            </p>
             <NewsletterForm />
           </div>
+        </div>
 
-          <div className="footer-bottom">
-            <div className="social-icons">
-              <button type="button" className="social-icon" onClick={() => setComingSoonOpen(true)}>
-                <i className="fa-brands fa-x-twitter" />
-              </button>
-              <button type="button" className="social-icon" onClick={() => setComingSoonOpen(true)}>
-                <i className="fa-brands fa-instagram" />
-              </button>
-              <button type="button" className="social-icon" onClick={() => setComingSoonOpen(true)}>
-                <i className="fa-brands fa-linkedin" />
-              </button>
-              <button type="button" className="social-icon" onClick={() => setComingSoonOpen(true)}>
-                <i className="fa-brands fa-facebook" />
-              </button>
-            </div>
-
-            <div className="copyright">© 2025 MOVODREAM</div>
-
-            <div className="global-support">
-              <span className="status-dot" />
-              GLOBAL SUPPORT ACTIVE
-            </div>
+        <div className="footer-bottom">
+          <div className="copyright">© 2026 MOVODREAM. All rights reserved.</div>
+          <p className="footer-tagline-bottom">
+            <i className="fa-solid fa-heart" /> Built with AI. For explorers like you.
+          </p>
+          <div className="global-support">
+            <span className="status-dot" />
+            GLOBAL SUPPORT ACTIVE
           </div>
         </div>
-      </footer>
-
-      <ComingSoonModal open={comingSoonOpen} onClose={() => setComingSoonOpen(false)} />
-    </>
+      </div>
+    </footer>
   )
 }

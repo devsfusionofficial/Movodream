@@ -1,0 +1,42 @@
+<svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
+  <defs>
+    <linearGradient id="winSky" x1="96" y1="18" x2="168" y2="126" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#BFE3FF" />
+      <stop offset="1" stop-color="#E7D2FA" />
+    </linearGradient>
+    <linearGradient id="caseBody" x1="40" y1="60" x2="108" y2="150" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#A855F7" />
+      <stop offset="1" stop-color="#5A2DD7" />
+    </linearGradient>
+    <linearGradient id="caseSlab" x1="45" y1="140" x2="155" y2="180" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#EADCFB" />
+      <stop offset="1" stop-color="#C3A8F0" />
+    </linearGradient>
+    <radialGradient id="caseGlow" cx="0" cy="0" r="1" gradientTransform="translate(100 132) scale(70 28)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#8B5CF6" stop-opacity="0.4" />
+      <stop offset="1" stop-color="#8B5CF6" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+
+  <ellipse cx="100" cy="132" rx="70" ry="28" fill="url(#caseGlow)" />
+
+  <!-- cabin window -->
+  <rect x="96" y="18" width="76" height="112" rx="38" fill="#F3E9FD" />
+  <rect x="104" y="26" width="60" height="96" rx="30" fill="url(#winSky)" />
+  <ellipse cx="122" cy="60" rx="14" ry="8" fill="#FFFFFF" opacity="0.85" />
+  <ellipse cx="146" cy="76" rx="18" ry="9" fill="#FFFFFF" opacity="0.7" />
+  <path d="M120 104c8-14 24-14 32 0z" fill="#C9A9F2" opacity="0.8" />
+
+  <!-- pedestal -->
+  <path d="M100 118 L166 148 L100 178 L34 148 Z" fill="url(#caseSlab)" />
+  <path d="M34 148 L100 178 L100 188 L34 158 Z" fill="#B294E8" opacity="0.55" />
+  <path d="M166 148 L100 178 L100 188 L166 158 Z" fill="#9E7BDD" opacity="0.55" />
+
+  <!-- suitcase -->
+  <rect x="42" y="70" width="66" height="76" rx="14" fill="url(#caseBody)" />
+  <rect x="52" y="80" width="46" height="56" rx="9" fill="#FFFFFF" opacity="0.16" />
+  <path d="M62 70V58a12 12 0 0 1 12-12h2a12 12 0 0 1 12 12v12" stroke="#7C4BE0" stroke-width="6" stroke-linecap="round" fill="none" />
+  <rect x="42" y="98" width="66" height="9" fill="#F03984" opacity="0.9" />
+  <circle cx="55" cy="152" r="6" fill="#4C1D95" />
+  <circle cx="95" cy="152" r="6" fill="#4C1D95" />
+</svg>

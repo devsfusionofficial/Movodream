@@ -1,0 +1,45 @@
+<svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
+  <defs>
+    <linearGradient id="globeBody" x1="52" y1="24" x2="150" y2="122" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#8B5CF6" />
+      <stop offset="1" stop-color="#4C1D95" />
+    </linearGradient>
+    <linearGradient id="globeLand" x1="60" y1="40" x2="140" y2="110" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F9A0DE" />
+      <stop offset="1" stop-color="#F03984" />
+    </linearGradient>
+    <linearGradient id="globeSlab" x1="45" y1="140" x2="155" y2="180" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#EADCFB" />
+      <stop offset="1" stop-color="#C3A8F0" />
+    </linearGradient>
+    <radialGradient id="globeGlow" cx="0" cy="0" r="1" gradientTransform="translate(100 130) scale(68 28)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#8B5CF6" stop-opacity="0.42" />
+      <stop offset="1" stop-color="#8B5CF6" stop-opacity="0" />
+    </radialGradient>
+    <clipPath id="globeClip"><circle cx="100" cy="74" r="48" /></clipPath>
+  </defs>
+
+  <ellipse cx="100" cy="130" rx="68" ry="28" fill="url(#globeGlow)" />
+
+  <!-- pedestal -->
+  <path d="M100 118 L166 148 L100 178 L34 148 Z" fill="url(#globeSlab)" />
+  <path d="M34 148 L100 178 L100 188 L34 158 Z" fill="#B294E8" opacity="0.55" />
+  <path d="M166 148 L100 178 L100 188 L166 158 Z" fill="#9E7BDD" opacity="0.55" />
+
+  <!-- globe -->
+  <circle cx="100" cy="74" r="48" fill="url(#globeBody)" />
+  <g clip-path="url(#globeClip)">
+    <path d="M62 58c14-7 24 2 34-2s16-12 28-8 20 14 14 24-22 6-30 16-6 22-20 24-26-8-28-22 2-25 2-32z" fill="url(#globeLand)" opacity="0.9" />
+    <g stroke="#FFFFFF" stroke-opacity="0.32" stroke-width="1.8" fill="none">
+      <ellipse cx="100" cy="74" rx="48" ry="20" />
+      <ellipse cx="100" cy="74" rx="48" ry="38" />
+      <ellipse cx="100" cy="74" rx="20" ry="48" />
+      <path d="M100 26v96" />
+    </g>
+  </g>
+  <circle cx="100" cy="74" r="48" stroke="#FFFFFF" stroke-opacity="0.35" stroke-width="2" />
+
+  <!-- orbit -->
+  <ellipse cx="100" cy="80" rx="66" ry="24" transform="rotate(-16 100 80)" stroke="#F472D0" stroke-opacity="0.75" stroke-width="2.4" />
+  <circle cx="163" cy="63" r="5" fill="#F03984" />
+</svg>

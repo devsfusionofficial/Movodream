@@ -1,0 +1,42 @@
+<svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
+  <defs>
+    <linearGradient id="brainBody" x1="40" y1="30" x2="160" y2="130" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F9A0DE" />
+      <stop offset="1" stop-color="#C031B0" />
+    </linearGradient>
+    <linearGradient id="brainSlab" x1="45" y1="140" x2="155" y2="180" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#EADCFB" />
+      <stop offset="1" stop-color="#C3A8F0" />
+    </linearGradient>
+    <radialGradient id="brainGlow" cx="0" cy="0" r="1" gradientTransform="translate(100 132) scale(72 30)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F03984" stop-opacity="0.4" />
+      <stop offset="1" stop-color="#F03984" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+
+  <ellipse cx="100" cy="132" rx="72" ry="30" fill="url(#brainGlow)" />
+
+  <!-- pedestal -->
+  <path d="M100 118 L166 148 L100 178 L34 148 Z" fill="url(#brainSlab)" />
+  <path d="M34 148 L100 178 L100 188 L34 158 Z" fill="#B294E8" opacity="0.55" />
+  <path d="M166 148 L100 178 L100 188 L166 158 Z" fill="#9E7BDD" opacity="0.55" />
+
+  <!-- brain lobes -->
+  <path d="M100 34c-13 0-22 7-25 17-11 1-19 9-19 20 0 6 2 11 6 15-3 4-4 8-4 13 0 13 11 22 25 22h17V34z" fill="url(#brainBody)" />
+  <path d="M100 34c13 0 22 7 25 17 11 1 19 9 19 20 0 6-2 11-6 15 3 4 4 8 4 13 0 13-11 22-25 22h-17V34z" fill="url(#brainBody)" opacity="0.82" />
+
+  <!-- folds -->
+  <g stroke="#FFFFFF" stroke-opacity="0.6" stroke-width="2.4" stroke-linecap="round" fill="none">
+    <path d="M100 44v77" />
+    <path d="M86 58c-8 2-11 8-9 14" />
+    <path d="M84 92c-8 1-12 7-10 13" />
+    <path d="M114 58c8 2 11 8 9 14" />
+    <path d="M116 92c8 1 12 7 10 13" />
+  </g>
+
+  <!-- synapse nodes -->
+  <circle cx="70" cy="74" r="4" fill="#FFFFFF" />
+  <circle cx="130" cy="74" r="4" fill="#FFFFFF" />
+  <circle cx="72" cy="108" r="3.4" fill="#FFFFFF" opacity="0.85" />
+  <circle cx="128" cy="108" r="3.4" fill="#FFFFFF" opacity="0.85" />
+</svg>
