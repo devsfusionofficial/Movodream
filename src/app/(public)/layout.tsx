@@ -7,6 +7,7 @@ import { Footer } from '@/components/layout/Footer'
 import '@/styles/homepage.css'
 import '@/styles/legal.css'
 import '@/styles/about.css'
+import '@/styles/pages.css'
 
 // Live site loads Manrope 200–800 via Google Fonts CDN; next/font self-hosts
 // the same variable range with no extra network request and no CLS.

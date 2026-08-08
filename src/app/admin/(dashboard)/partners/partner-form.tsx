@@ -44,7 +44,7 @@ export function PartnerForm({ partnerId, defaultValues }: PartnerFormProps) {
   const logoUrl = watch('logoUrl')
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} noValidate className="max-w-xl">
+    <form onSubmit={handleSubmit(onSubmit)} noValidate className="w-full max-w-none">
       <FieldGroup>
         <Field>
           <FieldLabel htmlFor="name">Name</FieldLabel>

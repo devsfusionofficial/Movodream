@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { getPostsByCategorySlug, getAllCategories } from '@/lib/queries/posts'
 import { PostCard } from '../../post-card'
+import { BlogToolbar } from '../../blog-toolbar'
 
 type PageProps = { params: Promise<{ category: string }> }
 
@@ -27,40 +28,34 @@ export default async function BlogCategoryPage({ params }: PageProps) {
   if (!category) notFound()
 
   return (
-    <>
-      <section className="content-hero">
-        <h1>{category.name}</h1>
-        <p>{posts.length} post{posts.length === 1 ? '' : 's'}</p>
+    <div className="page-shell">
+      <section className="page-crumb">
+        <Link href="/">Home</Link> › <Link href="/blog">Blog</Link> › <span>{category.name}</span>
       </section>
 
-      <main className="content-body" style={{ maxWidth: 1100 }}>
-        <div className="blog-toolbar">
-          <div className="blog-categories">
-            <Link href="/blog" className="blog-category-pill">
-              All
-            </Link>
-            {categories.map((c) => (
-              <Link
-                key={c._id}
-                href={`/blog/category/${c.slug}`}
-                className={`blog-category-pill${c.slug === category.slug ? ' active' : ''}`}
-              >
-                {c.name}
-              </Link>
-            ))}
-          </div>
-        </div>
+      <section className="page-head">
+        <span className="page-eyebrow">Category</span>
+        <h1>
+          <span className="p">{category.name}</span>
+        </h1>
+        <p className="page-head-lead">
+          {posts.length} post{posts.length === 1 ? '' : 's'} in this category.
+        </p>
+      </section>
+
+      <main className="page-main">
+        <BlogToolbar categories={categories} activeCategory={category.slug} />
 
         {posts.length === 0 ? (
-          <div className="blog-empty">No posts in this category yet.</div>
+          <div className="page-empty">No posts in this category yet.</div>
         ) : (
-          <div className="blog-grid">
+          <div className="post-grid">
             {posts.map((post) => (
               <PostCard key={post._id} post={post} />
             ))}
           </div>
         )}
       </main>
-    </>
+    </div>
   )
 }

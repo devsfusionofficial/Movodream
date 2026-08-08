@@ -183,6 +183,77 @@ export function RocketIcon({ className }: IconProps) {
   )
 }
 
+export function EyeIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+      <path
+        d="M2.4 12S5.8 5.6 12 5.6 21.6 12 21.6 12 18.2 18.4 12 18.4 2.4 12 2.4 12z M12 14.8a2.8 2.8 0 100-5.6 2.8 2.8 0 000 5.6z"
+        {...stroke}
+      />
+    </svg>
+  )
+}
+
+export function HeartIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+      <path
+        d="M12 20.2l-1.4-1.3C5.6 14.4 2.8 11.9 2.8 8.8a4.6 4.6 0 018.2-2.8l1 1.3 1-1.3a4.6 4.6 0 018.2 2.8c0 3.1-2.8 5.6-7.8 10.1L12 20.2z"
+        {...stroke}
+      />
+    </svg>
+  )
+}
+
+export function SparkleIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+      <path
+        d="M12 3.2l1.9 5.1 5.1 1.9-5.1 1.9-1.9 5.1-1.9-5.1L5 10.2l5.1-1.9L12 3.2z M18.4 16.4l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8.8-2z"
+        {...stroke}
+      />
+    </svg>
+  )
+}
+
+export function ShieldIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+      <path d="M12 3.2l7 2.6v5.6c0 4.2-2.9 7.4-7 9.4-4.1-2-7-5.2-7-9.4V5.8l7-2.6z" {...stroke} />
+    </svg>
+  )
+}
+
+export function InfinityIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+      <path
+        d="M8.6 15.4a3.4 3.4 0 110-6.8c2.4 0 3.4 3.4 6.8 3.4a3.4 3.4 0 100-6.8c-3.4 0-4.4 6.8-6.8 6.8z"
+        {...stroke}
+      />
+    </svg>
+  )
+}
+
+export function ClockIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+      <path
+        d="M12 20.4a8.4 8.4 0 100-16.8 8.4 8.4 0 000 16.8z M12 7.4V12l3 1.8"
+        {...stroke}
+      />
+    </svg>
+  )
+}
+
+export function PaperPlaneIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+      <path d="M20.8 3.2L3.6 10.2l6.6 2.6 2.6 6.6 8-16.2z M10.2 12.8l4.2-4.2" {...stroke} />
+    </svg>
+  )
+}
+
 export function ExpandIcon({ className }: IconProps) {
   return (
     <svg viewBox="0 0 24 24" className={className} aria-hidden="true">

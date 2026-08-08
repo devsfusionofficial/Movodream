@@ -2,6 +2,7 @@ import Link from 'next/link'
 import type { Metadata } from 'next'
 import { getFeaturedPosts, getLatestPosts, getAllCategories, searchPosts } from '@/lib/queries/posts'
 import { PostCard } from './post-card'
+import { BlogToolbar } from './blog-toolbar'
 
 export const metadata: Metadata = {
   title: 'Blog | Movodream',
@@ -14,58 +15,64 @@ type PageProps = { searchParams: Promise<{ q?: string }> }
 export default async function BlogIndexPage({ searchParams }: PageProps) {
   const { q } = await searchParams
   const categories = await getAllCategories()
+  const query = q?.trim()
 
-  if (q?.trim()) {
-    const results = await searchPosts(q)
-    return (
-      <>
-        <section className="content-hero">
-          <h1>Blog</h1>
-          <p>{results.length} result{results.length === 1 ? '' : 's'} for &ldquo;{q}&rdquo;</p>
-        </section>
+  const [featured, latest, results] = await Promise.all([
+    query ? Promise.resolve([]) : getFeaturedPosts(3),
+    query ? Promise.resolve([]) : getLatestPosts({ limit: 9 }),
+    query ? searchPosts(query) : Promise.resolve([]),
+  ])
 
-        <main className="content-body" style={{ maxWidth: 1100 }}>
-          <BlogToolbar categories={categories} activeQuery={q} />
-          {results.length === 0 ? (
-            <div className="blog-empty">No posts matched your search.</div>
-          ) : (
-            <div className="blog-grid">
-              {results.map((post) => (
-                <PostCard key={post._id} post={post} />
-              ))}
-            </div>
-          )}
-        </main>
-      </>
-    )
-  }
-
-  const [featured, latest] = await Promise.all([getFeaturedPosts(3), getLatestPosts({ limit: 9 })])
-  const featuredIds = new Set(featured.map((p) => p._id))
-  const rest = latest.filter((p) => !featuredIds.has(p._id))
+  const featuredIds = new Set(featured.map((post) => post._id))
+  const rest = latest.filter((post) => !featuredIds.has(post._id))
 
   return (
-    <>
-      <section className="content-hero">
-        <h1>Movodream Blog</h1>
-        <p>Ideas on AI travel, itinerary planning, and the future of travel technology.</p>
+    <div className="page-shell">
+      <section className="page-crumb">
+        <Link href="/">Home</Link> › <span>Blog</span>
       </section>
 
-      <main className="content-body" style={{ maxWidth: 1100 }}>
-        <BlogToolbar categories={categories} />
+      <section className="page-head">
+        <span className="page-eyebrow">Movodream Journal</span>
+        <h1>
+          Ideas on the future of <span className="p">intelligent travel.</span>
+        </h1>
+        <p className="page-head-lead">
+          Thinking on AI travel, itinerary planning, and the technology reshaping how people explore the world.
+        </p>
+      </section>
 
-        {featured.length === 0 ? (
-          <div className="blog-empty">No posts published yet — check back soon.</div>
+      <main className="page-main">
+        <BlogToolbar categories={categories} activeQuery={query} />
+
+        {query ? (
+          results.length === 0 ? (
+            <div className="page-empty">No posts matched “{query}”.</div>
+          ) : (
+            <>
+              <p className="post-tile-meta" style={{ marginBottom: 18 }}>
+                {results.length} result{results.length === 1 ? '' : 's'} for “{query}”
+              </p>
+              <div className="post-grid">
+                {results.map((post) => (
+                  <PostCard key={post._id} post={post} />
+                ))}
+              </div>
+            </>
+          )
+        ) : featured.length === 0 && rest.length === 0 ? (
+          <div className="page-empty">No posts published yet — check back soon.</div>
         ) : (
           <>
-            <div className="blog-grid featured">
-              {featured.map((post) => (
-                <PostCard key={post._id} post={post} />
-              ))}
-            </div>
-
+            {featured.length > 0 && (
+              <div className="post-grid is-featured">
+                {featured.map((post) => (
+                  <PostCard key={post._id} post={post} />
+                ))}
+              </div>
+            )}
             {rest.length > 0 && (
-              <div className="blog-grid">
+              <div className="post-grid">
                 {rest.map((post) => (
                   <PostCard key={post._id} post={post} />
                 ))}
@@ -74,39 +81,6 @@ export default async function BlogIndexPage({ searchParams }: PageProps) {
           </>
         )}
       </main>
-    </>
-  )
-}
-
-function BlogToolbar({
-  categories,
-  activeCategory,
-  activeQuery,
-}: {
-  categories: Awaited<ReturnType<typeof getAllCategories>>
-  activeCategory?: string
-  activeQuery?: string
-}) {
-  return (
-    <div className="blog-toolbar">
-      <div className="blog-categories">
-        <Link href="/blog" className={`blog-category-pill${!activeCategory ? ' active' : ''}`}>
-          All
-        </Link>
-        {categories.map((category) => (
-          <Link
-            key={category._id}
-            href={`/blog/category/${category.slug}`}
-            className={`blog-category-pill${activeCategory === category.slug ? ' active' : ''}`}
-          >
-            {category.name}
-          </Link>
-        ))}
-      </div>
-
-      <form action="/blog" method="get">
-        <input type="search" name="q" placeholder="Search posts…" defaultValue={activeQuery} className="blog-search" />
-      </form>
     </div>
   )
 }

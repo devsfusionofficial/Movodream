@@ -392,6 +392,12 @@
   font-size: 53px;
   color: #d71789;
   transform: translateY(5%);
+  /* Tailwind's preflight sets `svg { display: block }` for replaced
+     elements, which knocked this inline sparkle onto its own line and turned
+     the headline from three lines into four. The sibling `.changing-text`
+     already carries an `inline` override for the same reason. */
+  display: inline-block;
+  vertical-align: baseline;
 }
 .hero-left .desc {
   color: #595c5d;

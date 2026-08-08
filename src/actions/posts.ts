@@ -5,6 +5,10 @@ import type { HydratedDocument } from 'mongoose'
 import { requirePermission } from '@/lib/auth-guard'
 import { connectDB } from '@/lib/db'
 import { Post, type PostDoc } from '@/models/Post'
+// Populate requires referenced models to be registered in this server bundle.
+// These imports intentionally run for their model-registration side effect.
+import '@/models/Author'
+import '@/models/Category'
 import { postSchema, type PostInput } from '@/lib/validation/post'
 
 export type ActionResult = { success: true } | { success: false; error: string }

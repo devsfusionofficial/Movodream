@@ -45,7 +45,7 @@ export function AuthorForm({ authorId, defaultValues }: AuthorFormProps) {
   const avatarUrl = watch('avatarUrl')
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} noValidate className="max-w-xl">
+    <form onSubmit={handleSubmit(onSubmit)} noValidate className="w-full max-w-none">
       <FieldGroup>
         <Field>
           <FieldLabel htmlFor="name">Name</FieldLabel>

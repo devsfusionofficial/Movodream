@@ -4,7 +4,9 @@ import { revalidatePath } from 'next/cache'
 import { requirePermission } from '@/lib/auth-guard'
 import { connectDB } from '@/lib/db'
 import { Application } from '@/models/Application'
-import { createDownloadUrl } from '@/lib/r2'
+// `populate('job')` needs the Job schema registered in this server bundle.
+import '@/models/Job'
+import { createDownloadUrl, objectExists } from '@/lib/r2'
 import { applicationStatusSchema, type ApplicationStatusInput } from '@/lib/validation/application'
 
 export type ActionResult = { success: true } | { success: false; error: string }
@@ -49,6 +51,14 @@ export async function getApplicationResumeUrl(id: string): Promise<{ url: string
   await connectDB()
   const application = await Application.findById(id).lean<{ resumeKey: string } | null>()
   if (!application) return { error: 'Application not found' }
+  if (!application.resumeKey) return { error: 'No resume was attached to this application' }
+
+  // The application record outlives the file: the resumes/ retention rule
+  // deletes the object but leaves this row behind. Check before signing, so
+  // the recruiter gets a clear message rather than a NoSuchKey XML page.
+  if (!(await objectExists(application.resumeKey))) {
+    return { error: 'This resume is no longer available — it passed the retention period and was deleted.' }
+  }
 
   const url = await createDownloadUrl(application.resumeKey)
   return { url }

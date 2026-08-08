@@ -49,7 +49,7 @@ export async function sendApplicationNotification(input: {
   experience?: string
   qualification?: string
   coverLetter?: string
-  resumeUrl: string
+  applicationUrl: string
   resumeFileName: string
 }) {
   const transport = getTransporter()
@@ -74,9 +74,13 @@ export async function sendApplicationNotification(input: {
       '',
       input.coverLetter || '(no cover letter)',
       '',
-      // Presigned, expires in 5 minutes — resend from /admin/applications for
-      // a fresh link rather than emailing the raw file as an attachment.
-      `Resume (${input.resumeFileName}): ${input.resumeUrl}`,
+      // Links to the admin screen rather than embedding a presigned resume
+      // URL. A presigned link expires in 5 minutes, so it was almost always
+      // dead by the time anyone opened the email — and it put a
+      // no-login-required URL to someone's CV in an inbox that can be
+      // forwarded. The admin page requires a session and never goes stale.
+      `Resume on file: ${input.resumeFileName}`,
+      `View application: ${input.applicationUrl}`,
     ]
       .filter((line) => line !== null)
       .join('\n'),
@@ -116,4 +120,29 @@ export async function sendPostPublishedBroadcast(input: {
     })
   }
   return true
+}
+
+export async function sendMarketingBroadcast(input: {
+  subject: string
+  text: string
+  html: string
+  subscriberEmails: string[]
+}) {
+  const transport = getTransporter()
+  if (!transport) return { sent: false, count: 0 }
+  if (input.subscriberEmails.length === 0) return { sent: true, count: 0 }
+
+  const from = process.env.EMAIL_FROM_ADDRESS || process.env.SMTP_USER
+  for (let i = 0; i < input.subscriberEmails.length; i += BROADCAST_BATCH_SIZE) {
+    const batch = input.subscriberEmails.slice(i, i + BROADCAST_BATCH_SIZE)
+    await transport.sendMail({
+      from,
+      to: from,
+      bcc: batch,
+      subject: input.subject,
+      text: input.text,
+      html: input.html,
+    })
+  }
+  return { sent: true, count: input.subscriberEmails.length }
 }

@@ -1,47 +1,58 @@
+'use client'
+
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { useState } from 'react'
+import { BriefcaseBusiness, FileText, FolderKanban, Globe2, Inbox, LayoutDashboard, Menu, PanelLeftClose, Tags, Users, UserRound, X } from 'lucide-react'
 import { roles, type AppRole } from '@/lib/permissions'
 
-type NavItem = {
-  href: string
-  label: string
-  // Resource + at least one action the current role must have to see this
-  // link. Omit to always show (e.g. the dashboard home).
-  requires?: { resource: keyof typeof import('@/lib/permissions').statement; action: string }
-}
+type NavItem = { href: string; label: string; icon: typeof LayoutDashboard; requires?: { resource: keyof typeof import('@/lib/permissions').statement; action: string } }
 
-const NAV_ITEMS: NavItem[] = [
-  { href: '/admin', label: 'Dashboard' },
-  { href: '/admin/posts', label: 'Posts', requires: { resource: 'posts', action: 'read' } },
-  { href: '/admin/categories', label: 'Categories', requires: { resource: 'categories', action: 'read' } },
-  { href: '/admin/tags', label: 'Tags', requires: { resource: 'tags', action: 'read' } },
-  { href: '/admin/authors', label: 'Authors', requires: { resource: 'authors', action: 'read' } },
-  { href: '/admin/jobs', label: 'Jobs', requires: { resource: 'jobs', action: 'read' } },
-  { href: '/admin/applications', label: 'Applications', requires: { resource: 'applications', action: 'read' } },
-  { href: '/admin/subscribers', label: 'Subscribers', requires: { resource: 'subscribers', action: 'read' } },
-  { href: '/admin/offices', label: 'Offices', requires: { resource: 'offices', action: 'read' } },
-  { href: '/admin/partners', label: 'Partners', requires: { resource: 'partners', action: 'read' } },
-  { href: '/admin/users', label: 'Users', requires: { resource: 'user', action: 'list' } },
+const NAV_GROUPS: { label: string; items: NavItem[] }[] = [
+  { label: 'Overview', items: [{ href: '/admin', label: 'Dashboard', icon: LayoutDashboard }] },
+  { label: 'Content', items: [
+    { href: '/admin/posts', label: 'Posts', icon: FileText, requires: { resource: 'posts', action: 'read' } },
+    { href: '/admin/categories', label: 'Categories', icon: FolderKanban, requires: { resource: 'categories', action: 'read' } },
+    { href: '/admin/tags', label: 'Tags', icon: Tags, requires: { resource: 'tags', action: 'read' } },
+    { href: '/admin/authors', label: 'Authors', icon: UserRound, requires: { resource: 'authors', action: 'read' } },
+  ] },
+  { label: 'Operations', items: [
+    { href: '/admin/jobs', label: 'Jobs', icon: BriefcaseBusiness, requires: { resource: 'jobs', action: 'read' } },
+    { href: '/admin/applications', label: 'Applications', icon: Users, requires: { resource: 'applications', action: 'read' } },
+    { href: '/admin/contacts', label: 'Enquiries', icon: Inbox, requires: { resource: 'contacts', action: 'read' } },
+    { href: '/admin/marketing-subscribers', label: 'Marketing subscribers', icon: Globe2, requires: { resource: 'subscribers', action: 'read' } },
+  ] },
+  { label: 'Directory', items: [
+    { href: '/admin/offices', label: 'Offices', icon: Globe2, requires: { resource: 'offices', action: 'read' } },
+    { href: '/admin/partners', label: 'Partners', icon: FolderKanban, requires: { resource: 'partners', action: 'read' } },
+    { href: '/admin/users', label: 'Users', icon: Users, requires: { resource: 'user', action: 'list' } },
+  ] },
 ]
 
 function canSee(role: AppRole, item: NavItem) {
   if (!item.requires) return true
-  const roleDef = roles[role]
-  return roleDef?.authorize({ [item.requires.resource]: [item.requires.action] } as never)?.success ?? false
+  return roles[role]?.authorize({ [item.requires.resource]: [item.requires.action] } as never)?.success ?? false
 }
 
 export function Sidebar({ role }: { role: AppRole }) {
+  const pathname = usePathname()
+  const [open, setOpen] = useState(false)
+  const visibleGroups = NAV_GROUPS.map((group) => ({ ...group, items: group.items.filter((item) => canSee(role, item)) })).filter((group) => group.items.length)
+
   return (
-    <nav className="flex w-56 shrink-0 flex-col gap-1 border-r bg-muted/20 p-4">
-      <div className="mb-4 px-2 text-sm font-semibold">Movodream Admin</div>
-      {NAV_ITEMS.filter((item) => canSee(role, item)).map((item) => (
-        <Link
-          key={item.href}
-          href={item.href}
-          className="rounded-md px-2 py-1.5 text-sm text-foreground/80 hover:bg-muted hover:text-foreground"
-        >
-          {item.label}
-        </Link>
-      ))}
-    </nav>
+    <>
+      <button type="button" aria-label="Open navigation" onClick={() => setOpen(true)} className="fixed left-4 top-4 z-30 flex h-10 w-10 items-center justify-center rounded-xl border border-[#e6e1e9] bg-white text-[#2a1936] shadow-sm lg:hidden"><Menu className="h-5 w-5" /></button>
+      {open && <button type="button" aria-label="Close navigation overlay" onClick={() => setOpen(false)} className="fixed inset-0 z-40 bg-[#160a21]/40 backdrop-blur-sm lg:hidden" />}
+      <aside className={`fixed inset-y-0 left-0 z-50 flex w-[272px] shrink-0 flex-col border-r border-[#eee9f0] bg-[#1b0d27] text-white shadow-2xl outline-none transition-transform duration-300 lg:sticky lg:top-0 lg:z-auto lg:h-screen lg:min-h-0 lg:translate-x-0 lg:self-start lg:shadow-none ${open ? 'translate-x-0' : '-translate-x-full'}`}>
+        <div className="flex h-[82px] items-center justify-between border-b border-white/10 px-7">
+          <Link href="/admin" onClick={() => setOpen(false)} className="flex items-center gap-3"><span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#d71789] text-white"><Globe2 className="h-[18px] w-[18px]" /></span><span><span className="block text-[15px] font-semibold tracking-[-0.03em]">movodream</span><span className="block text-[9px] font-medium uppercase tracking-[0.22em] text-white/45">admin workspace</span></span></Link>
+          <button type="button" aria-label="Close navigation" onClick={() => setOpen(false)} className="text-white/45 hover:text-white lg:hidden"><X className="h-5 w-5" /></button>
+        </div>
+        <div className="min-h-0 flex-1 overflow-y-auto px-4 py-7 outline-none [scrollbar-color:rgba(255,255,255,0.18)_transparent] [scrollbar-width:thin]">
+          {visibleGroups.map((group) => <div key={group.label} className="mb-7"><p className="mb-3 px-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-white/35">{group.label}</p><div className="space-y-1">{group.items.map((item) => { const active = item.href === '/admin' ? pathname === '/admin' : pathname.startsWith(item.href); const Icon = item.icon; return <Link key={item.href} href={item.href} onClick={() => setOpen(false)} className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-medium transition ${active ? 'bg-white/12 text-white shadow-[inset_3px_0_0_#ff7294]' : 'text-white/55 hover:bg-white/8 hover:text-white'}`}><Icon className={`h-[17px] w-[17px] ${active ? 'text-[#ff7294]' : 'text-white/40'}`} />{item.label}</Link> })}</div></div>)}
+        </div>
+        <div className="border-t border-white/10 p-5"><div className="flex items-center gap-3 rounded-xl bg-white/6 p-3"><span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#ff7294] text-xs font-bold text-[#35102c]">{role.slice(0, 1).toUpperCase()}</span><div className="min-w-0"><p className="text-xs font-semibold capitalize text-white">{role} account</p><p className="mt-0.5 text-[10px] text-white/40">Movodream team</p></div><Link href="/" onClick={() => setOpen(false)} aria-label="Go to Movodream website" className="ml-auto rounded-lg p-1.5 text-white/35 transition hover:bg-white/10 hover:text-[#ff9ab2]"><PanelLeftClose className="h-4 w-4" /></Link></div></div>
+      </aside>
+    </>
   )
 }

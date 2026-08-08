@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { getJobBySlug } from '@/lib/queries/jobs'
 import { ApplicationForm } from './application-form'
 
@@ -52,21 +53,26 @@ export default async function JobDetailPage({ params }: PageProps) {
   ]
 
   return (
-    <>
+    <div className="page-shell">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-      <section className="content-hero">
+      <section className="page-crumb">
+        <Link href="/">Home</Link> › <Link href="/careers">Careers</Link> › <span>{job.title}</span>
+      </section>
+
+      <section className="page-head">
+        <span className="page-eyebrow">Open role</span>
         <h1>{job.title}</h1>
-        <div className="job-detail-meta">
+        <div className="job-tile-meta" style={{ marginTop: 18 }}>
           {job.department && <span>{job.department}</span>}
           {job.location && <span>{job.location}</span>}
           {job.employmentType && <span>{job.employmentType}</span>}
           {job.experience && <span>{job.experience}</span>}
         </div>
         {job.skills && job.skills.length > 0 && (
-          <div className="job-detail-skills">
+          <div className="page-pills" style={{ marginTop: 12 }}>
             {job.skills.map((skill: string) => (
-              <span key={skill} className="blog-category-pill">
+              <span key={skill} className="page-pill">
                 {skill}
               </span>
             ))}
@@ -74,33 +80,48 @@ export default async function JobDetailPage({ params }: PageProps) {
         )}
       </section>
 
-      <main className="content-body">
-        {job.descriptionHtml && (
-          <div dangerouslySetInnerHTML={{ __html: job.descriptionHtml }} />
-        )}
+      <main className="page-main page-article">
+        <div className="page-prose">
+          {job.descriptionHtml && <div dangerouslySetInnerHTML={{ __html: job.descriptionHtml }} />}
 
-        {job.responsibilitiesHtml && (
-          <>
-            <h2>Responsibilities</h2>
-            <div dangerouslySetInnerHTML={{ __html: job.responsibilitiesHtml }} />
-          </>
-        )}
+          {job.responsibilitiesHtml && (
+            <>
+              <h2>Responsibilities</h2>
+              <div dangerouslySetInnerHTML={{ __html: job.responsibilitiesHtml }} />
+            </>
+          )}
 
-        {job.applicationDeadline && (
-          <p style={{ marginTop: 32, fontWeight: 700 }}>
-            Application deadline: {new Date(job.applicationDeadline).toLocaleDateString()}
-          </p>
-        )}
+          {job.qualification && (
+            <>
+              <h2>Qualification</h2>
+              <p>{job.qualification}</p>
+            </>
+          )}
+
+          {job.applicationDeadline && (
+            <p>
+              <strong>Application deadline:</strong>{' '}
+              {new Date(job.applicationDeadline).toLocaleDateString(undefined, {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+              })}
+            </p>
+          )}
+        </div>
+
+        <div className="job-apply" id="apply">
+          <h2>Apply for this role</h2>
+          {isOpen ? (
+            <>
+              <p>Tell us a little about yourself and attach your CV — we read every application.</p>
+              <ApplicationForm jobId={job._id} />
+            </>
+          ) : (
+            <div className="job-closed">This role is no longer accepting applications.</div>
+          )}
+        </div>
       </main>
-
-      <div className="job-apply-section">
-        <h2>Apply for this role</h2>
-        {isOpen ? (
-          <ApplicationForm jobId={job._id} />
-        ) : (
-          <div className="job-closed-notice">This role is no longer accepting applications.</div>
-        )}
-      </div>
-    </>
+    </div>
   )
 }

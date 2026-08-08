@@ -4,6 +4,7 @@ import type { ColumnDef } from '@tanstack/react-table'
 import { Badge } from '@/components/ui/badge'
 import { SubscriberRowActions } from './subscriber-row-actions'
 import type { listSubscribers } from '@/actions/subscribers'
+import { formatAdminDate } from '@/lib/date-format'
 
 export type SubscriberRow = Awaited<ReturnType<typeof listSubscribers>>[number]
 
@@ -19,7 +20,7 @@ export const columns: ColumnDef<SubscriberRow, unknown>[] = [
   {
     id: 'subscribedAt',
     header: 'Subscribed',
-    cell: ({ row }) => new Date(row.original.subscribedAt ?? row.original.createdAt).toLocaleDateString(),
+    cell: ({ row }) => formatAdminDate(row.original.subscribedAt ?? row.original.createdAt),
   },
   {
     id: 'actions',

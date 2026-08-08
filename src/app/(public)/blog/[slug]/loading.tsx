@@ -1,31 +1,32 @@
 export default function BlogPostLoading() {
   return (
-    <>
-      <section className="post-detail-hero">
-        <div className="post-detail-categories">
-          <div className="skeleton-bar" style={{ width: 90, height: 26, borderRadius: 999 }} />
-        </div>
-        <div className="skeleton-bar skeleton-hero-title" style={{ width: 'min(560px, 80%)', height: 40 }} />
-        <div className="post-detail-meta">
-          <div className="skeleton-bar" style={{ width: 100, height: 14 }} />
-          <div className="skeleton-bar" style={{ width: 90, height: 14 }} />
-          <div className="skeleton-bar" style={{ width: 70, height: 14 }} />
-        </div>
+    <div className="page-shell">
+      <section className="page-crumb">
+        <div className="skeleton-bar" style={{ width: 240, height: 14 }} />
       </section>
 
-      <div className="post-detail-image">
-        <div className="skeleton-bar" style={{ position: 'absolute', inset: 0 }} />
-      </div>
+      <section className="page-head">
+        <div className="page-pills" style={{ marginBottom: 14 }}>
+          {Array.from({ length: 2 }).map((_, i) => (
+            <div key={i} className="skeleton-bar" style={{ width: 84, height: 32, borderRadius: 999 }} />
+          ))}
+        </div>
+        <div className="skeleton-bar skeleton-hero-title" />
+        <div className="skeleton-bar skeleton-hero-sub" />
+      </section>
 
-      <main className="post-detail-body">
-        {Array.from({ length: 6 }).map((_, i) => (
-          <div
-            key={i}
-            className="skeleton-bar skeleton-card-line"
-            style={{ width: i % 3 === 2 ? '65%' : '95%', marginTop: 16 }}
-          />
-        ))}
+      <main className="page-main page-article">
+        <div className="page-article-hero" />
+        <div className="page-prose">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div
+              key={i}
+              className="skeleton-bar skeleton-card-line"
+              style={{ width: i % 3 === 2 ? '64%' : '100%', marginBottom: 14 }}
+            />
+          ))}
+        </div>
       </main>
-    </>
+    </div>
   )
 }

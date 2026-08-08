@@ -46,7 +46,7 @@ export function OfficeForm({ officeId, defaultValues }: OfficeFormProps) {
   const imageUrl = watch('imageUrl')
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} noValidate className="max-w-xl">
+    <form onSubmit={handleSubmit(onSubmit)} noValidate className="w-full max-w-none">
       <FieldGroup>
         <Field>
           <FieldLabel htmlFor="city">City</FieldLabel>

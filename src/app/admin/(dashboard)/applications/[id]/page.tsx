@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import { getApplication } from '@/actions/applications'
 import { ApplicationStatusForm } from '../application-status-form'
 import { ResumeDownloadButton } from '../resume-download-button'
+import { formatAdminDate } from '@/lib/date-format'
 
 export default async function ApplicationDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -11,7 +12,7 @@ export default async function ApplicationDetailPage({ params }: { params: Promis
   const job = application.job as unknown as { title?: string } | null
 
   return (
-    <div className="max-w-2xl space-y-6">
+    <div className="w-full space-y-6">
       <div>
         <h1 className="text-xl font-semibold">{application.name}</h1>
         <p className="text-sm text-muted-foreground">Applied for {job?.title ?? 'Unknown role'}</p>
@@ -46,7 +47,7 @@ export default async function ApplicationDetailPage({ params }: { params: Promis
         )}
         <div>
           <dt className="text-muted-foreground">Applied on</dt>
-          <dd>{new Date(application.appliedAt ?? application.createdAt).toLocaleDateString()}</dd>
+          <dd>{formatAdminDate(application.appliedAt ?? application.createdAt)}</dd>
         </div>
       </dl>
 

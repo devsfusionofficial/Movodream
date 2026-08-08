@@ -47,7 +47,7 @@ export function JobForm({ jobId, defaultValues }: JobFormProps) {
   const skills = watch('skills') ?? []
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} noValidate className="max-w-2xl">
+    <form onSubmit={handleSubmit(onSubmit)} noValidate className="w-full max-w-none">
       <FieldGroup>
         <Field>
           <FieldLabel htmlFor="title">Title</FieldLabel>

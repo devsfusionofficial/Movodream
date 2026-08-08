@@ -37,10 +37,9 @@ applicationSchema.post<ApplicationDocument>('save', async function (doc) {
   try {
     const { sendApplicationNotification } = await import('@/lib/mailer')
     const { Job } = await import('@/models/Job')
-    const { createDownloadUrl } = await import('@/lib/r2')
 
     const job = await Job.findById(doc.job).lean<{ title: string } | null>()
-    const resumeUrl = await createDownloadUrl(doc.resumeKey)
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ?? ''
 
     await sendApplicationNotification({
       jobTitle: job?.title ?? 'Unknown role',
@@ -51,7 +50,7 @@ applicationSchema.post<ApplicationDocument>('save', async function (doc) {
       experience: doc.experience ?? undefined,
       qualification: doc.qualification ?? undefined,
       coverLetter: doc.coverLetter ?? undefined,
-      resumeUrl,
+      applicationUrl: `${baseUrl}/admin/applications/${doc._id}`,
       resumeFileName: doc.resumeFileName,
     })
   } catch (err) {

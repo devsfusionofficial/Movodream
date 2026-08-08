@@ -1,10 +1,7 @@
 import { JobForm } from '../job-form'
+import { AdminFormPage } from '@/components/admin/admin-form-page'
+import { BriefcaseBusiness } from 'lucide-react'
 
 export default function NewJobPage() {
-  return (
-    <div className="space-y-4">
-      <h1 className="text-xl font-semibold">New job</h1>
-      <JobForm />
-    </div>
-  )
+  return <AdminFormPage backHref="/admin/jobs" backLabel="Back to jobs" title="Create a new opportunity" description="Publish a thoughtful role page that makes the next step clear for the right candidates." eyebrow="Operations" icon={BriefcaseBusiness}><JobForm /></AdminFormPage>
 }

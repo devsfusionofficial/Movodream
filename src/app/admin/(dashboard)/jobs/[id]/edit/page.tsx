@@ -1,16 +1,15 @@
 import { notFound } from 'next/navigation'
 import { getJob } from '@/actions/jobs'
 import { JobForm } from '../../job-form'
+import { AdminFormPage } from '@/components/admin/admin-form-page'
+import { BriefcaseBusiness } from 'lucide-react'
 
 export default async function EditJobPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const job = await getJob(id)
   if (!job) notFound()
 
-  return (
-    <div className="space-y-4">
-      <h1 className="text-xl font-semibold">Edit job</h1>
-      <JobForm
+  return <AdminFormPage backHref="/admin/jobs" backLabel="Back to jobs" title="Edit opportunity" description="Update the role details, responsibilities, and visibility of this opportunity." eyebrow="Operations" icon={BriefcaseBusiness}><JobForm
         jobId={id}
         defaultValues={{
           title: job.title,
@@ -30,7 +29,5 @@ export default async function EditJobPage({ params }: { params: Promise<{ id: st
             : '',
           status: job.status,
         }}
-      />
-    </div>
-  )
+      /></AdminFormPage>
 }

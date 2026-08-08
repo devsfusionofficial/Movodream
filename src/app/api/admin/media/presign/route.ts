@@ -15,8 +15,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'fileName and contentType are required' }, { status: 400 })
   }
 
-  if (!contentType.startsWith('image/')) {
-    return NextResponse.json({ error: 'Only image uploads are supported here' }, { status: 400 })
+  if (!contentType.startsWith('image/') && !contentType.startsWith('video/')) {
+    return NextResponse.json({ error: 'Only image and video uploads are supported here' }, { status: 400 })
   }
 
   const result = await createPresignedUpload('media', fileName, contentType)

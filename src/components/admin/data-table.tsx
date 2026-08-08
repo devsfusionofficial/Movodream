@@ -18,8 +18,10 @@ import { Button } from '@/components/ui/button'
 type DataTableProps<TData> = {
   columns: ColumnDef<TData, unknown>[]
   data: TData[]
+  searchable?: boolean
   searchPlaceholder?: string
   searchColumnId?: string
+  emptyMessage?: string
 }
 
 /**
@@ -30,8 +32,10 @@ type DataTableProps<TData> = {
 export function DataTable<TData>({
   columns,
   data,
+  searchable = false,
   searchPlaceholder = 'Search…',
   searchColumnId,
+  emptyMessage = 'No results.',
 }: DataTableProps<TData>) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [globalFilter, setGlobalFilter] = useState('')
@@ -50,7 +54,7 @@ export function DataTable<TData>({
 
   return (
     <div className="space-y-4">
-      {searchColumnId && (
+      {(searchable || searchColumnId) && (
         <Input
           placeholder={searchPlaceholder}
           value={globalFilter}
@@ -67,7 +71,7 @@ export function DataTable<TData>({
                 {headerGroup.headers.map((header) => (
                   <TableHead
                     key={header.id}
-                    className={header.column.getCanSort() ? 'cursor-pointer select-none' : undefined}
+                    className={`${header.column.id === 'actions' ? 'w-px text-right' : ''} ${header.column.getCanSort() ? 'cursor-pointer select-none' : ''}`}
                     onClick={header.column.getToggleSortingHandler()}
                   >
                     {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
@@ -81,14 +85,19 @@ export function DataTable<TData>({
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id}>
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+                    <TableCell
+                      key={cell.id}
+                      className={cell.column.id === 'actions' ? 'w-px whitespace-nowrap text-right [&>div]:justify-end' : undefined}
+                    >
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className="h-24 text-center text-muted-foreground">
-                  No results.
+                  {emptyMessage}
                 </TableCell>
               </TableRow>
             )}

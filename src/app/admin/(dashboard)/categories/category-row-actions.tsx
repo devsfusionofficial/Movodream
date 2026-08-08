@@ -23,8 +23,8 @@ export function CategoryRowActions({ id }: { id: string }) {
       <Button variant="outline" size="sm" render={<Link href={`/admin/categories/${id}/edit`} />}>
         Edit
       </Button>
-      <Button variant="ghost" size="sm" onClick={handleDelete} disabled={isPending}>
-        Delete
+      <Button variant="ghost" size="sm" className="text-[#b42318] hover:bg-[#fff1f0] hover:text-[#b42318]" onClick={handleDelete} disabled={isPending}>
+        {isPending ? 'Deleting…' : 'Delete'}
       </Button>
     </div>
   )

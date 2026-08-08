@@ -4,6 +4,7 @@ import type { ColumnDef } from '@tanstack/react-table'
 import { Badge } from '@/components/ui/badge'
 import { ContactRowActions } from './contact-row-actions'
 import type { listContactSubmissions } from '@/actions/contacts'
+import { formatAdminDate } from '@/lib/date-format'
 
 export type ContactRow = Awaited<ReturnType<typeof listContactSubmissions>>[number]
 
@@ -51,11 +52,7 @@ export const columns: ColumnDef<ContactRow, unknown>[] = [
   {
     id: 'createdAt',
     header: 'Received',
-    cell: ({ row }) =>
-      new Date(row.original.createdAt).toLocaleString(undefined, {
-        dateStyle: 'medium',
-        timeStyle: 'short',
-      }),
+    cell: ({ row }) => formatAdminDate(row.original.createdAt, true),
   },
   {
     id: 'actions',

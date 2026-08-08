@@ -119,8 +119,88 @@
 }
 
 @layer base {
+  .admin-shell,
+  .admin-shell-content,
+  .admin-resource-page,
+  .admin-header-actions {
+    border: 0 !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border;
+  }
+
+  .admin-resource-page > form {
+    width: 100% !important;
+    max-width: none !important;
+    border: 1px solid #ebe5ed !important;
+    border-radius: 1.25rem;
+    background: #fff;
+    padding: 1.5rem;
+    box-shadow: 0 18px 50px rgb(42 25 51 / 5%);
+  }
+
+  .admin-resource-page > form > [data-slot='field-group'] {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 1.5rem;
+    row-gap: 1.35rem;
+  }
+
+  .admin-resource-page > form > [data-slot='field-group'] > :last-child,
+  .admin-resource-page > form > [data-slot='field-group'] > [data-slot='field']:has(textarea),
+  .admin-resource-page > form > [data-slot='field-group'] > [data-slot='field']:has([data-slot='rich-text-editor']) {
+    grid-column: 1 / -1;
+  }
+
+  .admin-resource-page > form [data-slot='field-group'] {
+    gap: 1.35rem;
+  }
+
+  .admin-resource-page > form [data-slot='field-label'] {
+    color: #33283a;
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  .admin-resource-page > form input,
+  .admin-resource-page > form textarea,
+  .admin-resource-page > form [data-slot='select-trigger'] {
+    min-height: 3.25rem;
+    border-color: #e6dce6;
+    border-radius: 0.9rem;
+    background: #fff;
+  }
+
+  .admin-resource-page > form textarea {
+    min-height: 7rem;
+  }
+
+  .admin-resource-page > form button[type='submit'] {
+    align-self: flex-end;
+    min-width: 10rem;
+    border-radius: 0.85rem;
+    background: #2b123d;
+    color: #fff;
+    box-shadow: 0 10px 20px rgb(43 18 61 / 15%);
+  }
+
+  @media (max-width: 760px) {
+    .admin-resource-page > form > [data-slot='field-group'] {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .admin-resource-page > form > [data-slot='field-group'] > [data-slot='field'] {
+      grid-column: auto;
+    }
+  }
+
+  *:focus-visible {
+    outline: 2px solid color-mix(in oklab, var(--ring) 65%, transparent);
+    outline-offset: 2px;
   }
   body {
     @apply bg-background text-foreground;
