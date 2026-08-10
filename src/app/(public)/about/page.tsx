@@ -8,7 +8,6 @@ import {
   EyeIcon,
   GlobeIcon,
   HeartIcon,
-  InfinityIcon,
   MapPinIcon,
   NavigateIcon,
   ShieldIcon,
@@ -59,7 +58,7 @@ export default async function AboutPage() {
     },
   }
 
-  const STATS: { value?: string; icon?: React.ReactNode; label: string; sub: React.ReactNode }[] = [
+  const STATS: { value: string; glyph?: boolean; label: string; sub: React.ReactNode }[] = [
     { value: `${offices.length}+`, label: 'Cities', sub: cityNames || 'Across India' },
     { value: '24/7', label: 'AI Assistance', sub: 'Always here for you' },
     {
@@ -71,7 +70,9 @@ export default async function AboutPage() {
         </>
       ),
     },
-    { icon: <InfinityIcon />, label: 'Possibilities', sub: 'For every kind of traveler' },
+    // Typographic glyph rather than an icon, so it shares the exact size,
+    // weight and baseline of the other three numerals.
+    { value: '∞', glyph: true, label: 'Possibilities', sub: 'For every kind of traveler' },
   ]
 
   return (
@@ -95,7 +96,9 @@ export default async function AboutPage() {
           </p>
           <span className="about-hero-badge">
             <SparkleIcon />
-            Built in India <i>·</i> Designed for the World
+            <span>
+              Built in India <i>·</i> Designed for the World
+            </span>
           </span>
         </div>
 
@@ -202,7 +205,7 @@ export default async function AboutPage() {
         <div className="about-stats-panel">
           {STATS.map((stat) => (
             <div className="about-stat" key={stat.label}>
-              <span className="about-stat-value">{stat.icon ?? stat.value}</span>
+              <span className={`about-stat-value${stat.glyph ? ' is-glyph' : ''}`}>{stat.value}</span>
               <strong>{stat.label}</strong>
               <p>{stat.sub}</p>
             </div>

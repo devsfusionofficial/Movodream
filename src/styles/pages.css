@@ -340,24 +340,16 @@
   color: var(--pg-muted);
 }
 
-/* ---------- article (blog post + job detail) ---------- */
+/* ---------- article (job detail) ---------- */
 
-.page-article {
+/* Cap the CHILDREN, not this element. `.page-article` also carries
+   `.page-main`'s gutter padding, so a max-width here was measured against the
+   padded box — the readable column collapsed to a narrow strip on the left
+   with the rest of the page empty. Capping children keeps the gutter intact
+   and centres the column. */
+.page-article > * {
   max-width: 760px;
-}
-
-.page-article-hero {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 16 / 8;
-  margin-bottom: 34px;
-  border-radius: 20px;
-  overflow: hidden;
-  background: linear-gradient(140deg, #fbe8f6 0%, #efe4fc 100%);
-}
-
-.page-article-hero img {
-  object-fit: cover;
+  margin-inline: auto;
 }
 
 .page-prose {
@@ -479,5 +471,320 @@
 
   .page-main {
     padding-bottom: 64px;
+  }
+}
+
+/* Touch sizing — keyed to pointer type rather than width, so tablets get it
+   too and a narrow desktop window doesn't. Measured at 38-42px before this;
+   44px is the iOS/WCAG 2.5.5 minimum. */
+@media (pointer: coarse) {
+  .page-pill,
+  .page-select,
+  .page-filters button {
+    min-height: 44px;
+  }
+
+  .page-crumb a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  .page-search {
+    min-height: 44px;
+  }
+}
+
+/* ==========================================================================
+   Blog article (detail) page
+   Two columns: a sticky share rail in the left margin and the article
+   column, sized together and centred. The previous version put a
+   `max-width` on the same element that carried the page gutter, which left
+   the copy crushed into a narrow strip with the right half of the page empty.
+   ========================================================================== */
+
+.article-page .article-layout {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 760px);
+  gap: 44px;
+  justify-content: center;
+  padding-top: 30px;
+  padding-bottom: 24px;
+}
+
+/* ---------- share rail ---------- */
+
+.article-rail {
+  position: sticky;
+  top: 110px;
+  align-self: start;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.article-rail-label {
+  margin-bottom: 4px;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #a49bb2;
+}
+
+.article-rail-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--pg-border);
+  background: #fff;
+  color: var(--pg-navy);
+  font-size: 0.92rem;
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.article-rail-btn:hover {
+  color: var(--pg-pink);
+  border-color: var(--pg-pink);
+  transform: translateY(-2px);
+}
+
+.article-rail-btn.is-copied {
+  color: #16a34a;
+  border-color: #86e0aa;
+}
+
+.article-rail-toast {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #16a34a;
+}
+
+/* ---------- article head ---------- */
+
+.article-cat {
+  display: inline-flex;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: #fdeaf5;
+  color: var(--pg-pink);
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.article-head h1 {
+  margin: 18px 0 0;
+  font-size: clamp(1.9rem, 3.4vw, 2.75rem);
+  font-weight: 800;
+  line-height: 1.16;
+  letter-spacing: -0.025em;
+  color: var(--pg-navy);
+}
+
+.article-standfirst {
+  margin: 16px 0 0;
+  font-size: 1.02rem;
+  line-height: 1.65;
+  color: var(--pg-muted);
+}
+
+.article-byline {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 22px;
+  font-size: 0.86rem;
+  color: var(--pg-muted);
+}
+
+.article-byline strong {
+  font-weight: 700;
+  color: var(--pg-navy);
+}
+
+.article-byline i {
+  font-style: normal;
+  color: #cfc7da;
+}
+
+.article-avatar,
+.article-author-avatar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--pg-gradient);
+  color: #fff;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.article-avatar {
+  width: 36px;
+  height: 36px;
+  font-size: 0.9rem;
+}
+
+.article-author-avatar {
+  width: 56px;
+  height: 56px;
+  font-size: 1.3rem;
+}
+
+.article-avatar img,
+.article-author-avatar img {
+  object-fit: cover;
+}
+
+/* ---------- hero + prose ---------- */
+
+.article-hero {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 8.4;
+  margin: 30px 0 34px;
+  border-radius: 18px;
+  overflow: hidden;
+  background: linear-gradient(140deg, #fbe8f6 0%, #efe4fc 100%);
+}
+
+.article-hero img {
+  object-fit: cover;
+}
+
+/* Pull quote inside CMS content. */
+.article-prose blockquote {
+  margin: 30px 0;
+  padding: 24px 28px 24px 58px;
+  border-left: none;
+  border-radius: 14px;
+  background: #fbeff8;
+  position: relative;
+  font-style: normal;
+  font-size: 1.02rem;
+  font-weight: 600;
+  line-height: 1.55;
+  color: var(--pg-pink);
+}
+
+.article-prose blockquote::before {
+  content: '“';
+  position: absolute;
+  left: 22px;
+  top: 14px;
+  font-size: 2.6rem;
+  line-height: 1;
+  color: rgba(236, 42, 139, 0.42);
+}
+
+.article-prose blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+.article-tags {
+  margin-top: 30px;
+}
+
+/* ---------- author card ---------- */
+
+.article-author {
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+  margin-top: 38px;
+  padding: 24px 26px;
+  border-radius: 18px;
+  background: #fff;
+  border: 1px solid var(--pg-border);
+  box-shadow: var(--pg-shadow);
+}
+
+.article-author h3 {
+  margin: 0;
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: var(--pg-navy);
+}
+
+.article-author p {
+  margin: 6px 0 0;
+  font-size: 0.87rem;
+  line-height: 1.6;
+  color: var(--pg-muted);
+}
+
+.article-author-link {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--pg-pink);
+}
+
+.article-author-link:hover {
+  text-decoration: underline;
+}
+
+/* ---------- continue reading ---------- */
+
+.article-page .article-more {
+  padding-top: 18px;
+  padding-bottom: 92px;
+}
+
+.article-more-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.article-more-head h2 {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: var(--pg-navy);
+}
+
+.article-more-head a {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--pg-pink);
+  white-space: nowrap;
+}
+
+.article-more-head a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 900px) {
+  .article-page .article-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+
+  /* Rail becomes a horizontal strip under the article on small screens. */
+  .article-rail {
+    position: static;
+    flex-direction: row;
+    justify-content: flex-start;
+    order: 2;
+    margin-top: 26px;
+  }
+
+  .article-rail-label {
+    margin: 0 4px 0 0;
+    align-self: center;
   }
 }

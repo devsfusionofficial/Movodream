@@ -794,6 +794,30 @@ a.help-contact-row:hover strong {
   }
 }
 
+/* Touch sizing. Applied by pointer type rather than width so it also covers
+   tablets, and so a narrow desktop window doesn't get finger-sized controls
+   it has no use for. */
+@media (pointer: coarse) {
+  /* Icon-only link: 15px of glyph needs padding to reach a usable target.
+     Negative margin keeps the breadcrumb's visual alignment unchanged. */
+  .doc-breadcrumb a[aria-label='Home'] {
+    display: inline-flex;
+    align-items: center;
+    padding: 15px;
+    margin: -15px;
+  }
+  .doc-toc a {
+    min-height: 44px;
+    align-items: center;
+  }
+  .doc-btn {
+    min-height: 44px;
+  }
+  .help-faq summary {
+    min-height: 44px;
+  }
+}
+
 @media (max-width: 640px) {
   .doc-wrap {
     padding: 0 18px;

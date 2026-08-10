@@ -4,6 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { getPostBySlug, getRelatedPosts } from '@/lib/queries/posts'
 import { PostCard } from '../post-card'
+import { ArticleShare } from './article-share'
 
 type PageProps = { params: Promise<{ slug: string }> }
 
@@ -59,102 +60,98 @@ export default async function BlogPostPage({ params }: PageProps) {
     },
   ]
 
-  return (
+  const category = (post.categories as unknown as { _id: string; name: string; slug: string }[] | undefined)?.[0]
+  const published = post.publishedAt ? new Date(post.publishedAt) : null
 
-<div className="page-shell">
+  return (
+    <div className="page-shell article-page">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
       <section className="page-crumb">
         <Link href="/">Home</Link> › <Link href="/blog">Blog</Link> › <span>{post.title}</span>
       </section>
 
-      <section className="page-head">
-        {post.categories && post.categories.length > 0 && (
-          <div className="page-pills" style={{ marginBottom: 14 }}>
-            {(post.categories as unknown as { _id: string; name: string; slug: string }[]).map((c) => (
-              <Link key={c._id} href={`/blog/category/${c.slug}`} className="page-pill">
-                {c.name}
+      <section className="article-layout">
+        <ArticleShare url={postUrl} title={post.title} />
+
+        <article className="article-body">
+          <header className="article-head">
+            {category && (
+              <Link href={`/blog/category/${category.slug}`} className="article-cat">
+                {category.name}
               </Link>
-            ))}
-          </div>
-        )}
-        <h1>{post.title}</h1>
-        <p className="page-head-lead">
-          {author?.name && <>By {author.name} · </>}
-          {post.publishedAt && (
-            <>
-              {new Date(post.publishedAt).toLocaleDateString(undefined, {
-                day: 'numeric',
-                month: 'short',
-                year: 'numeric',
-              })}{' '}
-              ·{' '}
-            </>
+            )}
+            <h1>{post.title}</h1>
+            {post.excerpt && <p className="article-standfirst">{post.excerpt}</p>}
+
+            <div className="article-byline">
+              <span className="article-avatar">
+                {author?.avatar?.url ? (
+                  <Image src={author.avatar.url} alt="" width={36} height={36} />
+                ) : (
+                  <span aria-hidden="true">{(author?.name ?? 'M').slice(0, 1)}</span>
+                )}
+              </span>
+              <strong>{author?.name ?? 'Movodream Team'}</strong>
+              <i>·</i>
+              {published && (
+                <>
+                  <time dateTime={published.toISOString()}>
+                    {published.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })}
+                  </time>
+                  <i>·</i>
+                </>
+              )}
+              <span>{post.readingTime ?? 1} min read</span>
+            </div>
+          </header>
+
+          {post.heroImage?.url && (
+            <div className="article-hero">
+              <Image src={post.heroImage.url} alt="" fill sizes="(max-width: 900px) 100vw, 760px" priority />
+            </div>
           )}
-          {post.readingTime ?? 1} min read
-        </p>
+
+          <div
+            className="page-prose article-prose"
+            dangerouslySetInnerHTML={{ __html: post.contentHtml || `<p>${post.excerpt ?? ''}</p>` }}
+          />
+
+          {post.tags && post.tags.length > 0 && (
+            <div className="page-pills article-tags">
+              {(post.tags as unknown as { _id: string; name: string; slug: string }[]).map((t) => (
+                <span key={t._id} className="page-pill">
+                  {t.name}
+                </span>
+              ))}
+            </div>
+          )}
+
+          <aside className="article-author">
+            <span className="article-author-avatar">
+              {author?.avatar?.url ? (
+                <Image src={author.avatar.url} alt="" width={56} height={56} />
+              ) : (
+                <span aria-hidden="true">{(author?.name ?? 'M').slice(0, 1)}</span>
+              )}
+            </span>
+            <div>
+              <h3>{author?.name ?? 'Movodream Team'}</h3>
+              {author?.bio && <p>{author.bio}</p>}
+              <Link href="/blog" className="article-author-link">
+                View all articles →
+              </Link>
+            </div>
+          </aside>
+        </article>
       </section>
 
-      <main className="page-main page-article">
-        {post.heroImage?.url && (
-          <div className="page-article-hero">
-            <Image src={post.heroImage.url} alt="" fill sizes="(max-width: 900px) 100vw, 760px" priority />
-          </div>
-        )}
-
-        <div
-          className="page-prose"
-          dangerouslySetInnerHTML={{ __html: post.contentHtml || `<p>${post.excerpt ?? ''}</p>` }}
-        />
-
-        {post.tags && post.tags.length > 0 && (
-          <div className="page-pills" style={{ marginTop: 30 }}>
-            {(post.tags as unknown as { _id: string; name: string; slug: string }[]).map((t) => (
-              <span key={t._id} className="page-pill">
-                {t.name}
-              </span>
-            ))}
-          </div>
-        )}
-
-        <div className="post-detail-share" style={{ marginTop: 26 }}>
-          <span>Share</span>
-          <a
-            href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(postUrl)}&text=${encodeURIComponent(post.title)}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Share on X"
-          >
-            <i className="fa-brands fa-x-twitter" />
-          </a>
-          <a
-            href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(postUrl)}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Share on LinkedIn"
-          >
-            <i className="fa-brands fa-linkedin" />
-          </a>
-        </div>
-
-        {author?.name && (
-          <div className="post-detail-author" style={{ marginTop: 30 }}>
-            {author.avatar?.url ? (
-              <Image src={author.avatar.url} alt="" width={56} height={56} />
-            ) : (
-              <div style={{ width: 56, height: 56, borderRadius: '50%', background: '#efe7f5' }} />
-            )}
-            <div>
-              <div className="name">{author.name}</div>
-              {author.bio && <div className="bio">{author.bio}</div>}
-            </div>
-          </div>
-        )}
-      </main>
-
       {related.length > 0 && (
-        <section className="page-main" style={{ paddingTop: 0 }}>
-          <h2 style={{ fontSize: '1.35rem', fontWeight: 700, margin: '0 0 22px' }}>Related posts</h2>
+        <section className="article-more">
+          <div className="article-more-head">
+            <h2>Continue reading</h2>
+            <Link href="/blog">View all articles →</Link>
+          </div>
           <div className="post-grid">
             {related.map((r) => (
               <PostCard key={r._id} post={r} />

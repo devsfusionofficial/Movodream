@@ -28,6 +28,41 @@ export function HeroCards() {
 
     const isMobile = window.innerWidth <= 768
 
+    // Small screens use a different model entirely: the cards sit as a fanned
+    // hand (all of it CSS — see the max-width: 560px block in homepage.css)
+    // and tapping one brings it to the front. The desktop deal/collapse is
+    // skipped here because those tweens write inline transforms, which would
+    // override the fan and the tap state.
+    if (isMobile) {
+      const cards = [card1, card2, card3]
+
+      const activate = (target: HTMLElement) => {
+        cards.forEach((c) => c.classList.toggle('is-active', c === target))
+      }
+
+      const cleanups = cards.map((card) => {
+        const onClick = () => activate(card)
+        const onKeyDown = (e: KeyboardEvent) => {
+          if (e.key !== 'Enter' && e.key !== ' ') return
+          e.preventDefault()
+          activate(card)
+        }
+        // The cards are now operable, so give them a role and a tab stop.
+        card.setAttribute('role', 'button')
+        card.setAttribute('tabindex', '0')
+        card.addEventListener('click', onClick)
+        card.addEventListener('keydown', onKeyDown)
+        return () => {
+          card.removeAttribute('role')
+          card.removeAttribute('tabindex')
+          card.removeEventListener('click', onClick)
+          card.removeEventListener('keydown', onKeyDown)
+        }
+      })
+
+      return () => cleanups.forEach((fn) => fn())
+    }
+
     gsap.set(card1, { opacity: 0, rotation: 0, y: 20, x: -30 })
     gsap.set(card2, { opacity: 0, rotation: 0, y: 30, x: 40 })
     gsap.set(card3, { opacity: 0, rotation: 0, y: 40, x: -20 })

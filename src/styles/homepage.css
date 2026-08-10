@@ -781,6 +781,92 @@
   }
 }
 
+/* Hero card composition on small screens.
+   The cluster measures 446px wide, but not because the cards are large — the
+   widest is 300px. It's the fan-out: card2 sits at margin-left: -21%, card1
+   at +112.62px, so 146px of that width is spread. Scaling the whole cluster
+   down would shrink the cards to fix a spacing problem and make the content
+   unreadable.
+   Instead the offsets and widths go fluid here: the wrapper drops
+   `width: max-content` for a capped percentage width, and because card2/card3
+   are absolutely positioned inside it their percentage offsets now resolve
+   against that. The stagger is kept (0% / 7% / 14%) but tightened, so the
+   cards stay near full size — ~292px at 375px+ against 300px on desktop. */
+/* Small screens present the three hero cards as a fanned hand of cards —
+   card1 furthest back and just peeking, card2 part-showing, card3 fully
+   visible in front — and tapping one brings it forward. Replaces the desktop
+   behaviour where the cards collapse onto each other on scroll, which at this
+   size just meant the top card hid the other two.
+
+   The spread comes mostly from horizontal offset rather than rotation: these
+   cards are ~385px tall, and rotating a box widens its painted footprint by
+   height x sin(angle), so every degree costs ~7px of the little width there
+   is. A few degrees reads as a fan; the offsets do the separating.
+
+   HeroCards skips its GSAP tweens on mobile so nothing writes an inline
+   transform over the fan or the tap state. */
+@media (max-width: 560px) {
+  .hero-right .cards-wrapper {
+    position: relative;
+    display: block;
+    width: min(100%, 340px);
+    /* All three cards are absolutely positioned, so the row needs its own
+       height. Sized to the tallest card plus the lift the fan adds. */
+    height: 430px;
+    margin: 40px auto 0;
+  }
+
+  .hero-right .cards-wrapper .card1,
+  .hero-right .cards-wrapper .card2,
+  .hero-right .cards-wrapper .card3 {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    top: auto;
+    width: 73%;
+    margin: 0;
+    transform-origin: bottom center;
+    cursor: pointer;
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), filter 0.35s ease;
+  }
+
+  /* Each card further back also sits higher, so its top edge clears the one
+     in front and you can see all three at once. Done with translateY rather
+     than by actually shortening the cards: they're bottom-aligned, so a lift
+     produces the same stepped-tops look without a max-height clipping the
+     card's own content mid-sentence. */
+  .hero-right .cards-wrapper .card1 {
+    z-index: 1;
+    transform: translateX(calc(-50% - 22px)) translateY(-34px) rotate(-5.5deg);
+    filter: brightness(0.955);
+  }
+
+  .hero-right .cards-wrapper .card2 {
+    z-index: 2;
+    transform: translateX(calc(-50% - 4px)) translateY(-17px) rotate(-3deg);
+    filter: brightness(0.985);
+  }
+
+  .hero-right .cards-wrapper .card3 {
+    z-index: 3;
+    transform: translateX(calc(-50% + 22px)) translateY(0) rotate(0deg);
+  }
+
+  /* Tapped card straightens and takes the front slot — same position
+     whichever card it is, so the arrangement reads identically no matter
+     which one is active. The other two keep their depth offsets, so they
+     still peek above and to the side of it. The lift is deliberately larger
+     than card3's resting offset — otherwise an active card2 would land
+     almost exactly on card3 and leave it a hairline. */
+  .hero-right .cards-wrapper .card1.is-active,
+  .hero-right .cards-wrapper .card2.is-active,
+  .hero-right .cards-wrapper .card3.is-active {
+    z-index: 9;
+    transform: translateX(calc(-50% + 26px)) translateY(-20px) rotate(0deg);
+    filter: none;
+  }
+}
+
 /* ── Section 2: "A Future Where Journeys Come Alive" (immersive booking) ── */
 .section-2 {
   width: 100%;
@@ -1840,9 +1926,13 @@
     min-height: 72px;
     margin-bottom: 8%;
   }
+  /* Centred and viewport-capped: at left: 36% a fixed 280px blur pushed 80px
+     off a 320px screen. Purely decorative, so it just needs to stay inside. */
   .phone-glow {
-    width: 280px;
-    height: 280px;
+    width: min(280px, 78vw);
+    height: min(280px, 78vw);
+    left: 50%;
+    transform: translateX(-50%);
   }
   .phone-text {
     font-size: 38px;
@@ -1977,8 +2067,12 @@
   left: auto;
   right: 0;
 }
+/* No flex-shrink: 0 here. The subtitle is ~500px of text, and pinned against
+   shrinking it ran 90px off a 320px screen with the end of the sentence cut
+   off. It now shrinks and wraps; the flanking rules give up their space
+   first (see .advantage-rule below). */
 .advantage-header .sub {
-  flex-shrink: 0;
+  min-width: 0;
   margin: 0;
   color: #5b5b6b;
   font-size: 1.05rem;
@@ -2659,7 +2753,9 @@
     background: rgba(32, 19, 40, 0.08);
     border: none;
     border-radius: 50%;
-    width: 32px;
+    /* Square, not 32×44 — these are the only way to change slide on mobile,
+       so they need a full 44px target in both directions. */
+    width: 44px;
     height: 44px;
     display: flex;
     align-items: center;
@@ -4234,6 +4330,16 @@ a.office-card:hover {
     flex-direction: column;
     padding-top: 120px;
   }
+  /* Both visuals are `flex: 1 1 460px` for the desktop row. Once the container
+     flips to a column that basis applies to the MAIN axis — height — and
+     `aspect-ratio` then derives the width from it (460 × 920/636 = 665px),
+     which runs ~170px off the side of a phone. Reset the basis and let the
+     width come from the column instead. */
+  .product-hero-visual,
+  .product-vision-visual {
+    flex: 0 0 auto;
+    width: 100%;
+  }
   .izhinga-row,
   .izhinga-row.is-reversed .izhinga-row-media {
     grid-template-columns: 1fr;
@@ -4244,7 +4350,9 @@ a.office-card:hover {
 @media (max-width: 600px) {
   .product-steps,
   .product-trust,
-  .product-stats {
+  .product-stats,
+  /* Was left at 2-up here, which put 149px tiles ~21px past a 320px screen. */
+  .product-tech-grid {
     grid-template-columns: 1fr;
   }
   .product-final-inner {
@@ -5140,4 +5248,45 @@ a.partner-card:hover {
 
 .skeleton-card-line {
   height: 14px;
+}
+
+/* ==================== Touch sizing ====================
+   Keyed to pointer type rather than viewport width, so tablets get finger
+   targets and a narrow desktop window doesn't. Each rule below covers a
+   control the responsive audit measured under the 44px iOS/WCAG 2.5.5
+   minimum; sizing comes from padding so nothing shifts visually. */
+@media (pointer: coarse) {
+  /* Footer link rows measured 23-31px tall. */
+  .footer-col a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+  .footer-col {
+    gap: 0;
+  }
+  /* Social icon buttons measured 42px. */
+  .social-icon {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  /* Header: logo link measured 36px tall, hamburger 48x24. */
+  nav.flex.w-full > a,
+  .hamburger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+  }
+  .hamburger {
+    min-width: 44px;
+  }
+  /* Newsletter field: 38px input, 36px submit. */
+  .footer-newsletter-input {
+    min-height: 44px;
+  }
+  .footer-newsletter-submit {
+    min-width: 44px;
+    min-height: 44px;
+  }
 }

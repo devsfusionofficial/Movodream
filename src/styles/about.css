@@ -59,35 +59,6 @@
   color: var(--ab-muted);
 }
 
-.about-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  padding: 13px 24px;
-  border-radius: 10px;
-  font-size: 0.92rem;
-  font-weight: 600;
-  border: none;
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.about-btn--primary {
-  background: var(--ab-gradient);
-  color: #fff;
-  box-shadow: 0 12px 26px -12px rgba(168, 85, 247, 0.6);
-}
-
-.about-btn--ghost {
-  background: #fff;
-  color: var(--ab-navy);
-  border: 1px solid var(--ab-border);
-}
-
-.about-btn:hover {
-  transform: translateY(-2px);
-}
-
 /* ---------- breadcrumb ---------- */
 
 .about-page .about-crumb {
@@ -112,17 +83,17 @@
 /* ---------- hero ---------- */
 
 .about-page .about-hero {
-  /* Gutter lives here (full-width element) so the headline lines up with
-     every section below. The visual still bleeds off the right edge. */
-  padding: 0 0 0 var(--ab-gutter);
+  /* Gutter on both sides: the artwork is a contained card rather than a
+     full-bleed panel, so it never runs into the viewport edge. */
+  padding: 8px var(--ab-gutter) 0;
   display: grid;
-  grid-template-columns: 1.12fr 0.88fr;
+  grid-template-columns: 1fr 1.02fr;
   align-items: center;
-  gap: 0;
+  gap: 44px;
 }
 
 .about-hero-copy {
-  padding: 40px 48px 64px 0;
+  padding: 28px 0 56px;
 }
 
 .about-hero h1 {
@@ -143,12 +114,12 @@
   font-weight: 600;
   line-height: 1.45;
   color: var(--ab-navy);
-  max-width: 400px;
+  max-width: 470px;
 }
 
 .about-hero-lead {
   margin: 18px 0 0;
-  max-width: 380px;
+  max-width: 460px;
   font-size: 0.92rem;
   line-height: 1.75;
   color: var(--ab-muted);
@@ -175,32 +146,30 @@
   color: var(--ab-pink);
 }
 
+/* The phrase is wrapped in a single span so it is ONE flex item. Left bare,
+   each text node became its own anonymous flex item and picked up the
+   badge's 10px gap on both sides of the separator, splitting the sentence. */
 .about-hero-badge i {
   font-style: normal;
-  color: var(--ab-border);
+  color: #b9b1c6;
+  padding: 0 6px;
 }
 
 .about-hero-visual {
   position: relative;
-  align-self: stretch;
-  min-height: 390px;
+  aspect-ratio: 1400 / 1000;
+  min-height: 380px;
+  border-radius: 24px;
   overflow: hidden;
+  box-shadow: 0 26px 60px -30px rgba(70, 20, 110, 0.45);
 }
 
 /* The mascot sits centre-right in the artwork, so bias the crop right to
-   keep it in frame as the panel narrows. */
+   keep it framed as the card narrows. No white fade now that the artwork is
+   a self-contained card rather than bleeding off the page edge. */
 .about-hero-visual img {
   object-fit: cover;
-  object-position: 62% center;
-}
-
-/* Soft fade into the copy column so the artwork has no hard left edge. */
-.about-hero-visual::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: linear-gradient(90deg, #fff 0%, rgba(255, 255, 255, 0.55) 9%, transparent 34%);
+  object-position: 60% center;
 }
 
 /* Floating capability chips over the scene. */
@@ -419,14 +388,16 @@
   color: var(--ab-pink);
 }
 
-.about-heart {
-  color: #f2295f;
+/* The infinity sign is drawn at x-height rather than cap-height, so at the
+   shared font-size it renders about half the visual height of "3+" or "100%".
+   Scaled up to match them optically. */
+.about-stat-value.is-glyph {
+  font-size: clamp(3rem, 4.6vw, 3.7rem);
+  line-height: 0.7;
 }
 
-.about-stat-value svg {
-  width: 40px;
-  height: 40px;
-  color: var(--ab-pink);
+.about-heart {
+  color: #f2295f;
 }
 
 .about-stat strong {
@@ -458,7 +429,7 @@
 .about-office {
   position: relative;
   overflow: hidden;
-  min-height: 190px;
+  min-height: 236px;
   padding: 26px 26px 30px;
   border-radius: 18px;
   background: #fff;
@@ -502,22 +473,23 @@
 .about-office-desc {
   position: relative;
   margin: 18px 0 0;
-  max-width: 56%;
+  max-width: 47%;
   font-size: 0.85rem;
   line-height: 1.6;
   color: var(--ab-muted);
 }
 
 /* Landmark sits behind the text, bottom-right, very low contrast. */
-/* Sits clear of the copy column (which is capped at 56%) so the landmark
-   never runs underneath the text. */
+/* Sits clear of the copy column (capped at 52%) so the landmark never runs
+   underneath the text. Scaled up and given a stronger tint so it reads as a
+   deliberate motif rather than a faint smudge. */
 .about-office-art {
   position: absolute;
-  right: 6px;
-  bottom: 6px;
-  width: 108px;
-  height: 108px;
-  color: rgba(236, 42, 139, 0.14);
+  right: 14px;
+  bottom: 10px;
+  width: 196px;
+  height: 196px;
+  color: rgba(236, 42, 139, 0.28);
   pointer-events: none;
 }
 
@@ -651,5 +623,15 @@
 
   .about-office-desc {
     max-width: 74%;
+  }
+}
+
+/* Touch sizing — keyed to pointer type so tablets get it and narrow desktop
+   windows don't. The breadcrumb link measured 18px tall. */
+@media (pointer: coarse) {
+  .about-crumb a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
   }
 }
