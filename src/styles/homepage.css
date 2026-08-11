@@ -1736,8 +1736,46 @@
     align-items: center;
   }
   .s4-tags {
-    align-items: center;
+    display: grid;
+    /* minmax(0, 1fr), not 1fr — a bare 1fr track's minimum is its content's
+       min-content size, so long non-wrapping text (e.g. "AI-driven
+       insights") pushed the column wider than the viewport instead of
+       wrapping inside it. */
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: stretch;
     justify-content: center;
+    gap: 10px;
+  }
+  /* Scoped to .s4-tags (the grid) so the standalone .s4-tag.green "Live"
+     pill elsewhere on the page — a single word, never wraps — keeps its own
+     sizing untouched. */
+  .s4-tags .s4-tag {
+    width: 100%;
+    justify-content: center;
+    /* left, not center: text-align:center centers each wrapped line
+       independently, so a short first line ("Smart") floated toward the
+       middle while a longer one ("AI-driven") sat close to the icon —
+       inconsistent icon-to-text gap from one tag to the next. Left-aligning
+       keeps every line's first character flush against the icon, with the
+       icon+text unit as a whole still centered in the pill via
+       justify-content above. */
+    text-align: left;
+    white-space: normal;
+    line-height: 1.25;
+    /* The bare text node next to the icon becomes an anonymous flex item;
+       its min-content width is the longest unbreakable word ("recommendations"),
+       which came out ~2px wider than the space left after the icon+padding —
+       just enough to visibly poke past the pill's right edge. Slightly
+       smaller text and tighter padding buys back that margin. */
+    font-size: 12px;
+    padding: 8px 12px;
+  }
+  .s4-tags .s4-tag:nth-child(3):last-child {
+    /* Exactly 3 tags (3rd child that's also the last): 2 up top, 1 centered
+       below, instead of stranded alone on the grid's left edge. */
+    grid-column: 1 / -1;
+    justify-self: center;
+    width: calc(50% - 5px);
   }
   .s4-slide.three {
     display: flex;
