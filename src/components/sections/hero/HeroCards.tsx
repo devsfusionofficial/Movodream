@@ -6,6 +6,9 @@ import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import 'atropos/css'
+import { useMediaQuery } from '@/lib/use-media-query'
+
+const MOBILE_QUERY = '(max-width: 768px)'
 
 /**
  * Ported from script.js lines 909–977: cards "deal" in with a
@@ -18,7 +21,24 @@ import 'atropos/css'
  * `Atropos({ el, highlight: false, shadow: false })`.
  */
 export function HeroCards() {
+  // Which layout applies is tracked live via matchMedia, not read once from
+  // window.innerWidth inside the animation effect below. A one-time read
+  // locks in whichever branch matched at first paint — resizing the
+  // viewport afterward (DevTools' responsive mode without a reload is the
+  // common way to hit this) never re-evaluated it, so the page stayed on
+  // the desktop GSAP animation permanently once it had loaded at desktop
+  // width, even though the CSS had already switched to mobile layout. GSAP
+  // writes inline transform/opacity styles, which beat every CSS rule
+  // including the mobile fan, so nothing in the stylesheet could have
+  // masked that. null is "not yet known" (first paint, before the browser
+  // APIs useSyncExternalStore needs are available to compare against).
+  const isMobile = useMediaQuery(MOBILE_QUERY)
+
   useGSAP(() => {
+    // Breakpoint not yet known (first render, before the effect above runs)
+    // — wait rather than guess, so nothing animates in on the wrong layout.
+    if (isMobile === null) return
+
     gsap.registerPlugin(ScrollTrigger)
 
     const card1 = document.querySelector<HTMLElement>('.card1')
@@ -26,28 +46,56 @@ export function HeroCards() {
     const card3 = document.querySelector<HTMLElement>('.card3')
     if (!card1 || !card2 || !card3) return
 
-    const isMobile = window.innerWidth <= 768
+    // useGSAP reverts everything this callback created — tweens, their
+    // inline style writes, and ScrollTriggers — whenever `isMobile` flips
+    // and the effect reruns, and also calls whatever cleanup function is
+    // returned below. That revert is what makes crossing the breakpoint
+    // safe: switching from desktop to mobile clears GSAP's inline styles
+    // before the mobile branch's CSS classes take over, and switching back
+    // removes the click handlers/slot classes before the desktop tweens
+    // start fresh.
 
-    // Small screens use a different model entirely: the cards sit as a fanned
-    // hand (all of it CSS — see the max-width: 560px block in homepage.css)
-    // and tapping one brings it to the front. The desktop deal/collapse is
-    // skipped here because those tweens write inline transforms, which would
-    // override the fan and the tap state.
+    // Small screens lay the cards out as a fanned hand in CSS (see the
+    // max-width: 560px block in homepage.css) and let a tap bring one to the
+    // front. The deal/collapse below is skipped there: its tweens write
+    // inline transforms, which would win over the fan and strand the cards
+    // wherever the scrub happened to leave them.
     if (isMobile) {
-      const cards = [card1, card2, card3]
+      // Three CSS slots (front / back1 / back2 — see the max-width: 560px
+      // block in homepage.css) get assigned to whichever card is playing
+      // that role, tracked as a back-to-front stack. This is deliberate:
+      // an earlier version hard-coded card3 as "always front" with only
+      // card1/card2 having a back position, so tapping card2 promoted it
+      // on top of card3 with nowhere for card3 to retreat to — it just sat
+      // there, fully covered, and there was nothing left to tap. Rotating
+      // the stack instead guarantees the same one-front-two-peeking
+      // arrangement after every tap, regardless of tap order.
+      const SLOTS = ['card-slot-back1', 'card-slot-back2', 'card-slot-front']
+      let stack = [card1, card2, card3]
+
+      const applySlots = () => {
+        stack.forEach((card, i) => {
+          card.classList.remove(...SLOTS)
+          card.classList.add(SLOTS[i])
+        })
+      }
+      applySlots()
 
       const activate = (target: HTMLElement) => {
-        cards.forEach((c) => c.classList.toggle('is-active', c === target))
+        if (stack[stack.length - 1] === target) return
+        stack = [...stack.filter((c) => c !== target), target]
+        applySlots()
       }
 
-      const cleanups = cards.map((card) => {
+      const cards = [card1, card2, card3]
+      const teardown = cards.map((card) => {
         const onClick = () => activate(card)
         const onKeyDown = (e: KeyboardEvent) => {
           if (e.key !== 'Enter' && e.key !== ' ') return
           e.preventDefault()
           activate(card)
         }
-        // The cards are now operable, so give them a role and a tab stop.
+        // These are operable now, so they need a role and a tab stop.
         card.setAttribute('role', 'button')
         card.setAttribute('tabindex', '0')
         card.addEventListener('click', onClick)
@@ -57,10 +105,11 @@ export function HeroCards() {
           card.removeAttribute('tabindex')
           card.removeEventListener('click', onClick)
           card.removeEventListener('keydown', onKeyDown)
+          card.classList.remove(...SLOTS)
         }
       })
 
-      return () => cleanups.forEach((fn) => fn())
+      return () => teardown.forEach((fn) => fn())
     }
 
     gsap.set(card1, { opacity: 0, rotation: 0, y: 20, x: -30 })
@@ -127,7 +176,13 @@ export function HeroCards() {
         },
       })
     })
-  }, [])
+    // revertOnUpdate is required, not optional, here: without it useGSAP
+    // defers cleanup to unmount instead of reverting on each dependency
+    // change, so re-running this effect after isMobile flips would layer
+    // the new branch's listeners/classes on top of the previous branch's
+    // still-live GSAP tweens and ScrollTriggers rather than replacing them
+    // — silently reintroducing the exact bug this state is meant to fix.
+  }, { dependencies: [isMobile], revertOnUpdate: true })
 
   return (
     <div className="cards-wrapper">

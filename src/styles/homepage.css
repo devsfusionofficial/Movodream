@@ -781,39 +781,36 @@
   }
 }
 
-/* Hero card composition on small screens.
-   The cluster measures 446px wide, but not because the cards are large — the
-   widest is 300px. It's the fan-out: card2 sits at margin-left: -21%, card1
-   at +112.62px, so 146px of that width is spread. Scaling the whole cluster
-   down would shrink the cards to fix a spacing problem and make the content
-   unreadable.
-   Instead the offsets and widths go fluid here: the wrapper drops
-   `width: max-content` for a capped percentage width, and because card2/card3
-   are absolutely positioned inside it their percentage offsets now resolve
-   against that. The stagger is kept (0% / 7% / 14%) but tightened, so the
-   cards stay near full size — ~292px at 375px+ against 300px on desktop. */
-/* Small screens present the three hero cards as a fanned hand of cards —
-   card1 furthest back and just peeking, card2 part-showing, card3 fully
-   visible in front — and tapping one brings it forward. Replaces the desktop
-   behaviour where the cards collapse onto each other on scroll, which at this
-   size just meant the top card hid the other two.
+/* Hero cards on small screens: a fanned hand of three SLOTS (front,
+   back-1, back-2), not three cards with fixed roles.
 
-   The spread comes mostly from horizontal offset rather than rotation: these
-   cards are ~385px tall, and rotating a box widens its painted footprint by
-   height x sin(angle), so every degree costs ~7px of the little width there
-   is. A few degrees reads as a fan; the offsets do the separating.
+   The earlier version hard-coded card3 as "always front" and gave only
+   card1/card2 a back-position style. Tapping card2 promoted it to a
+   full-size front card sitting almost exactly where card3 already was —
+   but card3 had no back-position rule to retreat to, so it stayed put and
+   got fully covered, leaving nothing left to tap. That is why the fan broke
+   whenever anything other than the original front card was activated.
 
-   HeroCards skips its GSAP tweens on mobile so nothing writes an inline
-   transform over the fan or the tap state. */
+   Fixed by decoupling position from identity: card-slot-front / -back1 /
+   -back2 are assigned in JS to whichever DOM card currently plays that
+   role, tracked as a stack that gets rotated on tap (see HeroCards.tsx).
+   Every tap therefore produces the exact same three-slot arrangement —
+   one full card, two peeking behind it — no matter which card is which.
+
+   All three cards are absolutely positioned at all times now (previously
+   only the back two were, with the front one left in flow — that
+   position:relative/absolute mismatch is what made a slot-based system
+   awkward before). The wrapper gets an explicit height sized to the
+   tallest card's natural content across every width tested (332px, +
+   headroom for the back slots peeking above it) instead of taking its
+   height from flow. */
 @media (max-width: 560px) {
   .hero-right .cards-wrapper {
     position: relative;
     display: block;
     width: min(100%, 340px);
-    /* All three cards are absolutely positioned, so the row needs its own
-       height. Sized to the tallest card plus the lift the fan adds. */
-    height: 430px;
-    margin: 40px auto 0;
+    height: 372px;
+    margin: 40px auto 28px;
   }
 
   .hero-right .cards-wrapper .card1,
@@ -823,47 +820,92 @@
     left: 50%;
     bottom: 0;
     top: auto;
-    width: 73%;
     margin: 0;
-    transform-origin: bottom center;
     cursor: pointer;
-    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), filter 0.35s ease;
+    transform-origin: bottom right;
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), width 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+      max-height 0.45s cubic-bezier(0.22, 1, 0.36, 1), filter 0.35s ease;
   }
 
-  /* Each card further back also sits higher, so its top edge clears the one
-     in front and you can see all three at once. Done with translateY rather
-     than by actually shortening the cards: they're bottom-aligned, so a lift
-     produces the same stepped-tops look without a max-height clipping the
-     card's own content mid-sentence. */
-  .hero-right .cards-wrapper .card1 {
-    z-index: 1;
-    transform: translateX(calc(-50% - 22px)) translateY(-34px) rotate(-5.5deg);
-    filter: brightness(0.955);
-  }
-
-  .hero-right .cards-wrapper .card2 {
-    z-index: 2;
-    transform: translateX(calc(-50% - 4px)) translateY(-17px) rotate(-3deg);
-    filter: brightness(0.985);
-  }
-
-  .hero-right .cards-wrapper .card3 {
+  /* Front: full width, full content, nothing clipped. */
+  .hero-right .cards-wrapper .card-slot-front {
     z-index: 3;
-    transform: translateX(calc(-50% + 22px)) translateY(0) rotate(0deg);
+    width: 82%;
+    max-height: 340px;
+    overflow: visible;
+    transform: translateX(calc(-50% + 16px)) rotate(0deg);
+    filter: none;
   }
 
-  /* Tapped card straightens and takes the front slot — same position
-     whichever card it is, so the arrangement reads identically no matter
-     which one is active. The other two keep their depth offsets, so they
-     still peek above and to the side of it. The lift is deliberately larger
-     than card3's resting offset — otherwise an active card2 would land
-     almost exactly on card3 and leave it a hairline. */
-  .hero-right .cards-wrapper .card1.is-active,
-  .hero-right .cards-wrapper .card2.is-active,
-  .hero-right .cards-wrapper .card3.is-active {
-    z-index: 9;
-    transform: translateX(calc(-50% + 26px)) translateY(-20px) rotate(0deg);
-    filter: none;
+  /* Back-2: nearer the front, less rotated. */
+  .hero-right .cards-wrapper .card-slot-back2 {
+    z-index: 2;
+    width: 72%;
+    max-height: 300px;
+    overflow: hidden;
+    transform: translateX(calc(-50% + 5px)) rotate(-7deg);
+    filter: brightness(0.98);
+  }
+
+  /* Back-1: furthest back, most rotated — the smallest sliver. */
+  .hero-right .cards-wrapper .card-slot-back1 {
+    z-index: 1;
+    width: 66%;
+    max-height: 260px;
+    overflow: hidden;
+    transform: translateX(calc(-50% - 3px)) rotate(-14deg);
+    filter: brightness(0.95);
+  }
+
+  /* LIVE badge (card1). Base rule renders it as an absolutely-positioned
+     ::after pill floating over the top-right of the header row — fine at
+     the desktop card's fixed 256px, where "Live Travel Mode" has room to
+     spare, but at mobile width it sat directly on top of the title text.
+     Since `.card-header` is already `display:flex`, dropping `position:
+     absolute` turns the pill back into a normal flex item; `margin-left:
+     auto` pushes it to the row's end instead of floating over whatever's
+     there. `.text` needs `min-width: 0` so it's actually allowed to shrink
+     within the flex row (flex items default to a content-based minimum
+     width, which is what was forcing the overflow); the ellipsis on h3 is
+     a last-resort safety net if a title is ever too long even for that. */
+  .hero-right .cards-wrapper .card1 .card-header::after {
+    position: static;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+  .hero-right .cards-wrapper .card1 .card-header .text {
+    min-width: 0;
+  }
+  .hero-right .cards-wrapper .card1 .card-header h3 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Expert Verified badge (card3). Base rule positions it at the header's
+     bottom edge (top: 100%) — which is also exactly where `.sub` ("Delhi →
+     Manali | 7h 20m") starts, so the badge sat directly on top of that
+     text. Giving the header a bottom margin pushes `.sub` down to create a
+     dedicated gap for the badge to sit in, rather than guessing at a
+     top/right position that only happens to clear the text at one width.
+     The base selector (`.header img`) matches BOTH images in the header —
+     the tiny 16x4 dots icon shares the badge's 32% width rule, which blows
+     it up ~4x past its real size; only invisible before because it sat
+     exactly under the badge. Split with :first-of-type/:last-of-type so
+     each gets sized for what it actually is. */
+  .hero-right .cards-wrapper .card3 .header {
+    margin-bottom: 26px;
+  }
+  .hero-right .cards-wrapper .card3 .header img:last-of-type {
+    width: 34%;
+    top: 100%;
+    right: 0;
+  }
+  .hero-right .cards-wrapper .card3 .header img:first-of-type {
+    width: 16px;
+    height: auto;
+    top: 2px;
+    right: 0;
   }
 }
 
@@ -1098,6 +1140,45 @@
   }
   .subs2-headline {
     margin-bottom: 28px;
+  }
+  /* .s2-card no longer changes size on scroll (ImmersiveBooking.tsx used to
+     scrub it from ~90vw up to 100svw/100svh — a genuine viewport takeover,
+     removed because the card was meant to stay a normal, fixed-size section
+     like everything else on the page). With that tween gone, its size is
+     entirely CSS now: the base rule's `width: 100%` would otherwise run
+     edge-to-edge once .section-2's own side padding is zeroed out just
+     above, so a width + inset margin is set explicitly here.
+     Deliberately NOT overriding aspect-ratio: the live site uses the same
+     wide 16/8 landscape strip at every width, not a taller mobile-specific
+     shape — the base rule two properties up already provides it, so mobile
+     just needs a narrower width, not a different ratio. */
+  .s2-card {
+    width: 90vw;
+    max-width: 480px;
+  }
+  /* At that width x 16/8 ratio the card is ~144px tall — nowhere near
+     enough room for the headline + 3-item feature list this overlay holds,
+     which is exactly why forcing it visible (mirroring the desktop rule
+     right above this block) clipped "experience" clean off the bottom of
+     the card. The live reference site doesn't show this overlay on mobile
+     at all — it's a plain photo card here — so it stays hidden rather than
+     forced, undoing the desktop media query's approach for this width. */
+  .fullscreen-content {
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+  /* .feature-bar's OWN base rule (its horizontal/row form, still living
+     inside .content — nothing reparents it into .fullscreen-content on this
+     breakpoint anymore) has no opacity default, so unlike .fullscreen-
+     content above it renders fully visible unless something hides it. That
+     "something" used to be a JS gsap.set() call tied to the reveal
+     animation this breakpoint no longer runs — leaving it JS-only would
+     mean the very first bug in this section (the horizontal row's `width:
+     max-content` overflowing a narrow card, each item squeezed to ~40px)
+     comes back the moment that JS call is ever touched again. Hiding it
+     here in CSS makes that impossible regardless of what the JS does. */
+  .content .feature-bar {
+    display: none;
   }
 }
 
@@ -1683,16 +1764,122 @@
     width: min(82vw, 360px);
     margin-inline: auto;
   }
-  .city-badge {
-    left: -11%;
+  /* Root cause of the "badges floating with no visible card" look: this is
+     the ONLY width .photo-card ever had — 26.5vw of the VIEWPORT, no mobile
+     override. That's a reasonable ~370px on a 1400px desktop screen, but at
+     a 320px mobile viewport it's 85px — a thumbnail. Since .s4-card has no
+     height of its own (sized by its content, i.e. this photo), the whole
+     card collapsed to match that 85px-wide sliver, while the decorative
+     badges around it — sized/positioned for a normal ~300px+ card — stayed
+     their intended size and consequently dwarfed it. Filling .s4-card's
+     width (already responsively sized above) instead of a raw vw fraction
+     fixes both: the photo matches the card frame, and the card's height
+     grows to the photo's real aspect ratio, giving the badges room to sit
+     where their (already mobile-tuned) percentages actually intend them to.
+  */
+  .photo-card {
+    width: 100%;
+    max-width: none;
   }
-  .s4-slide:first-child .city-badge {
-    scale: 0.5;
+  /* These decorative badges (PLAN/BOOK/vibe-card on slide 1, VISITED/Summer
+     Locations on slide 2) all carry their full desktop px sizing — fonts,
+     padding, icon dimensions — sized for the ~320-370px desktop card. The
+     mobile .s4-card is only 82vw (262px at a 320px viewport), so unscaled
+     desktop-size badges dwarf it. Only slide 1's .city-badge ever got a
+     `scale: 0.5` patch; slide 2's badges had no size reduction at all. Fixed
+     properly here by resizing every badge's actual font/padding/icon values
+     for mobile instead of transform-scaling, so positioning percentages
+     don't have to fight a shrink-toward-center transform.
+  */
+  .city-badge {
+    left: -9%;
+    font-size: 13px;
+    padding: 8px 10px;
+    gap: 5px;
+    border-radius: 10px;
+  }
+  .city-badge .icon {
+    width: 22px;
+    height: 22px;
+  }
+  .city-badge svg,
+  .city-badge .icon img {
+    width: 12px;
+  }
+  .city-badge.city-badge2 {
+    /* Corner-attached like .sm-badge (top-left, over "1. Persona") — hangs
+       over the bottom-left corner, partly in the transparent frame margin
+       and partly over "3. Must-Haves", instead of floating disconnected
+       below the card. */
+    max-width: 145px;
+    padding: 6px 8px;
+    bottom: -8%;
+    gap: 5px;
+  }
+  /* The badge hangs below .s4-card's own box (position: absolute doesn't
+     contribute to layout height), so without this the "Context Awareness"
+     copy that follows in normal flow sits right against it. */
+  .s4-slide[data-slide='1'] .s4-left {
+    margin-bottom: 40px;
+  }
+  .city-badge.city-badge2 .textsl2 {
+    gap: 2px;
+  }
+  .city-badge.city-badge2 .imgs img {
+    width: 20px;
+    height: 20px;
+  }
+  .city-badge.city-badge2 .imgs img:last-of-type {
+    margin-left: -9px;
+  }
+  .city-badge.city-badge2 .textsl2 span:first-of-type {
+    font-size: 8px;
+  }
+  .city-badge.city-badge2 .textsl2 span:last-of-type {
+    font-size: 9px;
+    line-height: 1.25;
+  }
+  .tag-book {
+    right: -3%;
+    font-size: 12px;
+    padding: 6px 12px;
+    gap: 6px;
+    border-radius: 10px;
+  }
+  .tag-icon {
+    width: 20px !important;
+    height: 20px !important;
+    font-size: 9px;
   }
   .start-card {
-    left: -2%;
+    left: 5%;
     bottom: -2%;
+    width: 108px;
+    padding: 12px 12px 10px;
+    border-radius: 14px;
+    gap: 6px;
     transform-origin: bottom left;
+  }
+  .start-card p {
+    font-size: 12px;
+    line-height: 1.3;
+  }
+  .arrow-btn {
+    width: 26px;
+    height: 26px;
+  }
+  .arrow-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+  .sm-badge {
+    width: 58px;
+    padding: 6px;
+    font-size: 9px;
+  }
+  .sm-badge img {
+    width: 28px;
+    height: 28px;
   }
   .s4-slide.is-active div.s4-card,
   .s4-slide.is-active div.s4-card * {
