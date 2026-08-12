@@ -9,6 +9,7 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useLenis } from '@/components/animation/SmoothScrollProvider'
 import { useOpenContactModal } from '@/components/layout/ContactModal'
+import { markNavClick } from '@/lib/section-nav-guard'
 
 const NAV_ITEMS = [
   { href: '#platform', label: 'Platform' },
@@ -38,27 +39,47 @@ export function Header() {
   useGSAP(() => {
     if (!isHome) return
     gsap.registerPlugin(ScrollTrigger)
-    const sections = document.querySelectorAll('section[id]')
-
-    const triggers = Array.from(sections).map((section) =>
-      ScrollTrigger.create({
-        trigger: section,
-        scroller: document.body,
-        start: 'top center',
-        end: 'bottom center',
-        onToggle: (self) => {
-          if (self.isActive) setActiveHref(`#${section.id}`)
-        },
-      })
+    // Not a blanket 'section[id]' — that also matches the Contact Modal's
+    // <section id="qzvOverlay">, which reports real geometry even while
+    // closed and, being last in DOM order, always won the "last section
+    // wins" comparison — every nav link ended up unhighlighted since
+    // '#qzvOverlay' matches no NAV_ITEMS href.
+    const sections = NAV_ITEMS.map((item) => document.querySelector<HTMLElement>(item.href)).filter(
+      (el): el is HTMLElement => el !== null
     )
 
-    return () => triggers.forEach((t) => t.kill())
+    // Each section's own 'top center'/'bottom center' window can legitimately
+    // overlap a neighbor's (e.g. a short section right after a tall one) —
+    // with independent onToggle callbacks, whichever section's callback
+    // fires LAST wins, regardless of which one the viewport center is
+    // actually inside. Recomputing from all sections together on every
+    // update picks the correct one deterministically instead of racing.
+    function updateActiveSection() {
+      const centerY = window.innerHeight / 2
+      let current: HTMLElement | null = null
+      for (const section of sections) {
+        const rect = section.getBoundingClientRect()
+        if (rect.top <= centerY) current = section
+      }
+      setActiveHref(current ? `#${current.id}` : null)
+    }
+
+    window.addEventListener('scroll', updateActiveSection, { passive: true })
+    ScrollTrigger.addEventListener('refresh', updateActiveSection)
+    updateActiveSection()
+
+    return () => {
+      window.removeEventListener('scroll', updateActiveSection)
+      ScrollTrigger.removeEventListener('refresh', updateActiveSection)
+    }
   }, [isHome])
 
   function handleNavClick(e: React.MouseEvent<HTMLAnchorElement>, href: string) {
     e.preventDefault()
     const target = document.querySelector(href)
     if (!target) return
+
+    markNavClick()
 
     if (lenisRef.current) {
       lenisRef.current.scrollTo(target as HTMLElement, { offset: 0, duration: 1.2, force: true })
@@ -122,7 +143,10 @@ export function Header() {
   }
 
   return (
-    <nav ref={navRef} className="flex w-full items-center justify-between bg-white px-[4.2%] py-4">
+    <nav
+      ref={navRef}
+      className="sticky top-0 z-[500] flex w-full items-center justify-between bg-white px-[4.2%] py-4"
+    >
       <Link href="/">
         <Image src="/assets/images/logo2.webp" alt="Movodream logo" width={140} height={36} className="h-9 w-auto" priority />
       </Link>

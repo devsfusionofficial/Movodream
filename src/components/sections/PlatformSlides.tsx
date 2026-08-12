@@ -4,19 +4,29 @@ import Image from 'next/image'
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { ScrollToPlugin } from 'gsap/ScrollToPlugin'
 import Atropos from 'atropos/react'
 import 'atropos/css'
+import { useLenis } from '@/components/animation/SmoothScrollProvider'
+import { navClickGuard } from '@/lib/section-nav-guard'
 
 /**
- * Product slides — normal scroll flow. Each slide gets a one-shot entrance
- * animation (fade/slide-in) the first time it scrolls into view; all three
- * are simply stacked in document flow like any other section.
+ * Product slides — pinned/scroll-jacked, ported from the live site's
+ * script.js (lines ~1367-1620): the section pins for 150% of a scroll and
+ * steps through the 3 slides one at a time as the user scrolls, snapping to
+ * each slide's centered scroll position.
  *
- * This intentionally replaces the original site's pinned/scroll-jacked
- * version (the whole section used to pin for 150% of scroll while
- * ScrollTrigger stepped through slides one at a time) — a deliberate
- * post-launch UX change, not a parity port. See docs/01-architecture.md
- * for context if that pinned behavior is ever wanted back.
+ * Unlike the original, this runs the SAME pinned behavior at every viewport
+ * width, including mobile — the client wants the effect consistent across
+ * the whole app, not just desktop (the original only pinned above 768px and
+ * fell back to plain natural-flow scrolling on mobile).
+ *
+ * That does mean adapting one piece the original leaned on desktop-only
+ * infrastructure for: the slide-to-slide snap-scroll uses the shared Lenis
+ * instance (`useLenis`) when one exists (desktop — see
+ * SmoothScrollProvider.tsx), and falls back to GSAP's ScrollToPlugin
+ * (compatible with ScrollTrigger.normalizeScroll, which is what runs on
+ * mobile instead of Lenis) when it doesn't.
  *
  * One faithful-but-odd detail kept from the original: the idle tilt effect
  * only targets the *first* `.s4-card` in the DOM (slide 1's), because the
@@ -24,11 +34,16 @@ import 'atropos/css'
  * and 3 don't get it — preserved as-is, not "fixed" to apply everywhere.
  */
 export function PlatformSlides() {
+  const lenisRef = useLenis()
+
   useGSAP(() => {
-    gsap.registerPlugin(ScrollTrigger)
+    gsap.registerPlugin(ScrollTrigger, ScrollToPlugin)
 
     const s4Slides = Array.from(document.querySelectorAll<HTMLElement>('.s4-slide'))
     if (s4Slides.length === 0) return
+
+    let s4CurrentSlide = -1
+    let s4IsAnimating = false
 
     function s4SlideIn(slideEl: HTMLElement) {
       const left = slideEl.querySelector('.s4-left')
@@ -79,6 +94,45 @@ export function PlatformSlides() {
       return tl
     }
 
+    function s4SlideOut(slideEl: HTMLElement, onDone: () => void) {
+      const children = slideEl.querySelectorAll('.s4-left, .s4-eyebrow, .s4-heading, .s4-bullets li, .s4-tags .s4-tag')
+
+      gsap.to(children, {
+        y: -50,
+        autoAlpha: 0,
+        scale: 0.94,
+        duration: 0.3,
+        stagger: 0.015,
+        ease: 'power2.in',
+        onComplete() {
+          gsap.set(slideEl, { opacity: 0, pointerEvents: 'none' })
+          slideEl.classList.remove('is-active')
+          gsap.set(children, { clearProps: 'all' })
+          onDone()
+        },
+      })
+    }
+
+    function s4GoToSlide(nextIdx: number, onComplete?: () => void) {
+      if (nextIdx === s4CurrentSlide) {
+        onComplete?.()
+        return
+      }
+
+      const prevIdx = s4CurrentSlide
+      s4CurrentSlide = nextIdx
+
+      if (prevIdx >= 0 && s4Slides[prevIdx]) {
+        s4SlideOut(s4Slides[prevIdx], () => {
+          const tl = s4SlideIn(s4Slides[nextIdx])
+          if (onComplete) tl.eventCallback('onComplete', onComplete)
+        })
+      } else {
+        const tl = s4SlideIn(s4Slides[nextIdx])
+        if (onComplete) tl.eventCallback('onComplete', onComplete)
+      }
+    }
+
     // ── s4-card idle tilt (first .s4-card only — see doc comment) ──
     const s4CardEl = document.querySelector<HTMLElement>('.s4-card')
     let idleTilt: gsap.core.Timeline | null = null
@@ -108,19 +162,114 @@ export function PlatformSlides() {
 
     s4Slides.forEach((slideEl) => gsap.set(slideEl, { opacity: 0 }))
 
-    const triggers = s4Slides.map((slideEl) =>
-      ScrollTrigger.create({
-        trigger: slideEl,
-        scroller: document.body,
-        start: 'top 75%',
-        once: true,
-        onEnter: () => s4SlideIn(slideEl),
-        invalidateOnRefresh: true,
+    // .s4-slide is position:absolute;inset:0 so all 3 stack for the pin — a
+    // pinned box's on-screen position is locked, so anything taller than the
+    // viewport is permanently unreachable (scrolling can't bring it into
+    // view the way normal document flow would). Mobile content is tightened
+    // in CSS to fit one screen, but rather than trust that guess holds at
+    // every possible viewport size, this measures the real content height
+    // and — if it's still taller than the viewport even after that
+    // tightening — uniformly scales the slide down to fit exactly. Nothing
+    // ever gets clipped or half-visible; worst case it's slightly smaller.
+    const sectionEl = document.querySelector<HTMLElement>('.section-4')
+    const wrapperEl = document.querySelector<HTMLElement>('.s4-slides-wrapper')
+    function applySectionHeight() {
+      if (!sectionEl || !wrapperEl) return
+      let max = window.innerHeight
+      s4Slides.forEach((slideEl) => {
+        const prevPosition = slideEl.style.position
+        const prevHeight = slideEl.style.height
+        slideEl.style.position = 'static'
+        slideEl.style.height = 'auto'
+        max = Math.max(max, slideEl.offsetHeight)
+        slideEl.style.position = prevPosition
+        slideEl.style.height = prevHeight
       })
-    )
+      const natural = max + 40
+      const visual = Math.min(natural, window.innerHeight)
+      const scale = visual / natural
+      sectionEl.style.height = `${visual}px`
+      wrapperEl.style.height = `${natural}px`
+      wrapperEl.style.transform = scale < 1 ? `scale(${scale})` : ''
+      wrapperEl.style.transformOrigin = 'top center'
+    }
+    applySectionHeight()
+    ScrollTrigger.addEventListener('refreshInit', applySectionHeight)
+
+    // While a snap-scroll is in flight, the user's own continued wheel/touch
+    // input fights the programmatic scroll (the original handles this with
+    // `lenis.stop()`/`lenis.start()` around each snap). normalizeScroll()
+    // with no args returns the singleton created in SmoothScrollProvider —
+    // undefined on desktop, where Lenis is the active mechanism instead.
+    function pauseScrollInput() {
+      lenisRef.current?.stop()
+      ScrollTrigger.normalizeScroll()?.disable()
+    }
+    function resumeScrollInput() {
+      lenisRef.current?.start()
+      ScrollTrigger.normalizeScroll()?.enable()
+    }
+
+    function snapScrollTo(targetScroll: number) {
+      if (lenisRef.current) {
+        lenisRef.current.scrollTo(targetScroll, { duration: 0.5 })
+      } else {
+        // Mobile has no Lenis instance (SmoothScrollProvider uses
+        // ScrollTrigger.normalizeScroll there instead) — ScrollToPlugin
+        // works natively with that.
+        gsap.to(window, { duration: 0.5, scrollTo: targetScroll, ease: 'power1.inOut' })
+      }
+    }
+
+    const pinST = ScrollTrigger.create({
+      trigger: '.section-4',
+      scroller: document.body,
+      start: 'top top',
+      end: '+=150%',
+      pin: true,
+      pinSpacing: true,
+      onUpdate(self) {
+        if (s4IsAnimating || navClickGuard.current) return
+
+        const p = self.progress
+        let rawIdx = 0
+        if (p > 0.33 && p <= 0.66) rawIdx = 1
+        else if (p > 0.66) rawIdx = 2
+
+        if (rawIdx !== s4CurrentSlide && rawIdx >= 0) {
+          const nextIdx = rawIdx > s4CurrentSlide ? s4CurrentSlide + 1 : s4CurrentSlide - 1
+
+          if (nextIdx >= 0 && nextIdx < s4Slides.length && nextIdx !== s4CurrentSlide) {
+            s4IsAnimating = true
+            pauseScrollInput()
+
+            const targetProgress = nextIdx === 0 ? 0.15 : nextIdx === 1 ? 0.5 : 0.85
+            const targetScroll = self.start + (self.end - self.start) * targetProgress
+            snapScrollTo(targetScroll)
+
+            s4GoToSlide(nextIdx)
+            setTimeout(() => {
+              s4IsAnimating = false
+              resumeScrollInput()
+            }, 700)
+          }
+        }
+      },
+      onEnter() {
+        if (s4CurrentSlide === -1 && !navClickGuard.current) {
+          s4IsAnimating = true
+          s4GoToSlide(0)
+          setTimeout(() => {
+            s4IsAnimating = false
+          }, 700)
+        }
+      },
+      invalidateOnRefresh: true,
+    })
 
     return () => {
-      triggers.forEach((t) => t.kill())
+      pinST.kill()
+      ScrollTrigger.removeEventListener('refreshInit', applySectionHeight)
       idleTilt?.kill()
       s4CardEl?.removeEventListener('mouseenter', onCardEnter)
       s4CardEl?.removeEventListener('mouseleave', onCardLeave)

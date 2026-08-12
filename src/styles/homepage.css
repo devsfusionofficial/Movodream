@@ -1205,6 +1205,14 @@
 }
 
 .section-4 {
+  /* Fixed to viewport height so ScrollTrigger has something to pin — the
+     3 slides below are stacked exactly on top of each other via
+     position:absolute and swapped in place while pinned. Height is
+     recomputed/overridden by PlatformSlides.tsx once real content is
+     measured; overflow:hidden is a safety net so any residual rounding
+     never shows as a half-cut sliver of content. */
+  height: 100svh;
+  overflow: hidden;
   position: relative;
   width: 100%;
   padding: 60px 10%;
@@ -1212,12 +1220,11 @@
 .s4-slides-wrapper {
   position: relative;
   width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 140px;
+  height: 100%;
 }
 .s4-slide {
-  position: relative;
+  position: absolute;
+  inset: 0;
   display: grid;
   grid-template-columns: 1fr 1fr;
   align-items: center;
@@ -1694,32 +1701,41 @@
 }
 
 @media (max-width: 768px) {
+  nav.sticky {
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+  }
+  nav.sticky img {
+    height: 28px !important;
+    width: auto !important;
+  }
   .section-4 {
-    height: auto;
-    min-height: 0;
-    padding: 48px 24px !important;
+    height: 100svh;
+    min-height: 500px;
+    padding: 72px 16px 16px !important;
+    box-sizing: border-box;
   }
   .s4-slides-wrapper {
-    position: static;
-    height: auto;
-    overflow: visible;
-    display: flex;
-    flex-direction: column;
-    gap: 80px;
+    position: relative;
+    height: 100%;
   }
   .s4-slide {
-    position: relative;
-    inset: auto;
+    position: absolute;
+    inset: 0;
     grid-template-columns: 1fr;
-    gap: 28px;
+    align-content: flex-start;
+    justify-content: flex-start;
+    gap: 6px;
     opacity: 0;
-    pointer-events: auto;
+    pointer-events: none;
   }
   .s4-slide.is-active {
     opacity: 1;
     pointer-events: auto;
   }
-  .s4-slide .s4-left *,
+  .s4-slide .s4-left * {
+    pointer-events: none !important;
+  }
   .s4-slide.is-active .s4-left * {
     pointer-events: auto !important;
   }
@@ -1729,63 +1745,30 @@
   }
   .s4-right {
     align-items: center;
-    gap: 12px;
+    gap: 6px;
     text-align: center;
   }
   .s4-bullets {
     align-items: center;
+    gap: 3px;
+  }
+  .s4-bullets li span {
+    font-size: 12px;
+    line-height: 1.25;
   }
   .s4-tags {
-    display: grid;
-    /* minmax(0, 1fr), not 1fr — a bare 1fr track's minimum is its content's
-       min-content size, so long non-wrapping text (e.g. "AI-driven
-       insights") pushed the column wider than the viewport instead of
-       wrapping inside it. */
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    align-items: stretch;
-    justify-content: center;
-    gap: 10px;
-  }
-  /* Scoped to .s4-tags (the grid) so the standalone .s4-tag.green "Live"
-     pill elsewhere on the page — a single word, never wraps — keeps its own
-     sizing untouched. */
-  .s4-tags .s4-tag {
-    width: 100%;
-    justify-content: center;
-    /* left, not center: text-align:center centers each wrapped line
-       independently, so a short first line ("Smart") floated toward the
-       middle while a longer one ("AI-driven") sat close to the icon —
-       inconsistent icon-to-text gap from one tag to the next. Left-aligning
-       keeps every line's first character flush against the icon, with the
-       icon+text unit as a whole still centered in the pill via
-       justify-content above. */
-    text-align: left;
-    white-space: normal;
-    line-height: 1.25;
-    /* The bare text node next to the icon becomes an anonymous flex item;
-       its min-content width is the longest unbreakable word ("recommendations"),
-       which came out ~2px wider than the space left after the icon+padding —
-       just enough to visibly poke past the pill's right edge. Slightly
-       smaller text and tighter padding buys back that margin. */
-    font-size: 12px;
-    padding: 8px 12px;
-  }
-  .s4-tags .s4-tag:nth-child(3):last-child {
-    /* Exactly 3 tags (3rd child that's also the last): 2 up top, 1 centered
-       below, instead of stranded alone on the grid's left edge. */
-    grid-column: 1 / -1;
-    justify-self: center;
-    width: calc(50% - 5px);
+    display: none !important;
   }
   .s4-slide.three {
     display: flex;
     flex-direction: column;
+    gap: 2px;
   }
   .s4-eyebrow.s3 {
     border-radius: 999px;
   }
   .s4-eyebrow.s3 .s4-tag.green {
-    margin-top: 8px;
+    margin-top: 2px;
   }
   .s4-slide.three .s4-left {
     flex-basis: auto;
@@ -1793,13 +1776,36 @@
   }
   .s4-slide.three .s4-right {
     flex-basis: auto;
+    gap: 3px;
+  }
+  .s4-slide.three .s4-bullets {
+    gap: 2px;
+  }
+  .s4-slide.three .s4-bullets li span {
+    font-size: 11.5px;
+    line-height: 1.2;
   }
   .s4-slide.three .s4-card {
-    transform: scale(0.78);
-    transform-origin: center;
+    transform: scale(0.76);
+    transform-origin: center top;
+    margin-top: 24px;
+    margin-bottom: 0px;
+    filter: drop-shadow(0px 8px 24px rgba(215, 23, 137, 0.18));
   }
+  .s4-slide.three .s4-card .circle-images-container > img {
+    max-width: 52%;
+    height: auto;
+    filter: drop-shadow(0px 4px 12px rgba(0, 0, 0, 0.12));
+  }
+  .s4-slide.three .s4-card .circle-images-container > img:nth-child(1) { top: 6%; left: 34%; }
+  .s4-slide.three .s4-card .circle-images-container > img:nth-child(2) { top: 16%; left: 78%; }
+  .s4-slide.three .s4-card .circle-images-container > img:nth-child(3) { top: 48%; left: 84%; }
+  .s4-slide.three .s4-card .circle-images-container > img:nth-child(4) { top: 82%; left: 74%; }
+  .s4-slide.three .s4-card .circle-images-container > img:nth-child(5) { top: 92%; left: 38%; }
+  .s4-slide.three .s4-card .circle-images-container > img:nth-child(6) { top: 56%; left: 14%; }
+  .s4-slide.three .s4-card .circle-images-container > img:nth-child(7) { top: 22%; left: 12%; width: 40px; }
   .s4-card {
-    width: min(82vw, 360px);
+    width: min(68vw, 245px);
     margin-inline: auto;
   }
   /* Root cause of the "badges floating with no visible card" look: this is
@@ -1818,6 +1824,21 @@
   .photo-card {
     width: 100%;
     max-width: none;
+  }
+  .action-buttons {
+    right: 8px;
+    top: 8px;
+    gap: 4px;
+  }
+  .action-btn {
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+  }
+  .action-btn img,
+  .action-btn svg {
+    width: 14px !important;
+    height: 14px !important;
   }
   /* These decorative badges (PLAN/BOOK/vibe-card on slide 1, VISITED/Summer
      Locations on slide 2) all carry their full desktop px sizing — fonts,
@@ -1928,7 +1949,7 @@
   }
   .s4-heading,
   .s4-heading-sm {
-    font-size: 28px !important;
+    font-size: 24px !important;
   }
   .s4-bullets li span {
     display: inline;
@@ -1940,7 +1961,7 @@
     font-size: 14px;
   }
   .s4-right {
-    gap: 8px;
+    gap: 6px;
   }
 }
 
