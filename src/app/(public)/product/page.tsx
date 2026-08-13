@@ -77,24 +77,32 @@ export default async function ProductPage() {
           </p>
           <ProductHeroCta />
 
-          {partners.length > 0 && (
-            <div className="product-trustedby">
-              <p>Trusted by travelers across India</p>
-              <div className="product-trustedby-logos">
-                {partners.slice(0, 5).map((partner) =>
-                  partner.logo?.url ? (
-                    <span key={partner._id} className="product-trustedby-logo">
-                      <Image src={partner.logo.url} alt={partner.name} fill sizes="110px" />
-                    </span>
-                  ) : null
-                )}
-              </div>
+          <div className="product-trustedby">
+            <p>TRUSTED BY TRAVELERS & LEADING PARTNERS</p>
+            <div className="product-trustedby-text-strip">
+              <span className="trustedby-brand">Aviationstack</span>
+              <span className="trustedby-dot">•</span>
+              <span className="trustedby-brand">CleverTap</span>
+              <span className="trustedby-dot">•</span>
+              <span className="trustedby-brand">EMBARK</span>
+              <span className="trustedby-dot">•</span>
+              <span className="trustedby-brand">EQUENCE</span>
+              <span className="trustedby-dot">•</span>
+              <span className="trustedby-brand">Gozo Cabs</span>
             </div>
-          )}
+          </div>
         </div>
 
         <div className="product-hero-visual">
-          <Image src="/assets/product/hero-window.webp" alt="" fill sizes="(max-width: 900px) 100vw, 560px" priority />
+          <Image
+            src="/assets/product/hero-window.webp"
+            alt="iZhinga AI Travel Companion"
+            fill
+            sizes="(max-width: 900px) 100vw, 1400px"
+            quality={100}
+            unoptimized
+            priority
+          />
         </div>
       </section>
 
@@ -226,7 +234,14 @@ export default async function ProductPage() {
           </div>
         </div>
         <div className="product-vision-visual">
-          <Image src="/assets/product/immersive-experience.webp" alt="" fill sizes="(max-width: 900px) 100vw, 520px" />
+          <Image
+            src="/assets/product/immersive-experience.webp"
+            alt="The Future of Travel"
+            fill
+            sizes="(max-width: 900px) 100vw, 1200px"
+            quality={100}
+            unoptimized
+          />
         </div>
       </section>
 

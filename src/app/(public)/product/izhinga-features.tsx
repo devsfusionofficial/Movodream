@@ -128,9 +128,11 @@ export function IzhingaFeatures() {
           <div className="izhinga-row-media">
             <Image
               src={`/assets/product/${feature.slug}.webp`}
-              alt=""
+              alt={feature.title}
               fill
-              sizes="(max-width: 900px) 100vw, 520px"
+              sizes="(max-width: 900px) 100vw, 1400px"
+              quality={100}
+              unoptimized
             />
           </div>
           <div className="izhinga-row-body">
