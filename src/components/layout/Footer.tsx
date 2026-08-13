@@ -64,6 +64,20 @@ export function Footer() {
             <Link href="/terms">Terms of Use</Link>
             <Link href="/cancellation-policy">Cancellation Policy</Link>
             <Link href="/support">Support</Link>
+            <div className="social-icons social-icons-mobile">
+              {SOCIAL_LINKS.map((social) => (
+                <a
+                  key={social.href}
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="social-icon"
+                  aria-label={social.label}
+                >
+                  <i className={`fa-brands ${social.icon}`} />
+                </a>
+              ))}
+            </div>
           </div>
 
           <div className="footer-col footer-newsletter-col">

@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useRef, useEffect } from 'react'
 import Image from 'next/image'
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
@@ -73,6 +74,34 @@ const TRUST = [
  * scroll-jacking (the original pinned emoji ring caused real layout bugs).
  */
 export function AdvantageGrid() {
+  const [activeAdvIndex, setActiveAdvIndex] = useState(0)
+  const gridRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const el = gridRef.current
+    if (!el) return
+
+    const handleScroll = () => {
+      const card = el.firstElementChild as HTMLElement
+      if (!card) return
+      const cardWidth = card.getBoundingClientRect().width + 14
+      const index = Math.round(el.scrollLeft / cardWidth)
+      setActiveAdvIndex(Math.min(Math.max(index, 0), POINTS.length - 1))
+    }
+
+    el.addEventListener('scroll', handleScroll, { passive: true })
+    return () => el.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  const scrollToCard = (index: number) => {
+    const el = gridRef.current
+    if (!el) return
+    const card = el.children[index] as HTMLElement
+    if (card) {
+      card.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
+    }
+  }
+
   useGSAP(() => {
     gsap.registerPlugin(ScrollTrigger)
 
@@ -113,7 +142,7 @@ export function AdvantageGrid() {
         </div>
       </div>
 
-      <div className="advantage-grid">
+      <div className="advantage-grid" ref={gridRef}>
         {POINTS.map((point) => (
           <div key={point.title} className="advantage-card">
             <div className="advantage-card-body">
@@ -131,6 +160,23 @@ export function AdvantageGrid() {
             )}
           </div>
         ))}
+      </div>
+
+      <div className="advantage-slider-lines" aria-hidden="true">
+        {POINTS.map((_, i) => (
+          <button
+            key={i}
+            type="button"
+            className={`advantage-line ${i === activeAdvIndex ? 'active' : ''}`}
+            onClick={() => scrollToCard(i)}
+            aria-label={`Go to slide ${i + 1}`}
+          />
+        ))}
+      </div>
+
+      <div className="advantage-mobile-hint" aria-hidden="true">
+        <span>Swipe to explore advantages</span>
+        <i className="fa-solid fa-arrow-right-long" />
       </div>
 
       <div className="advantage-trust">

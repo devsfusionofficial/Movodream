@@ -107,14 +107,18 @@ export function Header() {
       { y: 20, opacity: 0 },
       { y: 0, opacity: 1, duration: 0.4, stagger: 0.1, delay: 0.4, ease: 'power2.out' }
     )
-    gsap.to(hamburger, {
-      position: 'fixed',
-      right: 16,
-      top: 20,
-      duration: 0.4,
-      ease: 'power2.out',
-      onComplete: () => hamburger.classList.add('cross'),
-    })
+    hamburger.classList.add('cross')
+    gsap.fromTo(navMenu, { opacity: 0 }, { opacity: 1, duration: 0.4, ease: 'power2.out' })
+    gsap.fromTo(
+      navMenu.querySelectorAll('li'),
+      { y: -10, opacity: 0 },
+      { y: 0, opacity: 1, duration: 0.3, stagger: 0.1, delay: 0.2, ease: 'power2.out' }
+    )
+    gsap.fromTo(
+      document.querySelectorAll('.nav-right-mobile button'),
+      { y: 20, opacity: 0 },
+      { y: 0, opacity: 1, duration: 0.4, stagger: 0.1, delay: 0.4, ease: 'power2.out' }
+    )
   }
 
   function closeMobileMenu() {
@@ -130,7 +134,7 @@ export function Header() {
       onComplete: () => {
         setMobileOpen(false)
         gsap.set(navMenu, { opacity: 1 })
-        gsap.set(hamburger, { position: 'relative', left: 'auto', top: 'auto', x: 0, y: 0 })
+        gsap.set(hamburger, { clearProps: 'all' })
       },
     })
     gsap.to(navMenu.querySelectorAll('li'), {
@@ -196,13 +200,19 @@ export function Header() {
         <button
           ref={hamburgerRef}
           type="button"
-          className="hamburger"
-          aria-label="Toggle menu"
+          className={`hamburger ${mobileOpen ? 'cross' : ''}`}
+          aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
           onClick={() => (mobileOpen ? closeMobileMenu() : openMobileMenu())}
         >
-          <span />
-          <span />
-          <span />
+          {mobileOpen ? (
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#241a3e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M18 6L6 18M6 6l12 12" />
+            </svg>
+          ) : (
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#241a3e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          )}
         </button>
       </div>
     </nav>
