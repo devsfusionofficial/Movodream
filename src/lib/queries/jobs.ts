@@ -11,14 +11,62 @@ function serialize<T>(doc: T): T {
   return JSON.parse(JSON.stringify(doc))
 }
 
+function escapeRegex(text: string) {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
 export async function getPublishedJobs({ department, location }: { department?: string; location?: string } = {}) {
   await connectDB()
   const query: Record<string, unknown> = { status: 'published' }
-  if (department) query.department = department
-  if (location) query.location = location
+  if (department && department.trim()) {
+    query.department = { $regex: new RegExp(`^${escapeRegex(department.trim())}$`, 'i') }
+  }
+  if (location && location.trim()) {
+    query.location = { $regex: new RegExp(`^${escapeRegex(location.trim())}$`, 'i') }
+  }
 
   const jobs = await Job.find(query).sort({ createdAt: -1 }).lean()
   return serialize(jobs)
+}
+
+export async function getPublishedJobsPaginated({
+  department,
+  location,
+  page = 1,
+  limit = 6,
+}: {
+  department?: string
+  location?: string
+  page?: number
+  limit?: number
+} = {}) {
+  await connectDB()
+  const query: Record<string, unknown> = { status: 'published' }
+  if (department && department.trim()) {
+    query.department = { $regex: new RegExp(`^${escapeRegex(department.trim())}$`, 'i') }
+  }
+  if (location && location.trim()) {
+    query.location = { $regex: new RegExp(`^${escapeRegex(location.trim())}$`, 'i') }
+  }
+
+  const safePage = Math.max(1, page)
+  const safeLimit = Math.max(1, limit)
+  const skip = (safePage - 1) * safeLimit
+
+  const [totalJobs, jobs] = await Promise.all([
+    Job.countDocuments(query),
+    Job.find(query).sort({ createdAt: -1 }).skip(skip).limit(safeLimit).lean(),
+  ])
+
+  const totalPages = Math.ceil(totalJobs / safeLimit)
+
+  return {
+    jobs: serialize(jobs),
+    totalJobs,
+    page: safePage,
+    totalPages: totalPages || 1,
+    limit: safeLimit,
+  }
 }
 
 export async function getJobFilterOptions() {

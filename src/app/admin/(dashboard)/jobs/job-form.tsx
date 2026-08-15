@@ -34,14 +34,19 @@ export function JobForm({ jobId, defaultValues }: JobFormProps) {
   })
 
   async function onSubmit(values: JobInput) {
-    const result = jobId ? await updateJob(jobId, values) : await createJob(values)
-    if (!result.success) {
-      toast.error(result.error)
-      return
+    try {
+      const cleanInput: JobInput = JSON.parse(JSON.stringify(values))
+      const result = jobId ? await updateJob(jobId, cleanInput) : await createJob(cleanInput)
+      if (!result.success) {
+        toast.error(result.error)
+        return
+      }
+      toast.success(jobId ? 'Job updated' : 'Job created')
+      router.push('/admin/jobs')
+      router.refresh()
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to save job')
     }
-    toast.success(jobId ? 'Job updated' : 'Job created')
-    router.push('/admin/jobs')
-    router.refresh()
   }
 
   const skills = watch('skills') ?? []

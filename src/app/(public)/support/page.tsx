@@ -1,10 +1,12 @@
 import type { Metadata } from 'next'
+import Image from 'next/image'
 import Link from 'next/link'
 import { DocBreadcrumb } from '@/components/legal/DocShell'
 import { LockIcon, MailIcon, RefundIcon, RouteIcon, TicketIcon, UserIcon } from '@/components/legal/icons'
 import { ContactSupportButton } from './help-actions'
 import { HelpSearchAndFaq, type Faq } from './popular-topics'
 
+// Movodream Help Center & Support Page
 export const metadata: Metadata = {
   title: 'Help Center | Movodream',
   description:
@@ -120,34 +122,25 @@ const FAQS: Faq[] = [
   },
 ]
 
-/** Waving-assistant motif, matched to the reference's mascot slot. */
+/** Support mascot supplied by the client. */
 function HelpArt() {
   return (
-    <div className="help-art" aria-hidden="true">
-      <svg viewBox="0 0 240 200">
-        <defs>
-          <linearGradient id="help-brand" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#e05bc4" />
-            <stop offset="55%" stopColor="#c02fa0" />
-            <stop offset="100%" stopColor="#7b2fb5" />
-          </linearGradient>
-        </defs>
-        <circle cx="120" cy="104" r="76" fill="#fbf3fa" />
-        <rect x="150" y="34" width="66" height="42" rx="14" fill="#f3e6fb" />
-        <g fill="#c9a8e6">
-          <circle cx="170" cy="55" r="4.5" />
-          <circle cx="183" cy="55" r="4.5" />
-          <circle cx="196" cy="55" r="4.5" />
-        </g>
-        <rect x="74" y="62" width="92" height="76" rx="24" fill="url(#help-brand)" />
-        <rect x="88" y="82" width="64" height="34" rx="17" fill="#241a3e" />
-        <circle cx="108" cy="99" r="7" fill="#fff" />
-        <circle cx="132" cy="99" r="7" fill="#fff" />
-        <rect x="112" y="44" width="16" height="20" rx="8" fill="#c9a8e6" />
-        <circle cx="120" cy="40" r="9" fill="url(#help-brand)" />
-        <rect x="52" y="92" width="20" height="46" rx="10" fill="url(#help-brand)" />
-        <rect x="168" y="72" width="20" height="46" rx="10" fill="url(#help-brand)" transform="rotate(24 178 95)" />
-      </svg>
+    <div className="mascot-glass-card">
+      <div className="mascot-glow-backdrop" />
+      <div className="mascot-img-wrapper">
+        <Image
+          src="/assets/support/help-mascot.webp"
+          alt="Movodream Support Avatar"
+          width={220}
+          height={240}
+          priority
+          className="mascot-img"
+        />
+      </div>
+      <div className="mascot-status-tag">
+        <span className="pulse-dot" />
+        <span>24/7 AI Assistant Active</span>
+      </div>
     </div>
   )
 }
@@ -160,13 +153,17 @@ export default function SupportPage() {
           <DocBreadcrumb trail={[{ label: 'Support' }, { label: 'Help Center' }]} />
         </div>
 
-        <div className="help-head">
-          <div>
-            <h1>
-              How can we <span className="doc-accent">help you?</span>
+        <div className="support-hero-banner">
+          <div className="support-hero-left">
+            <div className="support-pill-badge">
+              <span className="badge-star">✨</span>
+              <span>Movodream Help Center</span>
+            </div>
+            <h1 className="support-hero-title">
+              How can we <span className="doc-accent">help you today?</span>
             </h1>
-            <p className="help-head-lead">
-              Find quick answers to common questions about bookings, changes, refunds and cancellations — or get in
+            <p className="support-hero-subtitle">
+              Find quick answers to common questions about bookings, trip changes, refunds and cancellations — or get in
               touch with our support team.
             </p>
           </div>
@@ -186,44 +183,46 @@ export default function SupportPage() {
           ))}
         </div>
 
-        <div className="help-columns" style={{ marginTop: 8 }}>
-          <div>
-            <HelpSearchAndFaq faqs={FAQS} />
+        <div className="support-faq-fullwidth">
+          <HelpSearchAndFaq faqs={FAQS} />
+        </div>
+
+        <div className="support-contact-banner" id="still-need-help">
+          <div className="contact-banner-header">
+            <h2>Still need help?</h2>
+            <p>Our support team is ready to assist you anytime.</p>
           </div>
 
-          <div className="help-contact" id="still-need-help">
-            <h2>Still need help?</h2>
-            <p>Our support team is ready to assist you.</p>
-
-            <div className="doc-actions" style={{ marginBottom: 6 }}>
+          <div className="contact-banner-grid">
+            <div className="contact-banner-card primary">
               <ContactSupportButton />
             </div>
 
-            <a className="help-contact-row" href="mailto:support@movodream.com">
+            <a className="contact-banner-card-link" href="mailto:support@movodream.com">
               <span className="help-contact-icon">
                 <MailIcon />
               </span>
-              <span>
+              <span className="contact-card-text">
                 Email Us
                 <strong>support@movodream.com</strong>
               </span>
             </a>
 
-            <Link className="help-contact-row" href="/cancellation-policy">
+            <Link className="contact-banner-card-link" href="/cancellation-policy">
               <span className="help-contact-icon">
                 <RefundIcon />
               </span>
-              <span>
+              <span className="contact-card-text">
                 Read the policy
                 <strong>Cancellation &amp; Refunds</strong>
               </span>
             </Link>
 
-            <Link className="help-contact-row" href="/privacy-policy">
+            <Link className="contact-banner-card-link" href="/privacy-policy">
               <span className="help-contact-icon">
                 <LockIcon />
               </span>
-              <span>
+              <span className="contact-card-text">
                 Read the policy
                 <strong>Privacy &amp; Your Data</strong>
               </span>

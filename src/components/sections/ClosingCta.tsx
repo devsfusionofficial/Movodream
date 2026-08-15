@@ -26,32 +26,48 @@ export function ClosingCta() {
     const readyActions = document.querySelector<HTMLElement>('.ready-actions')
     if (!readySubtext) return
 
-    const readyTl = gsap.timeline({
-      scrollTrigger: {
-        trigger: '.ready-section',
-        scroller: document.body,
-        start: 'top 70%',
-        once: true,
-        invalidateOnRefresh: true,
-      },
+    let cancelled = false
+    let splitSub: SplitText | null = null
+
+    // See ClarityIntel.tsx's fonts.ready comment — same fix, same reason:
+    // splitting text before the real webfont has loaded measures word
+    // widths against the fallback font, and nothing here recomputes once
+    // it swaps in.
+    document.fonts.ready.then(() => {
+      if (cancelled) return
+
+      const readyTl = gsap.timeline({
+        scrollTrigger: {
+          trigger: '.ready-section',
+          scroller: document.body,
+          start: 'top 70%',
+          once: true,
+          invalidateOnRefresh: true,
+        },
+      })
+
+      splitSub = SplitText.create(readySubtext, { type: 'words' })
+      gsap.set(readySubtext, { autoAlpha: 1 })
+
+      readyTl.fromTo(
+        splitSub.words,
+        { opacity: 0, y: 22 },
+        { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out', stagger: { each: 0.025, from: 'start' } }
+      )
+
+      if (readyActions) {
+        readyTl.fromTo(
+          readyActions,
+          { opacity: 0, y: 16 },
+          { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' },
+          '-=0.3'
+        )
+      }
     })
 
-    const splitSub = SplitText.create(readySubtext, { type: 'words' })
-    gsap.set(readySubtext, { autoAlpha: 1 })
-
-    readyTl.fromTo(
-      splitSub.words,
-      { opacity: 0, y: 22 },
-      { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out', stagger: { each: 0.025, from: 'start' } }
-    )
-
-    if (readyActions) {
-      readyTl.fromTo(
-        readyActions,
-        { opacity: 0, y: 16 },
-        { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' },
-        '-=0.3'
-      )
+    return () => {
+      cancelled = true
+      splitSub?.revert()
     }
   }, [])
 

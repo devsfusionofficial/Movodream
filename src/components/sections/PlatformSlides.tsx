@@ -202,22 +202,17 @@ export function PlatformSlides() {
     // with no args returns the singleton created in SmoothScrollProvider —
     // undefined on desktop, where Lenis is the active mechanism instead.
     function pauseScrollInput() {
-      lenisRef.current?.stop()
-      ScrollTrigger.normalizeScroll()?.disable()
+      // Non-blocking scroll transition to prevent page stalling
     }
     function resumeScrollInput() {
-      lenisRef.current?.start()
-      ScrollTrigger.normalizeScroll()?.enable()
+      // Non-blocking scroll transition to prevent page stalling
     }
 
     function snapScrollTo(targetScroll: number) {
       if (lenisRef.current) {
-        lenisRef.current.scrollTo(targetScroll, { duration: 0.5 })
+        lenisRef.current.scrollTo(targetScroll, { duration: 0.4 })
       } else {
-        // Mobile has no Lenis instance (SmoothScrollProvider uses
-        // ScrollTrigger.normalizeScroll there instead) — ScrollToPlugin
-        // works natively with that.
-        gsap.to(window, { duration: 0.5, scrollTo: targetScroll, ease: 'power1.inOut' })
+        gsap.to(window, { duration: 0.4, scrollTo: targetScroll, ease: 'power1.out' })
       }
     }
 

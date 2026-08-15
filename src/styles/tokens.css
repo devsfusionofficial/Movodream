@@ -34,6 +34,12 @@
   /* Type */
   --md-font-sans: 'Manrope', sans-serif;
 
+  /* Unified Fluid Typography Scale */
+  --md-h1-size: clamp(2.2rem, 4.2vw, 3.2rem);
+  --md-h2-size: clamp(1.5rem, 2.8vw, 2.2rem);
+  --md-h3-size: clamp(1.15rem, 2vw, 1.45rem);
+  --md-body-size: clamp(0.92rem, 1.4vw, 1.05rem);
+
   /* Breakpoints (reference only — CSS can't consume these as media query
      values directly; Tailwind config mirrors them for utility classes) */
   --md-bp-xs: 450px;

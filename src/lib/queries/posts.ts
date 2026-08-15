@@ -39,6 +39,11 @@ export async function getLatestPosts({ skip = 0, limit = 9 }: { skip?: number; l
   return serialize(posts)
 }
 
+export async function getPublishedPostsCount() {
+  await connectDB()
+  return await Post.countDocuments(PUBLISHED)
+}
+
 export async function getPostsByCategorySlug(categorySlug: string) {
   await connectDB()
   const category = await Category.findOne({ slug: categorySlug }).lean()
@@ -94,4 +99,18 @@ export async function getAllCategories() {
   await connectDB()
   const categories = await Category.find().sort({ name: 1 }).lean()
   return serialize(categories)
+}
+
+export async function getCategoriesWithCounts() {
+  await connectDB()
+  const categories = await Category.find().lean()
+  const counts = await Promise.all(
+    categories.map((cat) => Post.countDocuments({ ...PUBLISHED, categories: cat._id }))
+  )
+  const list = categories.map((cat, i) => ({
+    ...cat,
+    count: counts[i],
+  }))
+  list.sort((a, b) => b.count - a.count || a.name.localeCompare(b.name))
+  return serialize(list)
 }

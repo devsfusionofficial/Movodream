@@ -20,50 +20,73 @@ export function Hero() {
     const headline = document.querySelector<HTMLElement>('.hero-left h1')
     if (!headline) return
 
-    const splitAll = SplitText.create(headline, { type: 'lines,chars', linesClass: 'split-hero-line' })
-    gsap.set('.split-hero-line', { overflow: 'hidden' })
-    gsap.set(headline, { opacity: 1 })
-    gsap.set(splitAll.chars, { opacity: 0, xPercent: 45 })
+    let splitAll: SplitText | null = null
+    let splitDesc: SplitText | null = null
+    let cancelled = false
 
-    const master = gsap.timeline({ delay: 0.05 })
-    const CHAR_STAGGER = 0.038
-    const LINE_GAP = 0.1
-    let timeOffset = 0
+    // The headline starts at opacity:0 (inline style in the JSX below) and
+    // only becomes visible once this runs — if SplitText splits into
+    // lines/chars before the real webfont has loaded, it measures against
+    // the fallback font's metrics. The browser then reflows once the real
+    // font swaps in, but the split (and the char positions/timeline built
+    // from it) doesn't recompute — on a slow/cold-cache load this is common
+    // enough to be the likely cause of the hero occasionally staying blank
+    // after a hard refresh. Waiting for fonts.ready first means the split
+    // is always measured against final layout.
+    document.fonts.ready.then(() => {
+      if (cancelled) return
 
-    splitAll.lines.forEach((line) => {
-      const chars = splitAll.chars.filter((char) => line.contains(char))
-      chars.forEach((char, i) => {
-        master.fromTo(
-          char,
-          { opacity: 0, xPercent: 45 },
-          { opacity: 1, xPercent: 0, duration: 0.38, ease: 'power2.out' },
-          timeOffset + i * CHAR_STAGGER
-        )
+      splitAll = SplitText.create(headline, { type: 'lines,chars', linesClass: 'split-hero-line' })
+      gsap.set('.split-hero-line', { overflow: 'hidden' })
+      gsap.set(headline, { opacity: 1 })
+      gsap.set(splitAll.chars, { opacity: 0, xPercent: 45 })
+
+      const master = gsap.timeline({ delay: 0.05 })
+      const CHAR_STAGGER = 0.038
+      const LINE_GAP = 0.1
+      let timeOffset = 0
+
+      splitAll.lines.forEach((line) => {
+        const chars = splitAll!.chars.filter((char) => line.contains(char))
+        chars.forEach((char, i) => {
+          master.fromTo(
+            char,
+            { opacity: 0, xPercent: 45 },
+            { opacity: 1, xPercent: 0, duration: 0.38, ease: 'power2.out' },
+            timeOffset + i * CHAR_STAGGER
+          )
+        })
+        timeOffset += chars.length * CHAR_STAGGER + LINE_GAP
       })
-      timeOffset += chars.length * CHAR_STAGGER + LINE_GAP
+
+      const desc = document.querySelector<HTMLElement>('.hero-left .desc')
+      const ctas = document.querySelectorAll<HTMLElement>('.hero-ctas > div')
+
+      gsap.set([...ctas], { opacity: 0 })
+
+      if (desc) {
+        splitDesc = SplitText.create(desc, { type: 'words' })
+        gsap.set(splitDesc.words, { opacity: 0, y: 14 })
+        master.to(
+          splitDesc.words,
+          { opacity: 1, y: 0, duration: 0.45, ease: 'power2.out', stagger: { each: 0.03, from: 'start' } },
+          timeOffset - 0.05
+        )
+      }
+
+      master.fromTo(
+        [...ctas],
+        { opacity: 0, y: 28, scale: 0.94 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.65, ease: 'back.out(1.4)', stagger: 0.1 },
+        timeOffset + 0.18
+      )
     })
 
-    const desc = document.querySelector<HTMLElement>('.hero-left .desc')
-    const ctas = document.querySelectorAll<HTMLElement>('.hero-ctas > div')
-
-    gsap.set([...ctas], { opacity: 0 })
-
-    if (desc) {
-      const splitDesc = SplitText.create(desc, { type: 'words' })
-      gsap.set(splitDesc.words, { opacity: 0, y: 14 })
-      master.to(
-        splitDesc.words,
-        { opacity: 1, y: 0, duration: 0.45, ease: 'power2.out', stagger: { each: 0.03, from: 'start' } },
-        timeOffset - 0.05
-      )
+    return () => {
+      cancelled = true
+      splitAll?.revert()
+      splitDesc?.revert()
     }
-
-    master.fromTo(
-      [...ctas],
-      { opacity: 0, y: 28, scale: 0.94 },
-      { opacity: 1, y: 0, scale: 1, duration: 0.65, ease: 'back.out(1.4)', stagger: 0.1 },
-      timeOffset + 0.18
-    )
   }, [])
 
   return (

@@ -44,7 +44,8 @@ function applyJobInput(doc: HydratedDocument<JobDoc>, input: JobInput) {
   doc.status = input.status
 }
 
-export async function createJob(input: JobInput): Promise<ActionResult> {
+export async function createJob(rawInput: JobInput): Promise<ActionResult> {
+  const input: JobInput = JSON.parse(JSON.stringify(rawInput))
   await requirePermission('jobs', input.status === 'published' ? ['create', 'publish'] : ['create'])
   const parsed = jobSchema.safeParse(input)
   if (!parsed.success) return { success: false, error: parsed.error.issues[0]?.message ?? 'Invalid input' }
@@ -63,7 +64,8 @@ export async function createJob(input: JobInput): Promise<ActionResult> {
   return { success: true }
 }
 
-export async function updateJob(id: string, input: JobInput): Promise<ActionResult> {
+export async function updateJob(id: string, rawInput: JobInput): Promise<ActionResult> {
+  const input: JobInput = JSON.parse(JSON.stringify(rawInput))
   await requirePermission('jobs', input.status === 'published' ? ['update', 'publish'] : ['update'])
   const parsed = jobSchema.safeParse(input)
   if (!parsed.success) return { success: false, error: parsed.error.issues[0]?.message ?? 'Invalid input' }

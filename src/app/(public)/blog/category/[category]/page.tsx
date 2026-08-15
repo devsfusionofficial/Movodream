@@ -1,9 +1,10 @@
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import Image from 'next/image'
 import { getPostsByCategorySlug, getAllCategories } from '@/lib/queries/posts'
-import { PostCard } from '../../post-card'
-import { BlogToolbar } from '../../blog-toolbar'
+
+import { BlogCategoryFilter } from '../../category-filter'
 
 type PageProps = { params: Promise<{ category: string }> }
 
@@ -14,7 +15,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   return {
     title: `${category.name} | Movodream Blog`,
-    description: `Movodream blog posts about ${category.name}.`,
+    description: `Deep dives, insights, and stories on ${category.name} from the Movodream team.`,
     alternates: { canonical: `/blog/category/${category.slug}` },
   }
 }
@@ -28,30 +29,116 @@ export default async function BlogCategoryPage({ params }: PageProps) {
   if (!category) notFound()
 
   return (
-    <div className="page-shell">
-      <section className="page-crumb">
-        <Link href="/">Home</Link> › <Link href="/blog">Blog</Link> › <span>{category.name}</span>
+    <div className="page-shell blog-page-container">
+      {/* ---------- Hero Section ---------- */}
+      <section className="blog-hero-section">
+        <div className="blog-hero-content">
+          <span className="blog-eyebrow">MOVODREAM JOURNAL</span>
+          <h1>
+            Exploring <span className="gradient-text">{category.name}</span>
+          </h1>
+          <p className="blog-hero-lead">
+            Deep dives, insights, and stories on {category.name} shaping the future of intelligent travel.
+          </p>
+
+          <div className="crumb-pill-wrap">
+            <Link href="/blog" className="crumb-back-link">
+              ← Back to All Articles
+            </Link>
+          </div>
+        </div>
+
+        <div className="blog-hero-visual">
+          <div className="mascot-glow-backdrop" />
+          <div className="mascot-image-wrap">
+            <Image
+              src="/assets/images/blog_hero_mascot.jpg"
+              alt="Movodream AI Travel Companion"
+              fill
+              sizes="(max-width: 768px) 100vw, 500px"
+              priority
+              className="mascot-img"
+            />
+          </div>
+          <div className="floating-badge badge-1">🧠</div>
+          <div className="floating-badge badge-2">✈️</div>
+          <div className="floating-badge badge-3">📅</div>
+        </div>
       </section>
 
-      <section className="page-head">
-        <span className="page-eyebrow">Category</span>
-        <h1>
-          <span className="p">{category.name}</span>
-        </h1>
-        <p className="page-head-lead">
-          {posts.length} post{posts.length === 1 ? '' : 's'} in this category.
-        </p>
-      </section>
+      {/* ---------- Category Filter Bar ---------- */}
+      <BlogCategoryFilter categories={categories} activeCategory={category.slug} />
 
-      <main className="page-main">
-        <BlogToolbar categories={categories} activeCategory={category.slug} />
-
+      <main className="page-main blog-main-content">
         {posts.length === 0 ? (
-          <div className="page-empty">No posts in this category yet.</div>
+          <div className="blog-empty-card">
+            <div className="blog-empty-icon-wrap">✨</div>
+            <h3>Fresh stories brewing in {category.name}</h3>
+            <p>
+              Our editorial team is crafting new insights and deep-dives for this category. Explore our published articles or check back soon!
+            </p>
+            <Link href="/blog" className="blog-empty-cta">
+              ← Explore All Articles
+            </Link>
+          </div>
         ) : (
-          <div className="post-grid">
+          <div className="featured-grid">
             {posts.map((post) => (
-              <PostCard key={post._id} post={post} />
+              <Link key={post._id} href={`/blog/${post.slug}`} className="featured-card">
+                <div className="featured-card-media">
+                  {post.heroImage?.url ? (
+                    <Image
+                      src={post.heroImage.url}
+                      alt={post.title}
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 380px"
+                    />
+                  ) : (
+                    <div className="media-placeholder" />
+                  )}
+                </div>
+                <div className="featured-card-body">
+                  {post.categories?.[0] && (
+                    <span className="category-badge">{post.categories[0].name}</span>
+                  )}
+                  <h3>{post.title}</h3>
+                  {post.excerpt && <p>{post.excerpt}</p>}
+                  <div className="featured-card-footer">
+                    <div className="card-meta-wrap">
+                      {post.author?.name && (
+                        <div className="author-pill">
+                          {post.author.avatar ? (
+                            <Image
+                              src={post.author.avatar}
+                              alt={post.author.name}
+                              width={18}
+                              height={18}
+                              className="author-avatar-img"
+                            />
+                          ) : (
+                            <span className="author-initial">{post.author.name.charAt(0).toUpperCase()}</span>
+                          )}
+                          <span className="author-name">By {post.author.name}</span>
+                        </div>
+                      )}
+                      <span className="meta-text">
+                        {(post.publishedAt || post.createdAt) && (
+                          <>
+                            {new Date(post.publishedAt || post.createdAt).toLocaleDateString('en-US', {
+                              day: 'numeric',
+                              month: 'short',
+                              year: 'numeric',
+                            })}{' '}
+                            •{' '}
+                          </>
+                        )}
+                        {post.readingTime ?? 5} min read
+                      </span>
+                    </div>
+                    <span className="card-arrow-btn">→</span>
+                  </div>
+                </div>
+              </Link>
             ))}
           </div>
         )}

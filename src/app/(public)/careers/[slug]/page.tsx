@@ -63,63 +63,127 @@ export default async function JobDetailPage({ params }: PageProps) {
       <section className="page-head">
         <span className="page-eyebrow">Open role</span>
         <h1>{job.title}</h1>
-        <div className="job-tile-meta" style={{ marginTop: 18 }}>
-          {job.department && <span>{job.department}</span>}
-          {job.location && <span>{job.location}</span>}
-          {job.employmentType && <span>{job.employmentType}</span>}
-          {job.experience && <span>{job.experience}</span>}
-        </div>
-        {job.skills && job.skills.length > 0 && (
-          <div className="page-pills" style={{ marginTop: 12 }}>
-            {job.skills.map((skill: string) => (
-              <span key={skill} className="page-pill">
-                {skill}
-              </span>
-            ))}
-          </div>
-        )}
       </section>
 
-      <main className="page-main page-article">
-        <div className="page-prose">
-          {job.descriptionHtml && <div dangerouslySetInnerHTML={{ __html: job.descriptionHtml }} />}
+      <main className="page-main job-detail-main">
+        <div className="job-detail-grid">
+          {/* Left Column: Specifications & Content */}
+          <div className="job-detail-left">
+            <div className="job-overview-card">
+              <h3>📌 Role Specifications</h3>
+              <div className="job-spec-list">
+                {job.department && (
+                  <div className="spec-item">
+                    <span className="spec-icon">🏢</span>
+                    <div>
+                      <span className="spec-label">Department</span>
+                      <span className="spec-val">{job.department}</span>
+                    </div>
+                  </div>
+                )}
+                {job.location && (
+                  <div className="spec-item">
+                    <span className="spec-icon">📍</span>
+                    <div>
+                      <span className="spec-label">Location</span>
+                      <span className="spec-val">{job.location}</span>
+                    </div>
+                  </div>
+                )}
+                {job.employmentType && (
+                  <div className="spec-item">
+                    <span className="spec-icon">💼</span>
+                    <div>
+                      <span className="spec-label">Employment Type</span>
+                      <span className="spec-val">{job.employmentType}</span>
+                    </div>
+                  </div>
+                )}
+                {job.experience && (
+                  <div className="spec-item">
+                    <span className="spec-icon">⚡</span>
+                    <div>
+                      <span className="spec-label">Required Experience</span>
+                      <span className="spec-val">{job.experience}</span>
+                    </div>
+                  </div>
+                )}
+                {job.qualification && (
+                  <div className="spec-item">
+                    <span className="spec-icon">🎓</span>
+                    <div>
+                      <span className="spec-label">Qualification</span>
+                      <span className="spec-val">{job.qualification}</span>
+                    </div>
+                  </div>
+                )}
+                {job.applicationDeadline && (
+                  <div className="spec-item deadline">
+                    <span className="spec-icon">⏳</span>
+                    <div>
+                      <span className="spec-label">Application Deadline</span>
+                      <span className="spec-val">
+                        {new Date(job.applicationDeadline).toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric',
+                        })}
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
 
-          {job.responsibilitiesHtml && (
-            <>
-              <h2>Responsibilities</h2>
-              <div dangerouslySetInnerHTML={{ __html: job.responsibilitiesHtml }} />
-            </>
-          )}
+            {job.descriptionHtml ? (
+              <div className="job-section-card">
+                <h3>📖 Role Overview</h3>
+                <div className="page-prose" dangerouslySetInnerHTML={{ __html: job.descriptionHtml }} />
+              </div>
+            ) : (
+              <div className="job-section-card">
+                <h3>📖 Role Overview</h3>
+                <p className="job-placeholder-text">
+                  Movodream is hiring a <strong>{job.title}</strong> to join our team in <strong>{job.location || 'India'}</strong>. As part of this role, you will collaborate with our engineering, product, and AI teams to deliver world-class travel companion experiences.
+                </p>
+              </div>
+            )}
 
-          {job.qualification && (
-            <>
-              <h2>Qualification</h2>
-              <p>{job.qualification}</p>
-            </>
-          )}
+            {job.responsibilitiesHtml && (
+              <div className="job-section-card">
+                <h3>🎯 Key Responsibilities</h3>
+                <div className="page-prose" dangerouslySetInnerHTML={{ __html: job.responsibilitiesHtml }} />
+              </div>
+            )}
 
-          {job.applicationDeadline && (
-            <p>
-              <strong>Application deadline:</strong>{' '}
-              {new Date(job.applicationDeadline).toLocaleDateString(undefined, {
-                day: 'numeric',
-                month: 'long',
-                year: 'numeric',
-              })}
-            </p>
-          )}
-        </div>
+            {job.skills && job.skills.length > 0 && (
+              <div className="job-section-card">
+                <h3>🛠️ Preferred Skills & Technologies</h3>
+                <div className="job-skills-flex">
+                  {job.skills.map((skill: string) => (
+                    <span key={skill} className="skill-chip">
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
 
-        <div className="job-apply" id="apply">
-          <h2>Apply for this role</h2>
-          {isOpen ? (
-            <>
-              <p>Tell us a little about yourself and attach your CV — we read every application.</p>
-              <ApplicationForm jobId={job._id} />
-            </>
-          ) : (
-            <div className="job-closed">This role is no longer accepting applications.</div>
-          )}
+          {/* Right Column: Sticky Application Panel */}
+          <div className="job-detail-right">
+            <div className="job-sticky-panel" id="apply">
+              <div className="panel-header">
+                <h2>Apply for this role</h2>
+                <p>Tell us about yourself and attach your CV — we review every application.</p>
+              </div>
+              {isOpen ? (
+                <ApplicationForm jobId={job._id} />
+              ) : (
+                <div className="job-closed-box">This role is no longer accepting applications.</div>
+              )}
+            </div>
+          </div>
         </div>
       </main>
     </div>

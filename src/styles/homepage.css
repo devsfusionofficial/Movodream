@@ -991,6 +991,10 @@
   height: unset !important;
 }
 
+.mobile-immersive-features {
+  display: none;
+}
+
 .feature-bar {
   box-sizing: border-box;
   display: flex;
@@ -1189,6 +1193,127 @@
   .content .feature-bar {
     display: none;
   }
+
+  .mobile-immersive-features {
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+    margin: 20px 0 0;
+    position: relative;
+  }
+  .mobile-carousel-track {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 14px;
+    padding: 10px 24px 20px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .mobile-carousel-track::-webkit-scrollbar {
+    display: none;
+  }
+  .mobile-feature-card {
+    scroll-snap-align: center;
+    /* 76vw (not 82) leaves a clearer peek of the next card's edge — a
+       carousel needs to visibly announce "there's more" at rest, not just
+       once you start dragging. */
+    flex: 0 0 76vw;
+    max-width: 320px;
+    /* Compact, but consistent: all 3 cards stretch to the row's tallest
+       (the track's default align-items:stretch) since their copy lengths
+       differ — centering content (below) instead of top-packing it is what
+       keeps a shorter card from reading as half-empty. */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 8px;
+    padding: 18px 20px;
+    border-radius: 18px;
+    position: relative;
+    background: linear-gradient(155deg, #fff 0%, #fdf6ff 55%, #fbeeff 100%);
+    /* A gradient "ring" instead of a flat border — border-image can't do
+       radius + gradient together reliably, so it's a padding-box/border-box
+       double-background trick: the inner gradient paints the card, the
+       outer (border-box) gradient shows only in the 1.5px border gap. */
+    border: 1.5px solid transparent;
+    background-clip: padding-box, border-box;
+    background-origin: padding-box, border-box;
+    background-image: linear-gradient(155deg, #fff 0%, #fdf6ff 55%, #fbeeff 100%),
+      linear-gradient(135deg, rgba(215, 23, 137, 0.35), rgba(90, 45, 215, 0.3) 55%, rgba(13, 148, 136, 0.25));
+    box-shadow: 0 16px 34px rgba(90, 45, 215, 0.12), 0 3px 10px rgba(215, 23, 137, 0.07), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    overflow: hidden;
+    text-align: left;
+  }
+  .mobile-feature-card::before {
+    /* Soft glow blob in the corner — the kind of detail that reads as
+       "premium" instead of a flat card. z-index:0 (with content at 1)
+       keeps it from washing out the badge that sits near that corner. */
+    content: '';
+    position: absolute;
+    top: -26px;
+    right: -26px;
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(215, 23, 137, 0.13), transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .mobile-feature-badge {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 0.92rem;
+    font-weight: 800;
+    letter-spacing: 0.01em;
+  }
+  .mobile-feature-badge-icon {
+    font-size: 1rem;
+  }
+  .mobile-feature-badge.pink {
+    color: #d71789;
+  }
+  .mobile-feature-badge.purple {
+    color: #5a2dd7;
+  }
+  .mobile-feature-badge.teal {
+    color: #0d9488;
+  }
+  .mobile-feature-desc {
+    position: relative;
+    z-index: 1;
+    margin: 0;
+    font-size: 0.83rem;
+    line-height: 1.48;
+    color: #5b5b6e;
+  }
+  .mobile-carousel-dots {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding-top: 4px;
+  }
+  .mobile-carousel-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 99px;
+    border: none;
+    padding: 0;
+    background: rgba(90, 45, 215, 0.18);
+    cursor: pointer;
+    transition: width 0.25s ease, background 0.25s ease;
+  }
+  .mobile-carousel-dot.active {
+    width: 22px;
+    background: linear-gradient(90deg, #d71789, #5a2dd7);
+  }
 }
 
 @media (max-width: 480px) {
@@ -1335,23 +1460,24 @@
 }
 .action-buttons {
   position: absolute;
-  top: 16px;
-  right: 6%;
+  top: 18px;
+  right: 22px;
   display: flex;
   flex-direction: column;
-  gap: 0px;
+  gap: 6px;
   z-index: 10;
 }
 .action-btn {
-  width: 38px;
-  height: 38px;
+  width: 36px;
+  height: 36px;
+  padding: 8px;
   background: #343434;
   border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0px -4px 4px rgba(0, 0, 0, 0.25);
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25);
   transition: transform 0.2s ease, background 0.2s ease;
 }
 .action-btn:hover {
@@ -1360,6 +1486,11 @@
 }
 .action-btn svg,
 .action-btn img {
+  width: 18px !important;
+  height: 18px !important;
+  max-width: 18px !important;
+  max-height: 18px !important;
+  object-fit: contain;
   color: #ffffffd9;
 }
 .city-badge {
@@ -2912,31 +3043,40 @@
 .hs3-num { font-size: 22px; font-weight: 800; color: #fff; will-change: contents; }
 .hs3-lbl { font-size: 11px; color: rgba(255, 255, 255, 0.5); font-weight: 500; }
 
-.chat-interface {
-  display: none !important;
+@keyframes chatFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(12px);
+  }
 }
-.chat-interface .atropos-inner {
-  display: flex;
-  align-items: flex-start;
-  gap: 0px;
-  overflow: visible !important;
+.chat-interface {
+  position: absolute !important;
+  top: 20%;
+  right: 25%;
+  z-index: 10;
+  transform: rotate(-3deg);
+  transform-style: preserve-3d;
+  animation: chatFloat 4s ease-in-out infinite;
+  display: flex !important;
 }
 .chat-interface .user-avatar {
   z-index: 2;
+  flex-shrink: 0;
 }
 .chat-interface .chat-bubbles {
   z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
+.chat-interface .user-avatar svg,
 .chat-interface .user-avatar img {
   width: 45px;
   height: 45px;
   border-radius: 50%;
   transform: translateX(44%) translateY(-36%);
-}
-.chat-bubbles {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
 }
 .how-it-works .bubble {
   background: rgba(229, 182, 207, 0.8);

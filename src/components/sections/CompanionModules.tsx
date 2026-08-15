@@ -84,15 +84,15 @@ export function CompanionModules() {
       const bubble2 = document.querySelector('.bubble-2')
       const avatar = document.querySelector('.user-avatar')
 
-      gsap.killTweensOf('.chat-interface')
-      gsap.set([bubble1, bubble2, avatar], { autoAlpha: 0, scale: 0.5 })
+      gsap.killTweensOf(['.chat-interface', bubble1, bubble2, avatar])
+      gsap.set([bubble1, bubble2, avatar], { autoAlpha: 1, scale: 1 })
 
       gsap
         .timeline()
-        .from('.circle-wrapper', { scale: 0, duration: 0.8, rotation: 90 })
-        .fromTo(avatar, { autoAlpha: 0, x: 20, scale: 0.65 }, { autoAlpha: 1, x: 0, scale: 1, duration: 0.44, ease: 'back.out' }, '-=0.38')
-        .fromTo(bubble1, { autoAlpha: 0, scale: 0.45, y: 10, rotation: 7 }, { autoAlpha: 1, scale: 1, y: 0, rotation: 0, duration: 0.54, ease: 'back.out' }, '-=0.1')
-        .fromTo(bubble2, { autoAlpha: 0, scale: 0.45, y: 10, rotation: -6 }, { autoAlpha: 1, scale: 1, y: 0, rotation: 0, duration: 0.54, ease: 'back.out' }, '+=0.24')
+        .from('.circle-wrapper', { scale: 0.8, duration: 0.6, opacity: 0.5, ease: 'power2.out' })
+        .fromTo(avatar, { autoAlpha: 0, x: 20, scale: 0.8 }, { autoAlpha: 1, x: 0, scale: 1, duration: 0.4, ease: 'back.out(1.5)' }, '-=0.3')
+        .fromTo(bubble1, { autoAlpha: 0, y: 12, scale: 0.85 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.4, ease: 'back.out(1.5)' }, '-=0.1')
+        .fromTo(bubble2, { autoAlpha: 0, y: 12, scale: 0.85 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.4, ease: 'back.out(1.5)' }, '+=0.1')
     }
 
     function animateSlide2() {
@@ -244,10 +244,14 @@ export function CompanionModules() {
 
     initSlide2Hover()
 
+    // Initialize slide 0 immediately on mount so content is visible right away
+    goTo(0)
+    startSlideshowTimer()
+
     const enterTrigger = ScrollTrigger.create({
       trigger: '.how-it-works',
       scroller: document.body,
-      start: 'top -50%',
+      start: 'top 75%',
       onEnter: () => {
         resetSlideshow()
         goTo(0)
@@ -323,23 +327,22 @@ export function CompanionModules() {
                 </div>
               </div>
 
-              <Atropos className="chat-interface" highlight={false} shadow={false}>
+              <div className="chat-interface">
                 <div className="user-avatar">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="https://i.pravatar.cc/150?img=68" alt="User" />
+                  <Image src="/assets/images/user-avatar.jpg" alt="User" width={45} height={45} />
                 </div>
                 <div className="chat-bubbles">
                   <div className="bubble bubble-1">
                     <span className="text">Places similar to Bali but cheaper?</span>
                     <span className="icon">
-                      <Image src="/assets/icons/bubble-pencil.svg" alt="" width={18} height={18} />
+                      <Image src="/assets/icons/bubble-pencil.svg" alt="" width={16} height={16} />
                     </span>
                   </div>
                   <div className="bubble bubble-2">
                     <span className="text">Where can I go with good weather right now?</span>
                   </div>
                 </div>
-              </Atropos>
+              </div>
             </div>
 
             {/* SLIDE 2 */}

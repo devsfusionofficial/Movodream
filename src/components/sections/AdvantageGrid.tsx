@@ -179,19 +179,6 @@ export function AdvantageGrid() {
         <i className="fa-solid fa-arrow-right-long" />
       </div>
 
-      <div className="advantage-trust">
-        {TRUST.map((item) => (
-          <div key={item.title} className="advantage-trust-item">
-            <span className="advantage-trust-icon">
-              <i className={`fa-solid ${item.icon}`} />
-            </span>
-            <div>
-              <h4>{item.title}</h4>
-              <p>{item.desc}</p>
-            </div>
-          </div>
-        ))}
-      </div>
     </section>
   )
 }
