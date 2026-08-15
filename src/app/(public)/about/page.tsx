@@ -144,39 +144,35 @@ export default async function AboutPage() {
       <section className="about-pillars">
         <div className="about-pillars-grid">
           <article className="about-pillar">
-            <span className="about-pillar-icon">
-              <TargetIcon />
-            </span>
-            <div>
-              <span className="about-eyebrow">Our Mission</span>
-              <h3>
-                Simplify Travel.
-                <br />
-                Enrich Experiences.
-              </h3>
-              <p>
-                We combine AI, contextual intelligence, and human expertise to help travelers plan better, decide
-                faster, and explore deeper.
-              </p>
+            <div className="about-pillar-head">
+              <span className="about-pillar-icon">
+                <TargetIcon />
+              </span>
+              <div className="about-pillar-title">
+                <span className="about-eyebrow">Our Mission</span>
+                <h3>Simplify Travel. Enrich Experiences.</h3>
+              </div>
             </div>
+            <p>
+              We combine AI, contextual intelligence, and human expertise to help travelers plan better, decide
+              faster, and explore deeper.
+            </p>
           </article>
 
           <article className="about-pillar">
-            <span className="about-pillar-icon">
-              <EyeIcon />
-            </span>
-            <div>
-              <span className="about-eyebrow">Our Vision</span>
-              <h3>
-                A World Where
-                <br />
-                Travel Plans Itself.
-              </h3>
-              <p>
-                Imagine trips that organize themselves as effortlessly as daydreams, powered by real-time insights and
-                local understanding.
-              </p>
+            <div className="about-pillar-head">
+              <span className="about-pillar-icon">
+                <EyeIcon />
+              </span>
+              <div className="about-pillar-title">
+                <span className="about-eyebrow">Our Vision</span>
+                <h3>A World Where Travel Plans Itself.</h3>
+              </div>
             </div>
+            <p>
+              Imagine trips that organize themselves as effortlessly as daydreams, powered by real-time insights and
+              local understanding.
+            </p>
           </article>
         </div>
       </section>
@@ -225,14 +221,18 @@ export default async function AboutPage() {
               const meta = OFFICE_META[office.slug]
               return (
                 <article className="about-office" key={office._id}>
-                  <div className="about-office-head">
-                    <MapPinIcon />
-                    <div>
-                      <h3>{office.city}</h3>
-                      <p className="about-office-role">{meta?.role ?? 'Office'}</p>
+                  <div className="about-office-content">
+                    <div className="about-office-head">
+                      <span className="about-office-pin">
+                        <MapPinIcon />
+                      </span>
+                      <div>
+                        <h3>{office.city}</h3>
+                        <p className="about-office-role">{meta?.role ?? 'Office'}</p>
+                      </div>
                     </div>
+                    <p className="about-office-desc">{office.description || meta?.focus}</p>
                   </div>
-                  <p className="about-office-desc">{office.description || meta?.focus}</p>
                   {meta?.art && <span className="about-office-art">{meta.art}</span>}
                 </article>
               )

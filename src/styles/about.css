@@ -250,44 +250,76 @@
 
 .about-pillar {
   display: flex;
-  gap: 20px;
-  padding: 34px 32px 36px;
-  border-radius: 18px;
-  background: #fff;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 28px 26px 30px;
+  border-radius: 20px;
+  background: #ffffff;
   border: 1px solid var(--ab-border);
   box-shadow: var(--ab-shadow);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.about-pillar:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 20px 44px -20px rgba(70, 20, 110, 0.35);
+}
+
+.about-pillar-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 12px;
 }
 
 .about-pillar-icon {
-  flex-shrink: 0;
-  width: 52px;
-  height: 52px;
+  flex-shrink: 0 !important;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   background: #fdeaf5;
   color: var(--ab-pink);
+  margin-top: 2px;
 }
 
 .about-pillar-icon svg {
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
 }
 
-.about-pillar h3 {
-  margin: 10px 0 0;
-  font-size: 1.24rem;
+.about-pillar-title {
+  flex: 1;
+  min-width: 0;
+}
+
+.about-pillar-title .about-eyebrow {
+  display: block;
+  font-size: 0.74rem;
   font-weight: 700;
-  line-height: 1.3;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ab-pink);
+  margin-bottom: 4px;
+}
+
+.about-pillar-title h3 {
+  margin: 0;
+  font-size: 1.18rem;
+  font-weight: 700;
+  line-height: 1.28;
   letter-spacing: -0.01em;
   color: var(--ab-navy);
 }
 
 .about-pillar p {
-  margin: 12px 0 0;
+  margin: 0;
   font-size: 0.88rem;
-  line-height: 1.7;
+  line-height: 1.65;
   color: var(--ab-muted);
 }
 
@@ -300,28 +332,31 @@
 .about-values-row {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
 }
 
 .about-value {
   display: flex;
-  gap: 14px;
+  gap: 16px;
   align-items: flex-start;
-  padding: 0 24px;
-  border-right: 1px solid var(--ab-border);
+  padding: 22px 20px;
+  border-radius: 20px;
+  background: #ffffff;
+  border: 1px solid var(--ab-border);
+  box-shadow: var(--ab-shadow);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-.about-value:last-child {
-  border-right: none;
-}
-
-.about-value:first-child {
-  padding-left: 0;
+.about-value:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 40px -20px rgba(70, 20, 110, 0.35);
 }
 
 .about-value-icon {
-  flex-shrink: 0;
-  width: 42px;
-  height: 42px;
+  flex-shrink: 0 !important;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -333,18 +368,19 @@
 .about-value-icon svg {
   width: 20px;
   height: 20px;
+  flex-shrink: 0;
 }
 
 .about-value h4 {
   margin: 0 0 5px;
-  font-size: 0.93rem;
+  font-size: 0.95rem;
   font-weight: 700;
   color: var(--ab-navy);
 }
 
 .about-value p {
   margin: 0;
-  font-size: 0.82rem;
+  font-size: 0.84rem;
   line-height: 1.55;
   color: var(--ab-muted);
 }
@@ -429,12 +465,16 @@
 .about-office {
   position: relative;
   overflow: hidden;
-  min-height: 236px;
-  padding: 26px 26px 30px;
-  border-radius: 18px;
-  background: #fff;
+  padding: 22px 24px;
+  border-radius: 20px;
+  background: #ffffff;
   border: 1px solid var(--ab-border);
   box-shadow: var(--ab-shadow);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
@@ -443,23 +483,40 @@
   box-shadow: 0 22px 44px -22px rgba(70, 20, 110, 0.4);
 }
 
-.about-office-head {
-  display: flex;
-  gap: 10px;
-  align-items: flex-start;
-  position: relative;
+.about-office-content {
+  flex: 1;
+  min-width: 0;
 }
 
-.about-office-head svg {
-  width: 20px;
-  height: 20px;
+.about-office-head {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.about-office-pin {
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #fdeaf5;
+  color: var(--ab-pink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.about-office-pin svg {
+  width: 18px;
+  height: 18px;
   flex-shrink: 0;
   color: var(--ab-pink);
 }
 
 .about-office h3 {
   margin: 0;
-  font-size: 1.05rem;
+  font-size: 1.08rem;
   font-weight: 700;
   color: var(--ab-navy);
 }
@@ -471,26 +528,26 @@
 }
 
 .about-office-desc {
-  position: relative;
-  margin: 18px 0 0;
-  max-width: 47%;
-  font-size: 0.85rem;
-  line-height: 1.6;
+  margin: 0;
+  font-size: 0.86rem;
+  line-height: 1.55;
   color: var(--ab-muted);
 }
 
-/* Landmark sits behind the text, bottom-right, very low contrast. */
-/* Sits clear of the copy column (capped at 52%) so the landmark never runs
-   underneath the text. Scaled up and given a stronger tint so it reads as a
-   deliberate motif rather than a faint smudge. */
 .about-office-art {
-  position: absolute;
-  right: 14px;
-  bottom: 10px;
-  width: 196px;
-  height: 196px;
-  color: rgba(236, 42, 139, 0.28);
+  flex-shrink: 0;
+  width: 90px;
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(236, 42, 139, 0.35);
   pointer-events: none;
+}
+
+.about-office-art svg {
+  width: 90px;
+  height: 90px;
 }
 
 /* ---------- team band ---------- */
@@ -551,33 +608,29 @@
 @media (max-width: 980px) {
   .about-page .about-hero {
     grid-template-columns: 1fr;
-  }
-
-  .about-page .about-hero {
-    padding-left: 0;
+    gap: 28px;
+    padding: 8px var(--ab-gutter) 0;
   }
 
   .about-hero-copy {
-    padding: 32px 5% 48px;
+    padding: 20px 0 28px;
   }
 
   .about-hero-visual {
-    min-height: 320px;
-  }
-
-  .about-hero-visual::after {
-    background: linear-gradient(180deg, #fff 0%, rgba(255, 255, 255, 0.5) 12%, transparent 40%);
+    min-height: 280px;
   }
 
   .about-pillars-grid,
   .about-team-panel {
     grid-template-columns: 1fr;
+    gap: 24px;
   }
 
   .about-values-row,
   .about-stats-panel,
   .about-office-grid {
     grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
   }
 
   .about-value:nth-child(2n),
@@ -589,40 +642,242 @@
     padding: 16px 20px;
   }
 
-  .about-value:first-child {
-    padding-left: 20px;
-  }
-
   .about-stat:nth-child(-n + 2) {
-    padding-bottom: 26px;
+    padding-bottom: 24px;
   }
 }
 
-@media (max-width: 620px) {
-  .about-values-row,
-  .about-stats-panel,
-  .about-office-grid {
+@media (max-width: 640px) {
+  .about-page {
+    --ab-gutter: 16px;
+  }
+
+  .about-hero-copy {
+    padding: 16px 0 20px;
+  }
+
+  .about-hero h1 {
+    font-size: 1.75rem;
+    line-height: 1.2;
+  }
+
+  .about-hero-tag {
+    font-size: 0.92rem;
+    margin-top: 10px;
+  }
+
+  .about-hero-lead {
+    font-size: 0.84rem;
+    line-height: 1.6;
+    margin-top: 12px;
+  }
+
+  .about-hero-badge {
+    margin-top: 16px;
+    padding: 8px 14px;
+    font-size: 0.76rem;
+    max-width: 100%;
+    white-space: normal !important;
+    word-break: break-word;
+    line-height: 1.4;
+  }
+
+  .about-hero-visual {
+    min-height: 210px;
+    border-radius: 18px;
+  }
+
+  .about-chip {
+    padding: 6px 10px;
+    gap: 6px;
+  }
+
+  .about-chip-icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  .about-chip-icon svg {
+    width: 13px;
+    height: 13px;
+  }
+
+  .about-chip-text strong {
+    font-size: 0.72rem;
+  }
+
+  .about-chip-text span {
+    display: none;
+  }
+
+  .about-chip--1 {
+    top: 6%;
+    left: 4%;
+  }
+
+  .about-chip--2 {
+    top: 6%;
+    right: 4%;
+  }
+
+  .about-chip--3 {
+    bottom: 6%;
+    left: 4%;
+  }
+
+  .about-pillars-grid {
     grid-template-columns: 1fr;
+    gap: 14px;
   }
 
-  .about-value,
+  .about-pillar {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 20px 16px;
+    border-radius: 18px;
+  }
+
+  .about-pillar-head {
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+
+  .about-pillar-icon {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    margin-top: 2px;
+  }
+
+  .about-pillar-icon svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .about-pillar-title .about-eyebrow {
+    font-size: 0.7rem;
+    margin-bottom: 3px;
+  }
+
+  .about-pillar-title h3 {
+    font-size: 1.05rem;
+    line-height: 1.28;
+  }
+
+  .about-values-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .about-value {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px 16px;
+    border-radius: 16px;
+    background: #ffffff;
+    border: 1px solid var(--ab-border) !important;
+    box-shadow: var(--ab-shadow);
+  }
+
+  .about-value-icon {
+    flex-shrink: 0 !important;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+  }
+
+  .about-value > div {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .about-stats-panel {
+    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
+    border-radius: 18px;
+    padding: 10px 0;
+  }
+
   .about-stat {
-    border-right: none;
-    border-bottom: 1px solid var(--ab-border);
-    padding: 18px 4px;
+    border-right: none !important;
+    border-bottom: 1px solid rgba(168, 85, 247, 0.12);
+    padding: 14px 12px;
+    text-align: center;
   }
 
-  .about-value:last-child,
   .about-stat:last-child {
     border-bottom: none;
   }
 
-  .about-team-panel {
-    padding: 28px 24px;
+  .about-stat-value {
+    font-size: 2rem;
+  }
+
+  .about-office-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .about-office {
+    padding: 18px 16px;
+    gap: 14px;
+    border-radius: 16px;
   }
 
   .about-office-desc {
-    max-width: 74%;
+    font-size: 0.84rem;
+  }
+
+  .about-office-art {
+    width: 76px;
+    height: 76px;
+  }
+
+  .about-office-art svg {
+    width: 76px;
+    height: 76px;
+  }
+
+  .about-team-panel {
+    padding: 24px 16px 0;
+    grid-template-columns: 1fr;
+    gap: 18px;
+    border-radius: 20px;
+    text-align: center;
+  }
+
+  .about-team-copy {
+    padding-bottom: 20px;
+  }
+
+  .about-team-copy h2 {
+    font-size: 1.3rem;
+  }
+
+  .about-team-art {
+    max-width: 260px;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 380px) {
+  .about-page {
+    --ab-gutter: 12px;
+  }
+
+  .about-hero h1 {
+    font-size: 1.55rem;
+  }
+
+  .about-pillar {
+    padding: 14px 12px;
+  }
+
+  .about-chip {
+    display: none;
   }
 }
 
