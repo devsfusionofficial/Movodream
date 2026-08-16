@@ -1,6 +1,7 @@
 'use client'
 
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import Image from 'next/image'
 import gsap from 'gsap'
 import { useLenis } from '@/components/animation/SmoothScrollProvider'
@@ -99,10 +100,33 @@ export function ContactModalProvider({ children }: { children: React.ReactNode }
   const greetingIndexRef = useRef(0)
   const greetingTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
+  const [mounted, setMounted] = useState(false)
+  const [isOpen, setIsOpen] = useState(false)
   const [errors, setErrors] = useState<FieldErrors>({})
   const [submitting, setSubmitting] = useState(false)
   const [submitLabel, setSubmitLabel] = useState('Send!')
   const [showSuccess, setShowSuccess] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (isOpen) {
+      document.documentElement.style.overflow = 'hidden'
+      document.body.style.overflow = 'hidden'
+      lenisRef.current?.stop()
+    } else {
+      document.documentElement.style.overflow = ''
+      document.body.style.overflow = ''
+      lenisRef.current?.start()
+    }
+    return () => {
+      document.documentElement.style.overflow = ''
+      document.body.style.overflow = ''
+      lenisRef.current?.start()
+    }
+  }, [isOpen, lenisRef])
 
   const startGreetingLoop = useCallback(() => {
     if (greetingTimerRef.current) clearInterval(greetingTimerRef.current)
@@ -131,10 +155,6 @@ export function ContactModalProvider({ children }: { children: React.ReactNode }
     }
   }, [])
 
-  // Only ticks while the modal is actually open — this used to start on
-  // page load and run forever in the background (a setInterval animating a
-  // hidden DOM node every 2s for the entire visit), regardless of whether
-  // anyone ever opened the form.
   useEffect(() => {
     const overlay = overlayRef.current
     const dismiss = dismissRef.current
@@ -154,6 +174,7 @@ export function ContactModalProvider({ children }: { children: React.ReactNode }
 
   const close = useCallback(() => {
     isOpenRef.current = false
+    setIsOpen(false)
     overlayRef.current?.setAttribute('aria-hidden', 'true')
     lenisRef.current?.start()
     stopGreetingLoop()
@@ -165,7 +186,7 @@ export function ContactModalProvider({ children }: { children: React.ReactNode }
     gsap.to(overlay, {
       x: '100vw',
       opacity: 0,
-      duration: 0.75,
+      duration: 0.45,
       ease: 'power3.in',
       onComplete: () => {
         overlay.style.visibility = 'hidden'
@@ -183,6 +204,7 @@ export function ContactModalProvider({ children }: { children: React.ReactNode }
 
   const open = useCallback(() => {
     isOpenRef.current = true
+    setIsOpen(true)
     setErrors({})
 
     lenisRef.current?.stop()
@@ -206,19 +228,19 @@ export function ContactModalProvider({ children }: { children: React.ReactNode }
     gsap.killTweensOf(greeting)
 
     gsap.set(overlay, { x: '100vw', opacity: 0 })
-    gsap.set(card, { y: 24, opacity: 0, scale: 0.985 })
+    gsap.set(card, { y: 20, opacity: 0, scale: 0.985 })
 
     greetingIndexRef.current = 0
     greeting.textContent = GREETINGS[0]
     gsap.set(greeting, { opacity: 1, y: 0 })
     startGreetingLoop()
 
-    gsap.to(overlay, { x: 0, opacity: 1, duration: 1, ease: 'power4.out' })
-    gsap.to(card, { y: 0, opacity: 1, scale: 1, duration: 0.85, delay: 0.12, ease: 'power3.out' })
+    gsap.to(overlay, { x: 0, opacity: 1, duration: 0.5, ease: 'power4.out' })
+    gsap.to(card, { y: 0, opacity: 1, scale: 1, duration: 0.5, delay: 0.08, ease: 'power3.out' })
     gsap.fromTo(
       card.querySelectorAll('.qzv-field, .qzv-submit, .qzv-contactline'),
-      { y: 18, opacity: 0 },
-      { y: 0, opacity: 1, duration: 0.55, stagger: 0.08, delay: 0.18, ease: 'power2.out' }
+      { y: 12, opacity: 0 },
+      { y: 0, opacity: 1, duration: 0.4, stagger: 0.05, delay: 0.1, ease: 'power2.out' }
     )
   }, [lenisRef, startGreetingLoop])
 
@@ -289,151 +311,157 @@ export function ContactModalProvider({ children }: { children: React.ReactNode }
     <ContactModalContext.Provider value={open}>
       {children}
 
-      <section
-        className="qzv-overlay"
-        id="qzvOverlay"
-        aria-hidden="true"
-        ref={overlayRef}
-        onWheel={(e) => e.stopPropagation()}
-        onTouchMove={(e) => e.stopPropagation()}
-        onClick={(e) => {
-          if (e.target === e.currentTarget) close()
-        }}
-      >
-        <button
-          className="qzv-dismiss"
-          type="button"
-          id="qzvClose"
-          aria-label="Close form"
-          ref={dismissRef}
-          onClick={close}
-        >
-          <span className="qzv-icon">
-            <i className="fa-solid fa-x" />
-          </span>
-        </button>
+      {mounted &&
+        createPortal(
+          <section
+            className="qzv-overlay"
+            id="qzvOverlay"
+            aria-hidden="true"
+            ref={overlayRef}
+            onWheel={(e) => e.stopPropagation()}
+            onTouchMove={(e) => e.stopPropagation()}
+            onClick={(e) => {
+              if (e.target === e.currentTarget) close()
+            }}
+          >
+            <button
+              className="qzv-dismiss"
+              type="button"
+              id="qzvClose"
+              aria-label="Close form"
+              ref={dismissRef}
+              onClick={close}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M18 6L6 18M6 6l12 12" />
+              </svg>
+            </button>
 
-        <div className="qzv-frame">
-          <div className="qzv-leftrail">
-            <div>
-              <div className="qzv-badge">
-                <Image src="/assets/images/logo.png" alt="Logo" width={88} height={62} />
-              </div>
+            <div className="qzv-frame">
+              <div className="qzv-leftrail">
+                <div>
+                  <div className="qzv-logo-wrap">
+                    <Image src="/assets/images/logo2.webp" alt="Movodream Logo" width={180} height={48} className="h-11 w-auto" priority />
+                  </div>
 
-              <div className="qzv-story">
-                <h2 className="qzv-greeting" id="qzvGreeting" ref={greetingRef}>
-                  HOLA!
-                </h2>
-                <p className="qzv-copy">
-                  Ready to turn your wanderlust into a reality? Tell us where you want to go, and our AI concierge
-                  will craft a journey unique to your soul.
-                </p>
-              </div>
+                  <div className="qzv-story">
+                    <h2 className="qzv-greeting" id="qzvGreeting" ref={greetingRef}>
+                      HOLA!
+                    </h2>
+                    <p className="qzv-copy">
+                      Ready to turn your wanderlust into a reality? Tell us where you want to go, and our AI concierge
+                      will craft a journey unique to your soul.
+                    </p>
+                  </div>
 
-              <div className="qzv-contactstack">
-                <div className="qzv-contactline">
-                  <span className="qzv-icon">
-                    <i className="fa-solid fa-envelope" />
-                  </span>
-                  <span>Support@movodream.com</span>
+                  <div className="qzv-contactstack">
+                    <div className="qzv-contactline">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#b0004a" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                        <polyline points="22,6 12,13 2,6" />
+                      </svg>
+                      <span>Support@movodream.com</span>
+                    </div>
+                    <div className="qzv-contactline">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#b0004a" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                        <circle cx="12" cy="10" r="3" />
+                      </svg>
+                      <span>Global Support • 24/7 Intelligence</span>
+                    </div>
+                  </div>
                 </div>
-                <div className="qzv-contactline">
-                  <span className="qzv-icon">
-                    <i className="fa-solid fa-location-dot" />
-                  </span>
-                  <span>Global Support • 24/7 Intelligence</span>
+              </div>
+
+              <div className="qzv-rightrail">
+                <div className="qzv-glass" ref={cardRef} id="qzvCard">
+                  <form className="qzv-formgrid" onSubmit={handleSubmit} noValidate>
+                    <div className="qzv-field">
+                      <label className="qzv-fieldlabel" htmlFor="qzvName">
+                        Full Name
+                      </label>
+                      <input
+                        className="qzv-input"
+                        id="qzvName"
+                        name="qzvName"
+                        type="text"
+                        placeholder="What's your name?"
+                        style={errors.qzvName ? errStyle : undefined}
+                      />
+                      {errors.qzvName && <div className="qzv-error-msg">{errors.qzvName}</div>}
+                    </div>
+
+                    <div className="qzv-field">
+                      <label className="qzv-fieldlabel" htmlFor="qzvEmail">
+                        Email Address
+                      </label>
+                      <input
+                        className="qzv-input"
+                        id="qzvEmail"
+                        name="qzvEmail"
+                        type="email"
+                        placeholder="your@email.com"
+                        style={errors.qzvEmail ? errStyle : undefined}
+                      />
+                      {errors.qzvEmail && <div className="qzv-error-msg">{errors.qzvEmail}</div>}
+                    </div>
+
+                    <div className="qzv-field">
+                      <label className="qzv-fieldlabel" htmlFor="qzvconEmail">
+                        Confirm Email
+                      </label>
+                      <input
+                        className="qzv-input"
+                        id="qzvconEmail"
+                        name="qzvconEmail"
+                        type="email"
+                        placeholder="your@email.com"
+                        style={errors.qzvconEmail ? errStyle : undefined}
+                      />
+                      {errors.qzvconEmail && <div className="qzv-error-msg">{errors.qzvconEmail}</div>}
+                    </div>
+
+                    <div className="qzv-field">
+                      <label className="qzv-fieldlabel" htmlFor="qzvPhone">
+                        Phone
+                      </label>
+                      <input
+                        className="qzv-input"
+                        id="qzvPhone"
+                        name="qzvPhone"
+                        type="tel"
+                        maxLength={13}
+                        placeholder="Phone Number"
+                        style={errors.qzvPhone ? errStyle : undefined}
+                      />
+                      {errors.qzvPhone && <div className="qzv-error-msg">{errors.qzvPhone}</div>}
+                    </div>
+
+                    <div className="qzv-field">
+                      <label className="qzv-fieldlabel" htmlFor="qzvMessage">
+                        Message
+                      </label>
+                      <textarea
+                        className="qzv-textarea"
+                        id="qzvMessage"
+                        name="qzvMessage"
+                        placeholder="How can we help?"
+                        rows={3}
+                        style={errors.qzvMessage ? errStyle : undefined}
+                      />
+                      {errors.qzvMessage && <div className="qzv-error-msg">{errors.qzvMessage}</div>}
+                    </div>
+
+                    <button className="qzv-submit" type="submit" disabled={submitting}>
+                      {submitLabel}
+                    </button>
+                  </form>
                 </div>
               </div>
             </div>
-          </div>
-
-          <div className="qzv-rightrail">
-            <div className="qzv-glass" ref={cardRef} id="qzvCard">
-              <form className="qzv-formgrid" onSubmit={handleSubmit} noValidate>
-                <div className="qzv-field">
-                  <label className="qzv-fieldlabel" htmlFor="qzvName">
-                    Full Name
-                  </label>
-                  <input
-                    className="qzv-input"
-                    id="qzvName"
-                    name="qzvName"
-                    type="text"
-                    placeholder="What's your name?"
-                    style={errors.qzvName ? errStyle : undefined}
-                  />
-                  {errors.qzvName && <div className="qzv-error-msg">{errors.qzvName}</div>}
-                </div>
-
-                <div className="qzv-field">
-                  <label className="qzv-fieldlabel" htmlFor="qzvEmail">
-                    Email Address
-                  </label>
-                  <input
-                    className="qzv-input"
-                    id="qzvEmail"
-                    name="qzvEmail"
-                    type="email"
-                    placeholder="your@email.com"
-                    style={errors.qzvEmail ? errStyle : undefined}
-                  />
-                  {errors.qzvEmail && <div className="qzv-error-msg">{errors.qzvEmail}</div>}
-                </div>
-
-                <div className="qzv-field">
-                  <label className="qzv-fieldlabel" htmlFor="qzvconEmail">
-                    Confirm Email
-                  </label>
-                  <input
-                    className="qzv-input"
-                    id="qzvconEmail"
-                    name="qzvconEmail"
-                    type="email"
-                    placeholder="your@email.com"
-                    style={errors.qzvconEmail ? errStyle : undefined}
-                  />
-                  {errors.qzvconEmail && <div className="qzv-error-msg">{errors.qzvconEmail}</div>}
-                </div>
-
-                <div className="qzv-field">
-                  <label className="qzv-fieldlabel" htmlFor="qzvPhone">
-                    Phone
-                  </label>
-                  <input
-                    className="qzv-input"
-                    id="qzvPhone"
-                    name="qzvPhone"
-                    type="tel"
-                    maxLength={13}
-                    placeholder="Phone Number"
-                    style={errors.qzvPhone ? errStyle : undefined}
-                  />
-                  {errors.qzvPhone && <div className="qzv-error-msg">{errors.qzvPhone}</div>}
-                </div>
-
-                <div className="qzv-field">
-                  <label className="qzv-fieldlabel" htmlFor="qzvMessage">
-                    Message
-                  </label>
-                  <textarea
-                    className="qzv-textarea"
-                    id="qzvMessage"
-                    name="qzvMessage"
-                    placeholder="How can we help?"
-                    rows={3}
-                    style={errors.qzvMessage ? errStyle : undefined}
-                  />
-                  {errors.qzvMessage && <div className="qzv-error-msg">{errors.qzvMessage}</div>}
-                </div>
-
-                <button className="qzv-submit" type="submit" disabled={submitting}>
-                  {submitLabel}
-                </button>
-              </form>
-            </div>
-          </div>
-        </div>
-      </section>
+          </section>,
+          document.body
+        )}
 
       {showSuccess && <ContactSuccessPopup onClose={() => setShowSuccess(false)} />}
     </ContactModalContext.Provider>

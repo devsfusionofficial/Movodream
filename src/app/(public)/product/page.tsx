@@ -81,13 +81,9 @@ export default async function ProductPage() {
             <p>TRUSTED BY TRAVELERS & LEADING PARTNERS</p>
             <div className="product-trustedby-text-strip">
               <span className="trustedby-brand">Aviationstack</span>
-              <span className="trustedby-dot">•</span>
               <span className="trustedby-brand">CleverTap</span>
-              <span className="trustedby-dot">•</span>
               <span className="trustedby-brand">EMBARK</span>
-              <span className="trustedby-dot">•</span>
               <span className="trustedby-brand">EQUENCE</span>
-              <span className="trustedby-dot">•</span>
               <span className="trustedby-brand">Gozo Cabs</span>
             </div>
           </div>
