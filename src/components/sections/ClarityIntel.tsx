@@ -79,8 +79,13 @@ export function ClarityIntel() {
         const tl = gsap.timeline({
           scrollTrigger: { trigger: '.section-3', scroller: document.body, start: 'top 65%', scrub: true },
         })
-        tl.fromTo(lines[0], { x: '12%' }, { x: '-12%', duration: 1.1, ease: 'power3.out' })
-        tl.fromTo(lines[1], { x: '-12%' }, { x: '12%', duration: 1.1, ease: 'power3.out' }, '-=0.75')
+        // The ±12% drift is a desktop flourish. On narrow phones the headline
+        // already fills the width, so swinging it sideways pushes each line
+        // off opposite edges. GSAP writes `transform` inline, which beats any
+        // CSS override — so the amplitude has to be reduced here, not in CSS.
+        const drift = window.innerWidth <= 480 ? 0 : 12
+        tl.fromTo(lines[0], { x: `${drift}%` }, { x: `${-drift}%`, duration: 1.1, ease: 'power3.out' })
+        tl.fromTo(lines[1], { x: `${-drift}%` }, { x: `${drift}%`, duration: 1.1, ease: 'power3.out' }, '-=0.75')
       }
 
       const s3Right = document.querySelector('.s3-right')

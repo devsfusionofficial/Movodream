@@ -6321,3 +6321,30 @@ a.partner-card:hover {
     min-height: 44px;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Narrow phones (Galaxy Z Fold cover screen ~344px, small Androids ~360px).
+
+   `.phone-text` is `position: absolute` with a fixed 38px font below 768px,
+   and its two spans carry translateX(-4%) / translateX(10%) offsets — a
+   deliberate desktop art-direction stagger. At ~344px the type is simply
+   wider than the screen AND the stagger pushes line 1 off the left edge and
+   line 2 off the right. Below 480px: make the type fluid, anchor the block to
+   the container with real side padding, and drop the stagger.
+   --------------------------------------------------------------------------- */
+@media (max-width: 480px) {
+  .phone-text {
+    left: 0;
+    right: 0;
+    width: auto;
+    box-sizing: border-box;
+    padding-inline: 16px;
+    font-size: clamp(21px, 8.2vw, 38px);
+    text-wrap: balance;
+  }
+
+  .phone-text span:first-child,
+  .phone-text span:last-child {
+    transform: none;
+  }
+}
