@@ -101,13 +101,22 @@
   right: 0 !important;
   bottom: 0 !important;
   width: 100vw !important;
+  /* On mobile `100vh` is the LARGEST viewport — measured with the browser
+     chrome hidden — so while the address bar is showing the overlay runs off
+     the bottom of the screen and its last item (the CTA) is cut off. `dvh`
+     tracks the visible viewport as the chrome shows/hides. `vh` stays first
+     as the fallback for browsers without dynamic viewport units.
+     This never reproduces in DevTools' responsive mode, which has no
+     dynamic browser chrome. */
   height: 100vh !important;
+  height: 100dvh !important;
   margin: 0 !important;
   background: #ffffff !important;
   flex-direction: column !important;
   align-items: center !important;
   justify-content: space-between !important;
-  padding: 20px 24px 36px !important;
+  /* Keep the CTA clear of the home-indicator / gesture bar. */
+  padding: 20px 24px calc(36px + env(safe-area-inset-bottom, 0px)) !important;
   z-index: 999999999 !important;
   transform: none !important;
   box-sizing: border-box !important;
@@ -1722,6 +1731,20 @@
   width: 100%;
   display: block;
   transform: translateX(-1%) scale(1.02);
+  /* orb.mp4 is H.264 (avc1), which carries no alpha channel — the animation
+     was authored on a white backdrop, so the video always paints an opaque
+     white rectangle behind the orb.
+     A mask is used rather than `mix-blend-mode`: the parent .orb-wrapper sets
+     `transform`, which creates a stacking context and traps any blend inside
+     it, so blending never reached the page backdrop. A mask cuts the pixels
+     outright and is immune to that. The soft outer stop fades the remaining
+     white into the light section background.
+     Proper fix is re-exporting the clip with alpha (VP9/WebM or animated WebP). */
+  /* `closest-side` so the gradient is measured against the SHORTER edge. With
+     the default (farthest-corner) the stops are relative to the diagonal, so
+     on a non-square video the mask would never reach the top/bottom white. */
+  -webkit-mask-image: radial-gradient(circle closest-side at 50% 50%, #000 62%, rgba(0, 0, 0, 0) 97%);
+  mask-image: radial-gradient(circle closest-side at 50% 50%, #000 62%, rgba(0, 0, 0, 0) 97%);
 }
 .s4-slide.three .s4-card .circle-images-container > img {
   position: absolute;
@@ -3873,6 +3896,7 @@
   color: #1a1c1d;
   width: 100vw;
   height: 100vh;
+  height: 100dvh;
   padding: 20px;
   display: flex;
   align-items: center;
@@ -4105,6 +4129,7 @@
     inset: 0 !important;
     width: 100vw !important;
     height: 100vh !important;
+    height: 100dvh !important;
     background: #ffffff !important;
     padding: 16px 16px 40px !important;
     align-items: flex-start !important;
