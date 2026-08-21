@@ -58,6 +58,11 @@ applicationSchema.post<ApplicationDocument>('save', async function (doc) {
   }
 })
 
+// Every admin list sorts by createdAt. Without this index MongoDB does an
+// in-memory sort, which is slow and hard-fails past the 32MB sort limit
+// once the collection grows.
+applicationSchema.index({ createdAt: -1 })
+
 export type ApplicationDoc = InferSchemaType<typeof applicationSchema>
 
 export const Application = models.Application ?? model('Application', applicationSchema)

@@ -2,6 +2,7 @@
 
 import type { ColumnDef } from '@tanstack/react-table'
 import Link from 'next/link'
+import { Eye } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import type { listApplications } from '@/actions/applications'
@@ -37,7 +38,13 @@ export const columns: ColumnDef<ApplicationRow, unknown>[] = [
     id: 'actions',
     header: '',
     cell: ({ row }) => (
-      <Button variant="outline" size="sm" render={<Link href={`/admin/applications/${row.original._id}`} />}>
+      <Button
+        variant="outline"
+        size="sm"
+        render={<Link href={`/admin/applications/${row.original._id}`} />}
+        className="gap-1 border-[#e6e1e9] text-[#21182a] hover:bg-[#fce8f2] hover:text-[#d71789]"
+      >
+        <Eye className="h-3.5 w-3.5" />
         View
       </Button>
     ),

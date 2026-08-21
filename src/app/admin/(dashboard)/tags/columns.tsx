@@ -12,6 +12,6 @@ export const columns: ColumnDef<TagRow, unknown>[] = [
   {
     id: 'actions',
     header: '',
-    cell: ({ row }) => <TagRowActions id={row.original._id} />,
+    cell: ({ row }) => <TagRowActions id={row.original._id} tag={row.original} />,
   },
 ]

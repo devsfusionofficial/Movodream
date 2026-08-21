@@ -59,7 +59,7 @@ export function CreateUserDialog() {
             </Field>
 
             <Field>
-              <FieldLabel htmlFor="password">Temporary password</FieldLabel>
+              <FieldLabel htmlFor="password">Password</FieldLabel>
               <Input id="password" type="password" {...register('password')} />
               <FieldError errors={[errors.password]} />
             </Field>

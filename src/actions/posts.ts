@@ -9,6 +9,7 @@ import { Post, type PostDoc } from '@/models/Post'
 // These imports intentionally run for their model-registration side effect.
 import '@/models/Author'
 import '@/models/Category'
+import '@/models/Tag'
 import { postSchema, type PostInput } from '@/lib/validation/post'
 
 export type ActionResult = { success: true } | { success: false; error: string }
@@ -20,10 +21,16 @@ function serialize<T>(doc: T): T {
 export async function listPosts() {
   await requirePermission('posts', ['read'])
   await connectDB()
+  // Projection matters here: the list screens render a handful of columns,
+  // but an unprojected find() ships every field of every row to the client
+  // — including the full article/JD HTML and editor JSON. Detail screens
+  // use their own get<X>(id) and still receive everything.
   const posts = await Post.find()
+    .select('title slug status excerpt contentHtml heroImage author categories tags seo publishedAt createdAt')
     .sort({ createdAt: -1 })
     .populate('author', 'name')
     .populate('categories', 'name')
+    .populate('tags', 'name')
     .lean()
   return serialize(posts)
 }

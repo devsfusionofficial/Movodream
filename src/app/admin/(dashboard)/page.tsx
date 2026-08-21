@@ -23,7 +23,7 @@ function relativeDate(value?: string) {
 }
 
 function statusTone(status?: string) {
-  if (status === 'published' || status === 'active' || status === 'Hired') return 'bg-[#e9f8f0] text-[#167044]'
+  if (status === 'published' || status === 'active' || status === 'Hired') return 'bg-[#fce8f2] text-[#d71789]'
   if (status === 'draft' || status === 'Applied') return 'bg-[#fff4df] text-[#a56806]'
   return 'bg-[#f1edf3] text-[#756b7b]'
 }
@@ -52,8 +52,8 @@ export default async function AdminDashboardPage() {
   ]
 
   return (
-    <div className="mx-auto max-w-[1440px] space-y-8">
-      <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end"><div><p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-[#d71789]">Good to see you, {session.user.name?.split(' ')[0] ?? 'there'}</p><h1 className="text-3xl font-semibold tracking-[-0.055em] text-[#21182a] sm:text-4xl">Your workspace at a glance.</h1><p className="mt-3 text-sm text-[#887f8e]">Keep your content, people, and opportunities moving forward.</p></div><Link href="/admin/posts/new" className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[#241235] px-4 text-sm font-semibold text-white shadow-[0_10px_22px_rgba(36,18,53,0.16)] transition hover:bg-[#351747]"><Plus className="h-4 w-4" />Create a post</Link></div>
+    <div className="mx-auto max-w-[1440px] space-y-4">
+      <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end"><div><p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-[#d71789]">Good to see you, {session.user.name?.split(' ')[0] ?? 'there'}</p><h1 className="text-3xl font-semibold tracking-[-0.055em] text-[#21182a] sm:text-4xl">Your workspace at a glance.</h1><p className="mt-3 text-sm text-[#887f8e]">Keep your content, people, and opportunities moving forward.</p></div><Link href="/admin/posts/new" className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#d71789] to-[#ff7294] px-5 text-sm font-semibold text-white shadow-[0_8px_20px_rgba(215,23,137,0.25)] hover:opacity-95 border-0 transition"><Plus className="h-4 w-4" />Create a post</Link></div>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">{metrics.map((metric) => { const Icon = metric.icon; return <Link href={metric.href} key={metric.label} className="group rounded-2xl border border-[#ebe6ee] bg-white p-5 shadow-[0_5px_18px_rgba(34,20,40,0.025)] transition hover:-translate-y-0.5 hover:shadow-[0_12px_28px_rgba(34,20,40,0.08)]"><div className="flex items-start justify-between"><span className={`flex h-10 w-10 items-center justify-center rounded-xl ${metric.bg} ${metric.color}`}><Icon className="h-[18px] w-[18px]" /></span><ArrowUpRight className="h-4 w-4 text-[#c5bdc9] transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-[#d71789]" /></div><p className="mt-6 text-2xl font-semibold tracking-[-0.05em] text-[#2b2032]">{metric.value}</p><div className="mt-1 flex items-center justify-between gap-2"><p className="text-xs text-[#857c8b]">{metric.label}</p><span className="text-[10px] font-medium text-[#aaa1af]">{metric.total} total</span></div></Link> })}</div>
 

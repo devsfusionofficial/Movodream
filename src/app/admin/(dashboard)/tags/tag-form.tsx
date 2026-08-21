@@ -28,7 +28,7 @@ export function TagForm({ tagId, defaultValues }: TagFormProps) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate className="w-full max-w-none outline-none">
-      <div className="mb-6 flex items-center gap-3 border-b border-[#f0e9f0] pb-5">
+      <div className="mb-4 flex items-center gap-3 border-b border-[#f0e9f0] pb-3.5">
         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#fff0f7] text-[#e20b87]"><Tag className="h-4 w-4" /></div>
         <div><p className="text-sm font-semibold text-[#33283a]">Tag details</p><p className="mt-0.5 text-xs text-[#998d9c]">Keep labels short, recognizable, and URL-friendly.</p></div>
       </div>
@@ -44,7 +44,7 @@ export function TagForm({ tagId, defaultValues }: TagFormProps) {
           <FieldDescription>Used in the URL: /blog?tag=&lt;slug&gt;. Use lowercase words separated by hyphens.</FieldDescription>
           <FieldError errors={[errors.slug]} />
         </Field>
-        <div className="flex flex-col-reverse items-stretch justify-end gap-3 border-t border-[#f0e9f0] pt-5 sm:flex-row sm:items-center">
+        <div className="flex flex-col-reverse items-stretch justify-end gap-3 border-t border-[#f0e9f0] pt-4 sm:flex-row sm:items-center">
           <Button type="button" variant="ghost" render={<Link href="/admin/tags" />} className="text-[#887f8e]">Cancel</Button>
           <Button type="submit" disabled={isSubmitting}>{isSubmitting ? 'Saving...' : tagId ? 'Save changes' : 'Create tag'}</Button>
         </div>

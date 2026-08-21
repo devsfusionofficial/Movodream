@@ -12,6 +12,11 @@ const cache: MongooseCache = globalForMongoose.mongooseCache ?? { conn: null, pr
 globalForMongoose.mongooseCache = cache
 
 export async function connectDB() {
+  // Instant 0ms check if already connected
+  if (mongoose.connection.readyState === 1) {
+    return mongoose
+  }
+
   if (cache.conn) return cache.conn
 
   if (!cache.promise) {
@@ -19,7 +24,13 @@ export async function connectDB() {
     if (!DATABASE_URI) {
       throw new Error('Missing DATABASE_URI environment variable')
     }
-    cache.promise = mongoose.connect(DATABASE_URI, { bufferCommands: false })
+    cache.promise = mongoose.connect(DATABASE_URI, {
+      bufferCommands: false,
+      maxPoolSize: 10,
+      minPoolSize: 2,
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+    })
   }
 
   cache.conn = await cache.promise

@@ -1,30 +1,30 @@
 'use client'
 
 import type { ColumnDef } from '@tanstack/react-table'
-import { Badge } from '@/components/ui/badge'
 import { SubscriberRowActions } from './subscriber-row-actions'
-import type { listSubscribers } from '@/actions/subscribers'
-import { formatAdminDate } from '@/lib/date-format'
 
-export type SubscriberRow = Awaited<ReturnType<typeof listSubscribers>>[number]
+export type SubscriberRow = {
+  _id: string
+  email: string
+  status: 'active' | 'unsubscribed'
+  subscribedAt?: string
+  createdAt?: string
+}
 
 export const columns: ColumnDef<SubscriberRow, unknown>[] = [
   { accessorKey: 'email', header: 'Email' },
+  { accessorKey: 'status', header: 'Status' },
   {
-    accessorKey: 'status',
-    header: 'Status',
-    cell: ({ row }) => (
-      <Badge variant={row.original.status === 'active' ? 'default' : 'secondary'}>{row.original.status}</Badge>
-    ),
-  },
-  {
-    id: 'subscribedAt',
-    header: 'Subscribed',
-    cell: ({ row }) => formatAdminDate(row.original.subscribedAt ?? row.original.createdAt),
+    accessorKey: 'createdAt',
+    header: 'Date',
+    cell: ({ row }) => {
+      const d = row.original.createdAt || row.original.subscribedAt
+      return d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Recently'
+    },
   },
   {
     id: 'actions',
     header: '',
-    cell: ({ row }) => <SubscriberRowActions id={row.original._id} status={row.original.status} />,
+    cell: ({ row }) => <SubscriberRowActions id={row.original._id} subscriber={row.original} />,
   },
 ]

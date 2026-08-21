@@ -41,6 +41,6 @@ export const columns: ColumnDef<PostRow, unknown>[] = [
   {
     id: 'actions',
     header: '',
-    cell: ({ row }) => <PostRowActions id={row.original._id} />,
+    cell: ({ row }) => <PostRowActions id={row.original._id} post={row.original} />,
   },
 ]

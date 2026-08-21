@@ -18,7 +18,15 @@ function serialize<T>(doc: T): T {
 export async function listApplications() {
   await requirePermission('applications', ['read'])
   await connectDB()
-  const applications = await Application.find().sort({ createdAt: -1 }).populate('job', 'title').lean()
+  // Projection matters here: the list screens render a handful of columns,
+  // but an unprojected find() ships every field of every row to the client
+  // — including the full article/JD HTML and editor JSON. Detail screens
+  // use their own get<X>(id) and still receive everything.
+  const applications = await Application.find()
+    .select('name email status createdAt job')
+    .sort({ createdAt: -1 })
+    .populate('job', 'title')
+    .lean()
   return serialize(applications)
 }
 

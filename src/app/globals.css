@@ -183,9 +183,10 @@
     align-self: flex-end;
     min-width: 10rem;
     border-radius: 0.85rem;
-    background: #2b123d;
+    background: linear-gradient(105.63deg, #d71789 0%, #ff7294 100%);
     color: #fff;
-    box-shadow: 0 10px 20px rgb(43 18 61 / 15%);
+    box-shadow: 0 10px 22px rgb(215 23 137 / 22%);
+    transition: background 0.2s ease, transform 0.2s ease;
   }
 
   @media (max-width: 760px) {

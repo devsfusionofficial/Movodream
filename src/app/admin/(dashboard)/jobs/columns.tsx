@@ -26,6 +26,6 @@ export const columns: ColumnDef<JobRow, unknown>[] = [
   {
     id: 'actions',
     header: '',
-    cell: ({ row }) => <JobRowActions id={row.original._id} />,
+    cell: ({ row }) => <JobRowActions id={row.original._id} job={row.original} />,
   },
 ]

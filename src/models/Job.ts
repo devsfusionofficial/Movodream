@@ -33,6 +33,11 @@ jobSchema.pre<JobDocument>('validate', function () {
   if (!this.slug && this.title) this.slug = slugify(this.title)
 })
 
+// Every admin list sorts by createdAt. Without this index MongoDB does an
+// in-memory sort, which is slow and hard-fails past the 32MB sort limit
+// once the collection grows.
+jobSchema.index({ createdAt: -1 })
+
 export type JobDoc = InferSchemaType<typeof jobSchema>
 
 export const Job = models.Job ?? model('Job', jobSchema)

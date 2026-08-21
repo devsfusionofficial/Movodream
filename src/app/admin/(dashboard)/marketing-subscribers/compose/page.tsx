@@ -6,5 +6,16 @@ import { MarketingCompose } from '../marketing-compose'
 export default async function MarketingComposePage() {
   const subscribers = await listSubscribers()
   const activeCount = subscribers.filter((subscriber) => subscriber.status === 'active').length
-  return <div className="admin-resource-page space-y-5"><Link href="/admin/marketing-subscribers" className="inline-flex items-center gap-2 text-sm text-[#697176] hover:text-[#111]"><ArrowLeft className="h-4 w-4" />Back to subscribers</Link><MarketingCompose activeCount={activeCount} /></div>
+  return (
+    <div className="admin-resource-page mx-auto max-w-[1440px] space-y-4 outline-none">
+      <Link
+        href="/admin/marketing-subscribers"
+        className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#887f8e] transition-colors hover:text-[#d71789]"
+      >
+        <ArrowLeft className="h-3.5 w-3.5" />
+        Back to subscribers
+      </Link>
+      <MarketingCompose activeCount={activeCount} />
+    </div>
+  )
 }

@@ -12,6 +12,6 @@ export const columns: ColumnDef<PartnerRow, unknown>[] = [
   {
     id: 'actions',
     header: '',
-    cell: ({ row }) => <PartnerRowActions id={row.original._id} />,
+    cell: ({ row }) => <PartnerRowActions id={row.original._id} partner={row.original} />,
   },
 ]

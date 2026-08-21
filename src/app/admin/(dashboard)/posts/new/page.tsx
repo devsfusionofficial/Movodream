@@ -9,7 +9,7 @@ export default async function NewPostPage() {
   const [authors, categories, tags] = await Promise.all([listAuthors(), listCategories(), listTags()])
 
   return (
-    <div className="w-full space-y-7">
+    <div className="w-full space-y-4">
       <div className="flex flex-col gap-5 border-b border-[#ebe6ee] pb-7 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <Link href="/admin/posts" className="mb-4 inline-flex items-center gap-2 text-xs font-semibold text-[#a18f9f] transition hover:text-[#b40d6d]"><ArrowLeft className="h-3.5 w-3.5" />Back to posts</Link>
