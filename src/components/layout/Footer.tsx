@@ -9,12 +9,6 @@ const SOCIAL_LINKS = [
   { href: 'https://www.facebook.com/movodreamofficial/', label: 'Facebook', icon: 'fa-facebook' },
 ]
 
-/**
- * Redesigned per client-approved reference: dark theme, a real column grid
- * (brand, Product, Company, Legal), and the newsletter signup as its own
- * card. Offices no longer get their own footer column or route — client
- * request — office details now live entirely on /about instead.
- */
 export function Footer() {
   return (
     <footer className="movodream-footer">
@@ -64,6 +58,19 @@ export function Footer() {
             <Link href="/terms">Terms of Use</Link>
             <Link href="/cancellation-policy">Cancellation Policy</Link>
             <Link href="/support">Support</Link>
+          </div>
+
+          <div className="footer-col footer-newsletter-col">
+            <div className="footer-newsletter-heading">
+              <span className="footer-newsletter-icon">
+                <i className="fa-solid fa-paper-plane" />
+              </span>
+              <p className="footer-newsletter-card-title">Stay in the loop</p>
+            </div>
+            <p className="footer-newsletter-sub">
+              Get travel and product updates. Occasional news, no spam.
+            </p>
+            <NewsletterForm />
             <div className="social-icons social-icons-mobile">
               {SOCIAL_LINKS.map((social) => (
                 <a
@@ -79,19 +86,6 @@ export function Footer() {
               ))}
             </div>
           </div>
-
-          <div className="footer-col footer-newsletter-col">
-            <div className="footer-newsletter-heading">
-              <span className="footer-newsletter-icon">
-                <i className="fa-solid fa-paper-plane" />
-              </span>
-              <p className="footer-newsletter-card-title">Stay in the loop</p>
-            </div>
-            <p className="footer-newsletter-sub">
-              Get travel &amp; product updates. Occasional news, no spam.
-            </p>
-            <NewsletterForm />
-          </div>
         </div>
 
         <div className="footer-bottom">
@@ -99,10 +93,7 @@ export function Footer() {
           <p className="footer-tagline-bottom">
             <i className="fa-solid fa-heart" /> Built with AI. For explorers like you.
           </p>
-          <div className="global-support">
-            <span className="status-dot" />
-            GLOBAL SUPPORT ACTIVE
-          </div>
+          <div className="global-support">\n            <span className="status-dot" />\n            GLOBAL SUPPORT ACTIVE\n          </div>
         </div>
       </div>
     </footer>

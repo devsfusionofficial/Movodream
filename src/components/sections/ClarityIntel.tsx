@@ -57,21 +57,25 @@ export function ClarityIntel() {
         },
       })
 
-      gsap.fromTo(
-        '.s3-heading',
-        { x: isMobile ? '40vw' : '60vw' },
-        {
-          x: '-8%',
-          ease: 'none',
-          scrollTrigger: {
-            trigger: '.section-3',
-            scroller: document.body,
-            start: 'top 100%',
-            end: 'top 10%',
-            scrub: isMobile ? false : 2,
-          },
-        }
-      )
+      if (!isMobile) {
+        gsap.fromTo(
+          '.s3-heading',
+          { x: '30vw' },
+          {
+            x: '-15%',
+            ease: 'none',
+            scrollTrigger: {
+              trigger: '.section-3',
+              scroller: document.body,
+              start: 'top 100%',
+              end: 'top 10%',
+              scrub: 2,
+            },
+          }
+        )
+      } else {
+        gsap.set('.s3-heading', { clearProps: 'transform,x' })
+      }
 
       const phoneText = document.querySelector('.phone-text')
       if (phoneText) {
@@ -142,8 +146,8 @@ export function ClarityIntel() {
   return (
     <section id="vision" className="section-3">
       <h2 className="s3-heading">
-        <span className="s3-pink">Clarity Through</span>
-        <span className="s3-purple"> Intelligence</span>
+        <span className="s3-pink block sm:inline">Clarity Through</span>{' '}
+        <span className="s3-purple block sm:inline">Intelligence</span>
       </h2>
 
       <div className="s3-body">

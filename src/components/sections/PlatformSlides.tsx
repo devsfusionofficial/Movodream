@@ -185,7 +185,7 @@ export function PlatformSlides() {
         slideEl.style.position = prevPosition
         slideEl.style.height = prevHeight
       })
-      const natural = max + 40
+      const natural = max + 10
       const visual = Math.min(natural, window.innerHeight)
       const scale = visual / natural
       sectionEl.style.height = `${visual}px`
@@ -220,7 +220,7 @@ export function PlatformSlides() {
       trigger: '.section-4',
       scroller: document.body,
       start: 'top top',
-      end: '+=150%',
+      end: '+=90%',
       pin: true,
       pinSpacing: true,
       onUpdate(self) {
