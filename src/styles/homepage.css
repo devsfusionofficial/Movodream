@@ -3785,7 +3785,9 @@
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.social-icons-mobile { display: flex !important; margin-top: 14px !important; justify-content: flex-start !important; gap: 12px !important; }
+.social-icons-mobile {
+  display: none !important;
+}
 
 .social-icons {
   display: flex;
