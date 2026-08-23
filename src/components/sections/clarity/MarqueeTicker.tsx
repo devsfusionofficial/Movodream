@@ -18,7 +18,7 @@ const PILLS: Pill[] = [
       </svg>
     ),
   },
-  { label: 'AI-driven insights', colorClass: 'pink', icon: <Image src="/assets/icons/pill-ai-driven.svg" alt="" width={15} height={15} /> },
+  { label: 'AI-driven insights', colorClass: 'pink', icon: <Image src="/assets/icons/pill-insights.svg" alt="" width={15} height={15} style={{ width: 'auto', height: 'auto' }} /> },
   {
     label: 'Real-time',
     colorClass: 'purple',
@@ -29,11 +29,11 @@ const PILLS: Pill[] = [
       </svg>
     ),
   },
-  { label: 'Smart recommendations', colorClass: 'yellow', icon: <Image src="/assets/icons/s4-tag-yellow-recommend.svg" alt="" width={15} height={15} /> },
-  { label: 'Analyze preferences', colorClass: 'grey', icon: <Image src="/assets/icons/pill-analyze.svg" alt="" width={15} height={15} /> },
-  { label: 'Understands Intent', colorClass: 'pink', icon: <Image src="/assets/icons/pill-understands.svg" alt="" width={15} height={15} /> },
-  { label: 'Adaptive', colorClass: 'purple', icon: <Image src="/assets/icons/pill-adaptive.svg" alt="" width={15} height={15} /> },
-  { label: 'Context memory', colorClass: 'yellow', icon: <Image src="/assets/icons/pill-context-memory.svg" alt="" width={15} height={15} /> },
+  { label: 'Smart recommendations', colorClass: 'yellow', icon: <Image src="/assets/icons/s4-tag-yellow-recommend.svg" alt="" width={15} height={15} style={{ width: 'auto', height: 'auto' }} /> },
+  { label: 'Analyze preferences', colorClass: 'grey', icon: <Image src="/assets/icons/pill-analyze.svg" alt="" width={15} height={15} style={{ width: 'auto', height: 'auto' }} /> },
+  { label: 'Understands Intent', colorClass: 'pink', icon: <Image src="/assets/icons/pill-understands.svg" alt="" width={15} height={15} style={{ width: 'auto', height: 'auto' }} /> },
+  { label: 'Adaptive', colorClass: 'purple', icon: <Image src="/assets/icons/pill-adaptive.svg" alt="" width={15} height={15} style={{ width: 'auto', height: 'auto' }} /> },
+  { label: 'Context memory', colorClass: 'yellow', icon: <Image src="/assets/icons/pill-context-memory.svg" alt="" width={15} height={15} style={{ width: 'auto', height: 'auto' }} /> },
 ]
 
 // Duplicate pills arrays for 100% seamless infinite scrolling loop

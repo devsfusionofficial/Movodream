@@ -55,7 +55,7 @@ export function ExploreAppModalProvider({ children }: { children: React.ReactNod
 
           <div className="explore-modal-content">
             <div className="explore-modal-header">
-              <Image src="/assets/images/logo.png" alt="" width={60} height={60} className="explore-modal-logo" />
+              <Image src="/assets/images/logo.png" alt="" width={60} height={60} className="explore-modal-logo" style={{ width: 'auto', height: 'auto' }} />
               <h2>Choose Platform</h2>
               <p>Select your device</p>
             </div>

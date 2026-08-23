@@ -252,11 +252,12 @@ export function HeroCards() {
           alt="Green Tick"
           width={60}
           height={60}
+          style={{ width: '60px', height: '60px' }}
         />
         <div data-atropos-offset="2" className="header">
           <h3>Journey Intelligence</h3>
-          <Image src="/assets/icons/hero-card3-dots.svg" alt="" width={16} height={4} />
-          <Image src="/assets/images/expert-verified-badge.webp" alt="expert verified" width={80} height={24} />
+          <Image src="/assets/icons/hero-card3-dots.svg" alt="" width={16} height={4} style={{ width: '16px', height: '4px' }} />
+          <Image src="/assets/images/expert-verified-badge.webp" alt="expert verified" width={80} height={24} style={{ width: '80px', height: '24px' }} />
         </div>
 
         <p data-atropos-offset="2" className="sub">

@@ -97,7 +97,7 @@ export function Header() {
         className="sticky top-0 z-[500] flex w-full items-center justify-between bg-white px-[4.2%] py-4"
       >
         <Link href="/">
-          <Image src="/assets/images/logo2.webp" alt="Movodream logo" width={140} height={36} className="h-9 w-auto" priority />
+          <Image src="/assets/images/logo2.webp" alt="Movodream logo" width={140} height={36} className="h-9 w-auto" style={{ width: '140px', height: '36px' }} priority />
         </Link>
 
         {/* Desktop Nav Items */}
@@ -152,7 +152,7 @@ export function Header() {
         <div className="mobile-menu-overlay">
           <div className="mobile-menu-header">
             <Link href="/" onClick={() => setMobileOpen(false)}>
-              <Image src="/assets/images/logo2.webp" alt="Movodream logo" width={130} height={34} className="h-8 w-auto" priority />
+              <Image src="/assets/images/logo2.webp" alt="Movodream logo" width={130} height={34} className="h-8 w-auto" style={{ width: '130px', height: '34px' }} priority />
             </Link>
             <button
               type="button"

@@ -16,7 +16,7 @@ export function Footer() {
         <div className="footer-columns">
           <div className="footer-col footer-col-brand">
             <Link href="/" className="footer-logo-link">
-              <Image src="/assets/images/logo2.webp" alt="Movodream logo" width={150} height={39} />
+              <Image src="/assets/images/logo2.webp" alt="Movodream logo" width={150} height={39} style={{ width: '150px', height: '39px' }} />
             </Link>
             <p className="footer-tagline">
               Your AI travel companion — smarter planning, live guidance, and one connection to everything your trip

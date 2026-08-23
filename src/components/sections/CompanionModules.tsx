@@ -317,13 +317,13 @@ export function CompanionModules() {
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img className="dashed-circle3" width="76%" src="/assets/icons/s4-dashed-circle-3.svg" alt="" />
                 <div className="circle-images-container">
-                  <Image src="/assets/images/slider-msg-2.svg" alt="" width={190} height={80} />
-                  <Image src="/assets/images/circle-loc-2.png" alt="" width={76} height={76} />
-                  <Image src="/assets/images/slider-bali-loc.svg" alt="" width={165} height={70} />
-                  <Image src="/assets/images/899-more-locations-white.svg" alt="" width={145} height={60} />
-                  <Image src="/assets/images/slider-msg1.svg" alt="" width={175} height={70} />
-                  <Image src="/assets/images/slider-eiffil-tag.svg" alt="" width={165} height={60} />
-                  <Image src="/assets/images/star-loc.png" alt="" width={56} height={56} />
+                  <Image src="/assets/images/slider-msg-2.svg" alt="" width={190} height={80} style={{ width: 'auto', height: 'auto' }} />
+                  <Image src="/assets/images/circle-loc-2.png" alt="" width={76} height={76} style={{ width: 'auto', height: 'auto' }} />
+                  <Image src="/assets/images/slider-bali-loc.svg" alt="" width={165} height={70} style={{ width: 'auto', height: 'auto' }} />
+                  <Image src="/assets/images/899-more-locations-white.svg" alt="" width={145} height={60} style={{ width: 'auto', height: 'auto' }} />
+                  <Image src="/assets/images/slider-msg1.svg" alt="" width={175} height={70} style={{ width: 'auto', height: 'auto' }} />
+                  <Image src="/assets/images/slider-eiffil-tag.svg" alt="" width={165} height={60} style={{ width: 'auto', height: 'auto' }} />
+                  <Image src="/assets/images/star-loc.png" alt="" width={56} height={56} style={{ width: 'auto', height: 'auto' }} />
                 </div>
               </div>
 

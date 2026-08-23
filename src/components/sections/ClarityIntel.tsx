@@ -39,55 +39,63 @@ export function ClarityIntel() {
       if (cancelled) return
       const isMobile = window.innerWidth <= 768
 
-      const splitS3Heading = SplitText.create('.s3-heading', { type: 'chars' })
+      const splitS3Heading = isMobile
+        ? SplitText.create('.s3-heading', { type: 'words' })
+        : SplitText.create('.s3-heading', { type: 'chars' })
       splits.push(splitS3Heading)
 
-      gsap.from(splitS3Heading.chars, {
-        duration: 1.1,
-        y: 120,
-        autoAlpha: 0,
-        transformOrigin: '50% 100%',
-        stagger: { each: 0.08, ease: 'power2.in' },
-        ease: 'back.out',
-        scrollTrigger: {
-          trigger: '.section-3',
-          scroller: document.body,
-          start: 'top 55%',
-          once: true,
-        },
-      })
+      const targets = isMobile ? splitS3Heading.words : splitS3Heading.chars
 
-      if (!isMobile) {
-        gsap.fromTo(
-          '.s3-heading',
-          { x: '30vw' },
-          {
-            x: '-15%',
-            ease: 'none',
-            scrollTrigger: {
-              trigger: '.section-3',
-              scroller: document.body,
-              start: 'top 100%',
-              end: 'top 10%',
-              scrub: 2,
-            },
-          }
-        )
-      } else {
-        gsap.set('.s3-heading', { clearProps: 'transform,x' })
-      }
+      gsap.fromTo(
+        targets,
+        { y: isMobile ? 35 : 80, autoAlpha: 0 },
+        {
+          duration: isMobile ? 0.9 : 1.1,
+          y: 0,
+          autoAlpha: 1,
+          transformOrigin: '50% 100%',
+          stagger: { each: isMobile ? 0.08 : 0.05, ease: 'power2.in' },
+          ease: isMobile ? 'power3.out' : 'back.out(1.4)',
+          scrollTrigger: {
+            trigger: '.section-3',
+            start: isMobile ? 'top 92%' : 'top 85%',
+            toggleActions: 'play none play reverse',
+          },
+        }
+      )
+
+      // Continuous scrubbed horizontal motion across the section
+      // Scroll DOWN -> moves LEFT
+      // Scroll UP -> moves RIGHT
+      const driftFrom = isMobile ? '3vw' : '5vw'
+      const driftTo = isMobile ? '-2vw' : '-3vw'
+
+      gsap.fromTo(
+        '.s3-heading',
+        { x: driftFrom },
+        {
+          x: driftTo,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: '.section-3',
+            start: 'top 100%',
+            end: 'bottom 10%',
+            scrub: 1,
+          },
+        }
+      )
 
       const phoneText = document.querySelector('.phone-text')
       if (phoneText) {
         const lines = phoneText.querySelectorAll('span')
         const tl = gsap.timeline({
-          scrollTrigger: { trigger: '.section-3', scroller: document.body, start: 'top 65%', scrub: true },
+          scrollTrigger: { trigger: '.section-3', start: 'top 75%', scrub: true },
         })
         // The ±12% drift is a desktop flourish. On narrow phones the headline
         // already fills the width, so swinging it sideways pushes each line
         // off opposite edges. GSAP writes `transform` inline, which beats any
         // CSS override — so the amplitude has to be reduced here, not in CSS.
-        const drift = window.innerWidth <= 480 ? 0 : 12
+        const drift = isMobile ? 0 : 12
         tl.fromTo(lines[0], { x: `${drift}%` }, { x: `${-drift}%`, duration: 1.1, ease: 'power3.out' })
         tl.fromTo(lines[1], { x: `${-drift}%` }, { x: `${drift}%`, duration: 1.1, ease: 'power3.out' }, '-=0.75')
       }
@@ -100,7 +108,11 @@ export function ClarityIntel() {
         const descSub = s3Right.querySelector('.s3-desc-sub')
 
         const tl = gsap.timeline({
-          scrollTrigger: { trigger: '.s3-right', scroller: document.body, start: 'top 60%', once: true },
+          scrollTrigger: {
+            trigger: '.s3-right',
+            start: isMobile ? 'top 88%' : 'top 75%',
+            toggleActions: 'play none play reverse',
+          },
         })
 
         if (liveBadge) {

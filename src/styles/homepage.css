@@ -2184,19 +2184,19 @@
 
 .section-3 {
   width: 100%;
-  padding: 16px 0 16px;
+  padding: 90px 0 32px;
   overflow: hidden;
   position: relative;
 }
 .s3-heading {
   text-align: center;
   padding: 0 4vw;
-  font-size: clamp(2rem, 4.6vw, 5.2rem);
+  font-size: clamp(3rem, 6.2vw, 6.8rem);
   font-weight: 800;
   line-height: 1.2;
   letter-spacing: -0.03em;
   white-space: nowrap;
-  margin: 0 auto 20px;
+  margin: 0 auto 8px;
   width: 100%;
   box-sizing: border-box;
   will-change: transform;
@@ -2213,15 +2213,15 @@
   grid-template-columns: 1fr 1fr;
   align-items: center;
   gap: 0;
-  padding: 0px 5% 24px;
-  min-height: 420px;
+  padding: 0px 5% 8px;
+  min-height: 350px;
 }
 .s3-left {
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 400px;
+  min-height: 350px;
 }
 .phone-glow {
   position: absolute;
@@ -2315,7 +2315,7 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  padding: 10px 0 40px;
+  padding: 0px 0 32px;
   mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
   -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
 }
@@ -2397,37 +2397,69 @@
 .pill-icon.yellow svg { color: #f59e0b; }
 
 @media (max-width: 768px) {
+  .section-3 {
+    padding: 70px 0 28px !important;
+  }
   .s3-heading {
-    font-size: clamp(2rem, 7.5vw, 3.4rem) !important;
+    font-size: clamp(2.1rem, 8.5vw, 3.4rem) !important;
     white-space: normal !important;
     text-align: center !important;
-    padding: 0 16px !important;
-    margin: 0 auto 12px auto !important;
+    padding: 0 5% !important;
+    margin: 0 auto 10px auto !important;
     width: 100% !important;
     max-width: 100% !important;
     box-sizing: border-box !important;
+    line-height: 1.18 !important;
+    letter-spacing: -0.03em !important;
+    word-break: keep-all;
+    overflow-wrap: break-word;
+  }
+  .s3-pink {
+    display: inline-block;
+  }
+  .s3-purple {
+    display: inline-block;
+    margin-left: 6px;
   }
   .s3-body {
     grid-template-columns: 1fr;
-    padding: 12px 4% 16px;
-    gap: 14px;
+    padding: 8px 5% 16px;
+    gap: 16px;
   }
   .s3-left {
-    min-height: 60px;
-    margin-bottom: 12px;
+    min-height: 300px !important;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 100%;
   }
   /* Centred and viewport-capped: at left: 36% a fixed 280px blur pushed 80px
      off a 320px screen. Purely decorative, so it just needs to stay inside. */
   .phone-glow {
-    width: min(280px, 78vw);
-    height: min(280px, 78vw);
+    width: min(280px, 80vw);
+    height: min(280px, 80vw);
     left: 50%;
     transform: translateX(-50%);
+    opacity: 0.85;
   }
   .phone-text {
-    font-size: clamp(1.4rem, 5.5vw, 2.2rem);
-    line-height: 1.2;
-    margin-bottom: 12px;
+    font-size: clamp(1.6rem, 6.5vw, 2.4rem);
+    font-weight: 800;
+    line-height: 1.15;
+    margin-bottom: 0;
+    text-align: center;
+    position: absolute;
+    z-index: 3;
+    width: 100%;
+    align-items: center;
+    letter-spacing: -0.025em;
+  }
+  .phone-text span:first-child,
+  .phone-text span:last-child {
+    transform: none !important;
+    margin-top: 2px !important;
   }
   .s3-right {
     padding-left: 0;
@@ -2437,10 +2469,19 @@
   }
   .s3-title {
     text-align: center;
-    font-size: 32px;
+    font-size: clamp(1.4rem, 5.8vw, 2rem) !important;
+    font-weight: 800 !important;
+    line-height: 1.25 !important;
+    letter-spacing: -0.02em !important;
   }
   .s3-desc-main {
-    font-size: 16px;
+    font-size: 16px !important;
+    line-height: 1.55 !important;
+    color: rgba(44, 47, 48, 0.85) !important;
+  }
+  .s3-desc-sub {
+    font-size: 15px !important;
+    color: rgba(44, 47, 48, 0.75) !important;
   }
   .s3-ticker-section {
     padding: 10px 0 16px;
@@ -2485,29 +2526,32 @@
 }
 
 @media (max-width: 480px) {
-  .s3-title {
-    font-size: 22px;
-  }
   .s3-heading {
-    font-size: clamp(2rem, 7.5vw, 3.4rem) !important;
-    white-space: normal !important;
-    text-align: center !important;
-    padding: 0 12px !important;
+    font-size: clamp(2.2rem, 9vw, 3.2rem) !important;
+    padding: 0 4% !important;
+    margin-bottom: 20px !important;
+  }
+  .s3-left {
+    min-height: 320px !important;
+  }
+  .phone-text {
+    font-size: clamp(1.4rem, 6vw, 2rem) !important;
+  }
+  .s3-title {
+    font-size: clamp(1.3rem, 5.4vw, 1.75rem) !important;
   }
 }
 
-@media (max-width: 450px) {
-  .s3-body {
-    padding-top: 10px;
-    min-height: 0;
-    gap: 14px;
+@media (max-width: 360px) {
+  .s3-heading {
+    font-size: clamp(1.9rem, 8.8vw, 2.5rem) !important;
+    padding: 0 8px !important;
   }
   .s3-left {
-    margin-bottom: 8px;
-    margin-top: 4px;
+    min-height: 280px !important;
   }
-  .s3-heading {
-    padding: 0 8px !important;
+  .phone-text {
+    font-size: clamp(1.2rem, 5.5vw, 1.6rem) !important;
   }
 }
 
@@ -6410,24 +6454,39 @@ a.partner-card:hover {
 
 @media (max-width: 768px) {
   .section-3 {
-    padding: 24px 16px 36px;
+    padding: 70px 0 28px !important;
+  }
+  .s3-heading {
+    font-size: clamp(2.1rem, 8.5vw, 3.4rem) !important;
+    white-space: normal !important;
+    text-align: center !important;
+    padding: 0 4% !important;
+    margin: 0 auto 10px auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    line-height: 1.18 !important;
+    letter-spacing: -0.03em !important;
+    word-break: keep-all;
+    overflow-wrap: break-word;
   }
   .s3-body {
     grid-template-columns: 1fr;
-    padding: 16px 4% 24px;
-    gap: 20px;
+    padding: 8px 5% 16px;
+    gap: 16px;
   }
   .s3-left {
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 320px;
-    margin-bottom: 16px;
+    min-height: 300px !important;
+    margin-bottom: 8px;
+    width: 100%;
   }
   .phone-wrap {
-    width: 58vw;
-    max-width: 260px;
+    width: 82vw !important;
+    max-width: 340px !important;
     height: auto !important;
     max-height: none !important;
     aspect-ratio: 400/800;
@@ -6436,21 +6495,35 @@ a.partner-card:hover {
   .phone-text {
     position: absolute;
     z-index: 3;
-    font-size: clamp(1.5rem, 5.8vw, 2.2rem);
-    line-height: 1.15;
-    text-align: center;
+    font-size: clamp(2rem, 8vw, 2.8rem) !important;
+    font-weight: 800 !important;
+    line-height: 1.15 !important;
+    text-align: center !important;
+    letter-spacing: -0.03em !important;
+    width: 90% !important;
   }
   .phone-glow {
-    width: min(240px, 70vw);
-    height: min(240px, 70vw);
-    left: 50%;
-    transform: translateX(-50%);
-    filter: blur(75px);
+    width: min(320px, 90vw) !important;
+    height: min(320px, 90vw) !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    filter: blur(80px) !important;
+    opacity: 0.9 !important;
   }
   .s3-right {
     padding-left: 0;
     align-items: center;
     text-align: center;
-    gap: 14px;
+    gap: 16px;
+  }
+  .s3-title {
+    text-align: center;
+    font-size: clamp(1.6rem, 6.5vw, 2.2rem) !important;
+    font-weight: 800 !important;
+    line-height: 1.25 !important;
+  }
+  .s3-desc-main {
+    font-size: clamp(1rem, 4vw, 1.15rem) !important;
+    line-height: 1.6 !important;
   }
 }
