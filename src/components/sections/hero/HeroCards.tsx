@@ -189,7 +189,7 @@ export function HeroCards() {
       <Atropos className="card1" highlight={false} shadow={false}>
         <div className="card">
           <div data-atropos-offset="3" className="card-header">
-            <Image src="/assets/icons/hero-card1-live-travel.svg" alt="" width={40} height={40} />
+            <Image src="/assets/icons/hero-card1-live-travel.svg" alt="" width={40} height={40} style={{ width: 'auto', height: 'auto' }} />
             <div className="text">
               <h3>Live Travel Mode</h3>
               <p className="sub">ACTIVE</p>
@@ -211,7 +211,7 @@ export function HeroCards() {
 
       <Atropos className="card2" highlight={false} shadow={false}>
         <span data-atropos-offset="2" className="tag">
-          <Image src="/assets/icons/hero-card2-tag.svg" alt="" width={14} height={14} />
+          <Image src="/assets/icons/hero-card2-tag.svg" alt="" width={14} height={14} style={{ width: 'auto', height: 'auto' }} />
           See Before You Go
         </span>
         <Image
@@ -239,7 +239,7 @@ export function HeroCards() {
             <span className="circle circle2" />
           </div>
           <button type="button" className="icon">
-            <Image src="/assets/icons/hero-card2-expand.svg" alt="" width={20} height={20} />
+            <Image src="/assets/icons/hero-card2-expand.svg" alt="" width={20} height={20} style={{ width: 'auto', height: 'auto' }} />
           </button>
         </div>
       </Atropos>
