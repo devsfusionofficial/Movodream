@@ -35,9 +35,7 @@ export function HeroCards() {
   const isMobile = useMediaQuery(MOBILE_QUERY)
 
   useGSAP(() => {
-    // Breakpoint not yet known (first render, before the effect above runs)
-    // — wait rather than guess, so nothing animates in on the wrong layout.
-    if (isMobile === null) return
+    const mobile = isMobile ?? (typeof window !== 'undefined' && window.innerWidth <= 768)
 
     gsap.registerPlugin(ScrollTrigger)
 
@@ -46,30 +44,9 @@ export function HeroCards() {
     const card3 = document.querySelector<HTMLElement>('.card3')
     if (!card1 || !card2 || !card3) return
 
-    // useGSAP reverts everything this callback created — tweens, their
-    // inline style writes, and ScrollTriggers — whenever `isMobile` flips
-    // and the effect reruns, and also calls whatever cleanup function is
-    // returned below. That revert is what makes crossing the breakpoint
-    // safe: switching from desktop to mobile clears GSAP's inline styles
-    // before the mobile branch's CSS classes take over, and switching back
-    // removes the click handlers/slot classes before the desktop tweens
-    // start fresh.
+    if (mobile) {
+      gsap.set([card1, card2, card3], { clearProps: 'all' })
 
-    // Small screens lay the cards out as a fanned hand in CSS (see the
-    // max-width: 560px block in homepage.css) and let a tap bring one to the
-    // front. The deal/collapse below is skipped there: its tweens write
-    // inline transforms, which would win over the fan and strand the cards
-    // wherever the scrub happened to leave them.
-    if (isMobile) {
-      // Three CSS slots (front / back1 / back2 — see the max-width: 560px
-      // block in homepage.css) get assigned to whichever card is playing
-      // that role, tracked as a back-to-front stack. This is deliberate:
-      // an earlier version hard-coded card3 as "always front" with only
-      // card1/card2 having a back position, so tapping card2 promoted it
-      // on top of card3 with nowhere for card3 to retreat to — it just sat
-      // there, fully covered, and there was nothing left to tap. Rotating
-      // the stack instead guarantees the same one-front-two-peeking
-      // arrangement after every tap, regardless of tap order.
       const SLOTS = ['card-slot-back1', 'card-slot-back2', 'card-slot-front']
       let stack = [card1, card2, card3]
 
@@ -95,7 +72,6 @@ export function HeroCards() {
           e.preventDefault()
           activate(card)
         }
-        // These are operable now, so they need a role and a tab stop.
         card.setAttribute('role', 'button')
         card.setAttribute('tabindex', '0')
         card.addEventListener('click', onClick)

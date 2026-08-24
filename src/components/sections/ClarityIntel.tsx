@@ -29,61 +29,57 @@ export function ClarityIntel() {
     let cancelled = false
     const splits: SplitText[] = []
 
-    // SplitText measures line/word/char boxes against whatever font is
-    // active at call time — if that's still the fallback font, ScrollTrigger
-    // start/end positions computed from those boxes end up wrong once the
-    // real webfont swaps in and reflows, and nothing here re-triggers a
-    // recalculation. Waiting for fonts.ready avoids that mismatch entirely
-    // instead of chasing it with more ScrollTrigger.refresh() calls.
+    const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768
+
+    const splitS3Heading = SplitText.create('.s3-heading', { type: 'chars,words' })
+    splits.push(splitS3Heading)
+
+    const targets = splitS3Heading.chars
+
+    gsap.fromTo(
+      targets,
+      { y: isMobile ? 25 : 60, autoAlpha: 0 },
+      {
+        duration: isMobile ? 0.7 : 0.9,
+        y: 0,
+        autoAlpha: 1,
+        transformOrigin: '50% 100%',
+        stagger: { each: isMobile ? 0.05 : 0.04, ease: 'power2.in' },
+        ease: isMobile ? 'power3.out' : 'back.out(1.4)',
+        scrollTrigger: {
+          trigger: '.section-3',
+          start: isMobile ? 'top 95%' : 'top 85%',
+          toggleActions: 'play none none none',
+        },
+      }
+    )
+
+    // Continuous scrubbed horizontal motion across the section
+    // Scroll DOWN -> moves LEFT
+    // Scroll UP -> moves RIGHT
+    const driftFrom = isMobile ? '3vw' : '5vw'
+    const driftTo = isMobile ? '-2vw' : '-3vw'
+
+    gsap.fromTo(
+      '.s3-heading',
+      { x: driftFrom },
+      {
+        x: driftTo,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: '.section-3',
+          start: 'top 100%',
+          end: 'bottom 10%',
+          scrub: 1,
+        },
+      }
+    )
+
     document.fonts.ready.then(() => {
-      if (cancelled) return
-      const isMobile = window.innerWidth <= 768
-
-      const splitS3Heading = isMobile
-        ? SplitText.create('.s3-heading', { type: 'words' })
-        : SplitText.create('.s3-heading', { type: 'chars' })
-      splits.push(splitS3Heading)
-
-      const targets = isMobile ? splitS3Heading.words : splitS3Heading.chars
-
-      gsap.fromTo(
-        targets,
-        { y: isMobile ? 35 : 80, autoAlpha: 0 },
-        {
-          duration: isMobile ? 0.9 : 1.1,
-          y: 0,
-          autoAlpha: 1,
-          transformOrigin: '50% 100%',
-          stagger: { each: isMobile ? 0.08 : 0.05, ease: 'power2.in' },
-          ease: isMobile ? 'power3.out' : 'back.out(1.4)',
-          scrollTrigger: {
-            trigger: '.section-3',
-            start: isMobile ? 'top 92%' : 'top 85%',
-            toggleActions: 'play none play reverse',
-          },
-        }
-      )
-
-      // Continuous scrubbed horizontal motion across the section
-      // Scroll DOWN -> moves LEFT
-      // Scroll UP -> moves RIGHT
-      const driftFrom = isMobile ? '3vw' : '5vw'
-      const driftTo = isMobile ? '-2vw' : '-3vw'
-
-      gsap.fromTo(
-        '.s3-heading',
-        { x: driftFrom },
-        {
-          x: driftTo,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: '.section-3',
-            start: 'top 100%',
-            end: 'bottom 10%',
-            scrub: 1,
-          },
-        }
-      )
+      if (!cancelled) {
+        ScrollTrigger.refresh()
+      }
+    })
 
       const phoneText = document.querySelector('.phone-text')
       if (phoneText) {
@@ -147,13 +143,12 @@ export function ClarityIntel() {
           tl.fromTo(descSub, { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, '-=0.4')
         }
       }
-    })
 
-    return () => {
-      cancelled = true
-      splits.forEach((s) => s.revert())
-    }
-  }, [])
+      return () => {
+        cancelled = true
+        splits.forEach((s: SplitText) => s.revert())
+      }
+    }, [])
 
   return (
     <section id="vision" className="section-3">
