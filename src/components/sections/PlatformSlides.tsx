@@ -208,8 +208,8 @@ export function PlatformSlides() {
             <ul className="s4-bullets">
               <li><span>AI insights from millions of real trips</span></li>
               <li><span>One-click booking — flights, stays, experiences</span></li>
-              <li><span>Expert-verified POIs only</span></li>
-              <li><span>Real-time prices and availability</span></li>
+              <li><span>Expert-verified POIs &amp; real-time prices</span></li>
+              <li><span>Dynamic itinerary optimization &amp; budget tracking</span></li>
             </ul>
             <div className="s4-tags">
               <span className="s4-tag grey">
