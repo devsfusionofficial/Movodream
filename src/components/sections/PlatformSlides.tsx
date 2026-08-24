@@ -114,7 +114,7 @@ export function PlatformSlides() {
       sectionEl.style.height = `${visual}px`
       wrapperEl.style.height = `${natural}px`
       wrapperEl.style.transform = scale < 1 ? `scale(${scale})` : ''
-      wrapperEl.style.transformOrigin = 'top center'
+      wrapperEl.style.transformOrigin = window.innerWidth <= 768 ? 'center center' : 'top center'
     }
     applySectionHeight()
     ScrollTrigger.addEventListener('refreshInit', applySectionHeight)
