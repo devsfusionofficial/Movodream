@@ -42,95 +42,21 @@ export function PlatformSlides() {
     const s4Slides = Array.from(document.querySelectorAll<HTMLElement>('.s4-slide'))
     if (s4Slides.length === 0) return
 
-    let s4CurrentSlide = -1
-    let s4IsAnimating = false
+    let activeIndex = 0
 
-    function s4SlideIn(slideEl: HTMLElement) {
-      const left = slideEl.querySelector('.s4-left')
-      const eyebrow = slideEl.querySelector('.s4-eyebrow')
-      const heading = slideEl.querySelector('.s4-heading')
-      const bullets = slideEl.querySelectorAll('.s4-bullets li')
-      const tags = slideEl.querySelectorAll('.s4-tags .s4-tag')
-      const subText = slideEl.querySelector('.sub')
-      const cta = slideEl.querySelector('.s4-slide-cta')
+    function setActiveSlide(targetIdx: number) {
+      if (targetIdx === activeIndex) return
+      activeIndex = targetIdx
 
-      const tl = gsap.timeline()
-      gsap.set(slideEl, { opacity: 1, pointerEvents: 'auto' })
-      slideEl.classList.add('is-active')
-
-      tl.fromTo(
-        left,
-        { scale: 0.72, autoAlpha: 0, y: 48, rotationY: -12, transformOrigin: 'center bottom' },
-        { scale: 1, autoAlpha: 1, y: 0, rotationY: 0, duration: 0.7, ease: 'back.out(1.5)' }
-      )
-
-      const floatingEls = slideEl.querySelectorAll('.city-badge, .start-card')
-      if (floatingEls.length) {
-        tl.from(floatingEls, { scale: 0.6, autoAlpha: 0, y: 24, duration: 0.5, stagger: 0.08, ease: 'back.out(2)' }, '-=0.35')
-      }
-      if (eyebrow) {
-        tl.fromTo(eyebrow, { x: 80, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, ease: 'power3.out' }, '-=0.5')
-      }
-      if (heading) {
-        tl.fromTo(heading, { x: 90, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.5, ease: 'power3.out' }, '-=0.35')
-      }
-      if (bullets.length) {
-        tl.fromTo(bullets, { x: 70, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.4, stagger: 0.06, ease: 'power2.out' }, '-=0.3')
-      }
-      if (tags.length) {
-        tl.fromTo(
-          tags,
-          { x: 50, autoAlpha: 0, scale: 0.88 },
-          { x: 0, autoAlpha: 1, scale: 1, duration: 0.35, stagger: 0.05, ease: 'expo.out' },
-          '-=0.2'
-        )
-      }
-      if (subText) {
-        tl.fromTo(subText, { autoAlpha: 0, y: 20 }, { autoAlpha: 1, y: 0, duration: 0.4, ease: 'power2.out' }, '-=0.15')
-      }
-      if (cta) {
-        tl.fromTo(cta, { autoAlpha: 0, scale: 0.6 }, { autoAlpha: 1, scale: 1, duration: 0.5, ease: 'expo.out' }, '-=0.25')
-      }
-      return tl
-    }
-
-    function s4SlideOut(slideEl: HTMLElement, onDone: () => void) {
-      const children = slideEl.querySelectorAll('.s4-left, .s4-eyebrow, .s4-heading, .s4-bullets li, .s4-tags .s4-tag')
-
-      gsap.to(children, {
-        y: -50,
-        autoAlpha: 0,
-        scale: 0.94,
-        duration: 0.3,
-        stagger: 0.015,
-        ease: 'power2.in',
-        onComplete() {
-          gsap.set(slideEl, { opacity: 0, pointerEvents: 'none' })
-          slideEl.classList.remove('is-active')
-          gsap.set(children, { clearProps: 'all' })
-          onDone()
-        },
+      s4Slides.forEach((slide, idx) => {
+        if (idx === targetIdx) {
+          slide.classList.add('is-active')
+          gsap.set(slide, { opacity: 1, pointerEvents: 'auto' })
+        } else {
+          slide.classList.remove('is-active')
+          gsap.set(slide, { opacity: 0, pointerEvents: 'none' })
+        }
       })
-    }
-
-    function s4GoToSlide(nextIdx: number, onComplete?: () => void) {
-      if (nextIdx === s4CurrentSlide) {
-        onComplete?.()
-        return
-      }
-
-      const prevIdx = s4CurrentSlide
-      s4CurrentSlide = nextIdx
-
-      if (prevIdx >= 0 && s4Slides[prevIdx]) {
-        s4SlideOut(s4Slides[prevIdx], () => {
-          const tl = s4SlideIn(s4Slides[nextIdx])
-          if (onComplete) tl.eventCallback('onComplete', onComplete)
-        })
-      } else {
-        const tl = s4SlideIn(s4Slides[nextIdx])
-        if (onComplete) tl.eventCallback('onComplete', onComplete)
-      }
     }
 
     // ── s4-card idle tilt (first .s4-card only — see doc comment) ──
@@ -160,17 +86,17 @@ export function PlatformSlides() {
       }
     }
 
-    s4Slides.forEach((slideEl) => gsap.set(slideEl, { opacity: 0 }))
+    s4Slides.forEach((slideEl, idx) => {
+      if (idx === 0) {
+        gsap.set(slideEl, { opacity: 1, pointerEvents: 'auto' })
+        slideEl.classList.add('is-active')
+      } else {
+        gsap.set(slideEl, { opacity: 0, pointerEvents: 'none' })
+        slideEl.classList.remove('is-active')
+      }
+    })
+    activeIndex = 0
 
-    // .s4-slide is position:absolute;inset:0 so all 3 stack for the pin — a
-    // pinned box's on-screen position is locked, so anything taller than the
-    // viewport is permanently unreachable (scrolling can't bring it into
-    // view the way normal document flow would). Mobile content is tightened
-    // in CSS to fit one screen, but rather than trust that guess holds at
-    // every possible viewport size, this measures the real content height
-    // and — if it's still taller than the viewport even after that
-    // tightening — uniformly scales the slide down to fit exactly. Nothing
-    // ever gets clipped or half-visible; worst case it's slightly smaller.
     const sectionEl = document.querySelector<HTMLElement>('.section-4')
     const wrapperEl = document.querySelector<HTMLElement>('.s4-slides-wrapper')
     function applySectionHeight() {
@@ -196,67 +122,26 @@ export function PlatformSlides() {
     applySectionHeight()
     ScrollTrigger.addEventListener('refreshInit', applySectionHeight)
 
-    // While a snap-scroll is in flight, the user's own continued wheel/touch
-    // input fights the programmatic scroll (the original handles this with
-    // `lenis.stop()`/`lenis.start()` around each snap). normalizeScroll()
-    // with no args returns the singleton created in SmoothScrollProvider —
-    // undefined on desktop, where Lenis is the active mechanism instead.
-    function pauseScrollInput() {
-      // Non-blocking scroll transition to prevent page stalling
-    }
-    function resumeScrollInput() {
-      // Non-blocking scroll transition to prevent page stalling
-    }
-
-    function snapScrollTo(targetScroll: number) {
-      if (lenisRef.current) {
-        lenisRef.current.scrollTo(targetScroll, { duration: 0.4 })
-      } else {
-        gsap.to(window, { duration: 0.4, scrollTo: targetScroll, ease: 'power1.out' })
-      }
-    }
-
     const pinST = ScrollTrigger.create({
       trigger: '.section-4',
       scroller: document.body,
       start: 'top top',
-      end: '+=90%',
+      end: '+=240%',
       pin: true,
       pinSpacing: true,
       onUpdate(self) {
-        if (s4IsAnimating || navClickGuard.current) return
-
+        if (navClickGuard.current) return
         const p = self.progress
-        let rawIdx = 0
-        if (p > 0.33 && p <= 0.66) rawIdx = 1
-        else if (p > 0.66) rawIdx = 2
 
-        if (rawIdx !== s4CurrentSlide && rawIdx >= 0) {
-          const nextIdx = rawIdx > s4CurrentSlide ? s4CurrentSlide + 1 : s4CurrentSlide - 1
+        let nextIdx = activeIndex
+        if (activeIndex === 0 && p > 0.36) nextIdx = 1
+        else if (activeIndex === 1) {
+          if (p < 0.26) nextIdx = 0
+          else if (p > 0.72) nextIdx = 2
+        } else if (activeIndex === 2 && p < 0.62) nextIdx = 1
 
-          if (nextIdx >= 0 && nextIdx < s4Slides.length && nextIdx !== s4CurrentSlide) {
-            s4IsAnimating = true
-            pauseScrollInput()
-
-            const targetProgress = nextIdx === 0 ? 0.15 : nextIdx === 1 ? 0.5 : 0.85
-            const targetScroll = self.start + (self.end - self.start) * targetProgress
-            snapScrollTo(targetScroll)
-
-            s4GoToSlide(nextIdx)
-            setTimeout(() => {
-              s4IsAnimating = false
-              resumeScrollInput()
-            }, 700)
-          }
-        }
-      },
-      onEnter() {
-        if (s4CurrentSlide === -1 && !navClickGuard.current) {
-          s4IsAnimating = true
-          s4GoToSlide(0)
-          setTimeout(() => {
-            s4IsAnimating = false
-          }, 700)
+        if (nextIdx !== activeIndex) {
+          setActiveSlide(nextIdx)
         }
       },
       invalidateOnRefresh: true,

@@ -1423,7 +1423,8 @@
   opacity: 0;
   pointer-events: none;
 }
-.s4-slide.is-active {
+.s4-slide.is-active,
+.s4-slide.slide1 {
   opacity: 1;
   pointer-events: auto;
 }
