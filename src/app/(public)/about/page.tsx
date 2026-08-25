@@ -15,6 +15,7 @@ import {
   EyeIcon,
   GlobeIcon,
   HeartIcon,
+  LinkedInIcon,
   MapPinIcon,
   NavigateIcon,
   ShieldIcon,
@@ -49,6 +50,45 @@ const VALUES = [
     icon: <GlobeIcon />,
     title: 'Built in India. Designed for the World.',
     desc: 'Rooted in India, shaped by global perspectives, and built for journeys everywhere.',
+  },
+]
+
+const MANAGEMENT_TEAM = [
+  {
+    name: 'Harpreet Singh',
+    role: 'Founder, CEO',
+    image: '/assets/team/harpreet-singh.webp',
+    linkedin: 'https://www.linkedin.com/in/harpreet-movodream',
+  },
+  {
+    name: 'Dhiraj Ramjiyani',
+    role: 'Co-Founder, CTO',
+    image: '/assets/team/dhiraj-ramjiyani.webp',
+    linkedin: 'https://www.linkedin.com/in/dhirajramjiyani-movodream/',
+  },
+  {
+    name: 'Swanit Sankpal',
+    role: 'CPO',
+    image: '/assets/team/swanit.webp',
+    linkedin: 'https://www.linkedin.com/in/swanit-sankpal-1b9969109/',
+  },
+  {
+    name: 'Harman Singh',
+    role: 'Lead Marketing',
+    image: '/assets/team/harman.webp',
+    linkedin: 'https://www.linkedin.com/in/-harmanpreet-singh/',
+  },
+  {
+    name: 'Manjot Singh',
+    role: 'Head of Local Guru & Operations',
+    image: '/assets/team/manjot-singh.webp',
+    linkedin: 'https://www.linkedin.com/company/movodream/',
+  },
+  {
+    name: 'Arjun Bali',
+    role: 'VP Product Quality',
+    image: '/assets/team/arjun.webp',
+    linkedin: 'https://www.linkedin.com/in/arjun-bali-movodream',
   },
 ]
 
@@ -209,7 +249,7 @@ export default async function AboutPage() {
         <section className="about-presence">
           <div className="about-center">
             <h2>Our Presence</h2>
-            <p>Proudly building our technology and teams in India.</p>
+            <p>Proudly building our technology and expanding our presence globally.</p>
           </div>
           <div className="about-office-grid">
             {offices.map((office) => {
@@ -235,6 +275,47 @@ export default async function AboutPage() {
           </div>
         </section>
       )}
+
+      {/* Leadership & Management Team */}
+      <section className="about-leadership">
+        <div className="about-center">
+          <span className="about-eyebrow">Leadership</span>
+          <h2>Meet the Minds Behind Movodream</h2>
+          <p>The visionaries, technologists, and builders shaping the future of AI-powered travel.</p>
+        </div>
+        <div className="about-leadership-grid">
+          {MANAGEMENT_TEAM.map((member) => (
+            <article className="about-member-card" key={member.name}>
+              <div className="about-member-photo-wrap">
+                <Image
+                  src={member.image}
+                  alt={member.name}
+                  width={400}
+                  height={420}
+                  className="about-member-photo"
+                  sizes="(max-width: 640px) 50vw, (max-width: 980px) 33vw, 20vw"
+                />
+              </div>
+              <div className="about-member-info">
+                <div className="about-member-title-group">
+                  <h3 className="about-member-name">{member.name}</h3>
+                  <p className="about-member-role">{member.role}</p>
+                </div>
+                <a
+                  href={member.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="about-member-linkedin"
+                  aria-label={`${member.name} on LinkedIn`}
+                >
+                  <LinkedInIcon />
+                  <span>Connect</span>
+                </a>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
 
       {/* Team */}
       <section className="about-team">

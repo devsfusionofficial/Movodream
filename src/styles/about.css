@@ -554,6 +554,127 @@
   height: 90px;
 }
 
+/* ---------- leadership team ---------- */
+
+.about-page .about-leadership {
+  padding-top: 72px;
+  padding-bottom: 20px;
+}
+
+.about-leadership-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.about-member-card {
+  position: relative;
+  background: #ffffff;
+  border-radius: 24px;
+  border: 1px solid var(--ab-border);
+  box-shadow: var(--ab-shadow);
+  padding: 14px 14px 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease, border-color 0.35s ease;
+}
+
+.about-member-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 24px 50px -20px rgba(70, 20, 110, 0.35);
+  border-color: rgba(236, 42, 139, 0.38);
+}
+
+.about-member-photo-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 0.96;
+  max-height: 270px;
+  border-radius: 18px;
+  overflow: hidden;
+  background: linear-gradient(145deg, #fbf2f8 0%, #f4eafd 100%);
+  border: 1px solid rgba(236, 42, 139, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.7);
+}
+
+.about-member-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.about-member-card:hover .about-member-photo {
+  transform: scale(1.05);
+}
+
+.about-member-info {
+  padding: 16px 8px 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 4px;
+}
+
+.about-member-title-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.about-member-name {
+  margin: 0;
+  font-size: 1.06rem;
+  font-weight: 750;
+  color: var(--ab-navy);
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+}
+
+.about-member-role {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ab-pink);
+  line-height: 1.35;
+}
+
+.about-member-linkedin {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 7px 16px;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #0a66c2;
+  background: #f0f7fd;
+  border: 1px solid rgba(10, 102, 194, 0.2);
+  text-decoration: none;
+  transition: all 0.22s ease;
+}
+
+.about-member-linkedin svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.about-member-linkedin:hover {
+  background: #0a66c2;
+  color: #ffffff;
+  border-color: #0a66c2;
+  box-shadow: 0 6px 18px -4px rgba(10, 102, 194, 0.4);
+  transform: translateY(-2px);
+}
+
 /* ---------- team band ---------- */
 
 .about-page .about-team {
@@ -635,6 +756,11 @@
   .about-office-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 20px;
+  }
+
+  .about-leadership-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
   }
 
   .about-value:nth-child(2n),
@@ -823,6 +949,44 @@
   .about-office-grid {
     grid-template-columns: 1fr;
     gap: 14px;
+  }
+
+  .about-leadership-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .about-member-card {
+    border-radius: 18px;
+    padding: 10px 10px 14px;
+  }
+
+  .about-member-photo-wrap {
+    aspect-ratio: 1 / 1;
+    max-height: 180px;
+    border-radius: 14px;
+  }
+
+  .about-member-info {
+    padding: 10px 4px 0;
+    align-items: center;
+    text-align: center;
+    gap: 3px;
+  }
+
+  .about-member-name {
+    font-size: 0.92rem;
+  }
+
+  .about-member-role {
+    font-size: 0.72rem;
+  }
+
+  .about-member-linkedin {
+    width: auto;
+    padding: 5px 12px;
+    font-size: 0.72rem;
+    margin-top: 6px;
   }
 
   .about-office {
