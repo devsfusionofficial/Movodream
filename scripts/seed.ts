@@ -52,6 +52,9 @@ async function seedOffices() {
     { city: 'Delhi', slug: 'delhi', order: 1 },
     { city: 'Mumbai', slug: 'mumbai', order: 2 },
     { city: 'Amritsar', slug: 'amritsar', order: 3 },
+    { city: 'Bengaluru', slug: 'bengaluru', order: 4 },
+    { city: 'Dubai', slug: 'dubai', order: 5 },
+    { city: 'Australia', slug: 'australia', order: 6 },
   ]
 
   for (const office of offices) {

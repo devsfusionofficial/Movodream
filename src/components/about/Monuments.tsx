@@ -68,3 +68,71 @@ export function GoldenTemple({ className }: Props) {
     </svg>
   )
 }
+
+/** Bengaluru — Vidhana Soudha. */
+export function VidhanaSoudha({ className }: Props) {
+  return (
+    <svg viewBox="0 0 120 120" className={className} aria-hidden="true">
+      <g {...line}>
+        <path d="M14 108h92" />
+        <path d="M20 108v-6h80v6" />
+        <path d="M24 102V68h72v34" />
+        <path d="M48 102V76h24v26" />
+        <path d="M54 102V86a6 6 0 0112 0v16" />
+        <path d="M30 102V72M38 102V72M82 102V72M90 102V72" />
+        <path d="M22 68h76" />
+        <path d="M44 68V62h32v6" />
+        <path d="M48 62c0-14 12-22 12-22s12 8 12 22" />
+        <path d="M60 40v-14" />
+        <path d="M57 26h6" />
+        <path d="M26 68V60h8v8" />
+        <path d="M26 60a4 4 0 018 0" />
+        <path d="M30 56v-6" />
+        <path d="M86 68V60h8v8" />
+        <path d="M86 60a4 4 0 018 0" />
+        <path d="M90 56v-6" />
+      </g>
+    </svg>
+  )
+}
+
+/** Dubai — Burj Khalifa. */
+export function BurjKhalifa({ className }: Props) {
+  return (
+    <svg viewBox="0 0 120 120" className={className} aria-hidden="true">
+      <g {...line}>
+        <path d="M20 108h80" />
+        <path d="M32 108v-10h56v10" />
+        <path d="M38 98v-16h44v16" />
+        <path d="M44 82v-16h32v16" />
+        <path d="M48 66v-16h24v16" />
+        <path d="M52 50v-16h16v16" />
+        <path d="M55 34v-12h10v12" />
+        <path d="M57 22v-8h6v8" />
+        <path d="M60 14V6" />
+        <path d="M60 108V14" />
+        <path d="M38 98h44M44 82h32M48 66h24M52 50h16M55 34h10M57 22h6" />
+        <path d="M26 108v-6h6v6M88 108v-6h6v6" />
+      </g>
+    </svg>
+  )
+}
+
+/** Australia — Sydney Opera House. */
+export function SydneyOperaHouse({ className }: Props) {
+  return (
+    <svg viewBox="0 0 120 120" className={className} aria-hidden="true">
+      <g {...line}>
+        <path d="M12 108h96" />
+        <path d="M18 108v-6h84v6" />
+        <path d="M22 102V90h76v12" />
+        <path d="M26 90C28 58 48 38 66 38c-2 18-3 36-14 52" />
+        <path d="M38 90C40 66 54 50 66 38" />
+        <path d="M52 90C54 66 70 48 82 48c-2 16-3 28-10 42" />
+        <path d="M62 90C64 72 74 58 82 48" />
+        <path d="M72 90C74 76 86 64 96 64c-2 10-3 18-8 26" />
+        <path d="M24 90C22 78 26 68 32 64c0 8 0 18-2 26" />
+      </g>
+    </svg>
+  )
+}

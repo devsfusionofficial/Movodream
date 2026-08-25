@@ -2,7 +2,14 @@ import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
 import { getPublicOffices } from '@/lib/queries/offices'
-import { GatewayOfIndia, GoldenTemple, IndiaGate } from '@/components/about/Monuments'
+import {
+  BurjKhalifa,
+  GatewayOfIndia,
+  GoldenTemple,
+  IndiaGate,
+  SydneyOperaHouse,
+  VidhanaSoudha,
+} from '@/components/about/Monuments'
 import {
   CompassIcon,
   EyeIcon,
@@ -52,6 +59,11 @@ const OFFICE_META: Record<string, { role: string; focus: string; art: React.Reac
   delhi: { role: 'Head Office', focus: 'Innovation, Engineering & Product', art: <IndiaGate /> },
   mumbai: { role: 'Office', focus: 'Business, Partnerships & Operations', art: <GatewayOfIndia /> },
   amritsar: { role: 'Office', focus: 'Culture, Local Insights & Community', art: <GoldenTemple /> },
+  bengaluru: { role: 'Tech Hub', focus: 'AI Research, Technology & Architecture', art: <VidhanaSoudha /> },
+  bangalore: { role: 'Tech Hub', focus: 'AI Research, Technology & Architecture', art: <VidhanaSoudha /> },
+  dubai: { role: 'International Hub', focus: 'Global Operations & Middle East Expansion', art: <BurjKhalifa /> },
+  australia: { role: 'Regional Hub', focus: 'APAC Expansion, Growth & Alliances', art: <SydneyOperaHouse /> },
+  sydney: { role: 'Regional Hub', focus: 'APAC Expansion, Growth & Alliances', art: <SydneyOperaHouse /> },
 }
 
 export default async function AboutPage() {
