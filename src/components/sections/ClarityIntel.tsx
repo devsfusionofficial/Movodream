@@ -31,49 +31,41 @@ export function ClarityIntel() {
 
     const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768
 
-    const splitS3Heading = SplitText.create('.s3-heading', { type: 'chars,words' })
-    splits.push(splitS3Heading)
-
-    const targets = splitS3Heading.chars
-
+    // Bulletproof staggered entrance animation for .s3-heading spans ("Clarity Through" & "Intelligence")
     gsap.fromTo(
-      targets,
-      { y: isMobile ? 25 : 60, autoAlpha: 0 },
+      '.s3-heading span',
+      { y: isMobile ? 25 : 45, opacity: 0 },
       {
-        duration: isMobile ? 0.7 : 0.9,
+        duration: isMobile ? 0.75 : 0.9,
         y: 0,
-        autoAlpha: 1,
-        transformOrigin: '50% 100%',
-        stagger: { each: isMobile ? 0.05 : 0.04, ease: 'power2.in' },
-        ease: isMobile ? 'power3.out' : 'back.out(1.4)',
+        opacity: 1,
+        stagger: 0.15,
+        ease: 'power3.out',
         scrollTrigger: {
-          trigger: '.section-3',
-          start: isMobile ? 'top 95%' : 'top 85%',
+          trigger: '.s3-heading',
+          start: 'top 92%',
           toggleActions: 'play none none none',
         },
       }
     )
 
-    // Continuous scrubbed horizontal motion across the section
-    // Scroll DOWN -> moves LEFT
-    // Scroll UP -> moves RIGHT
-    const driftFrom = isMobile ? '3vw' : '5vw'
-    const driftTo = isMobile ? '-2vw' : '-3vw'
-
-    gsap.fromTo(
-      '.s3-heading',
-      { x: driftFrom },
-      {
-        x: driftTo,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: '.section-3',
-          start: 'top 100%',
-          end: 'bottom 10%',
-          scrub: 1,
-        },
-      }
-    )
+    if (!isMobile) {
+      // Continuous scrubbed horizontal motion across the section (desktop only)
+      gsap.fromTo(
+        '.s3-heading',
+        { x: '4vw' },
+        {
+          x: '-2vw',
+          ease: 'none',
+          scrollTrigger: {
+            trigger: '.section-3',
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: 1,
+          },
+        }
+      )
+    }
 
     document.fonts.ready.then(() => {
       if (!cancelled) {

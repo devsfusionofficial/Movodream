@@ -121,14 +121,15 @@ export function IzhingaFeatures() {
     <div className="izhinga-rows">
       {FEATURES.map((feature, i) => (
         <div key={feature.slug} className={`izhinga-row${i % 2 === 1 ? ' is-reversed' : ''}`}>
-          <div className="izhinga-row-media">
+          <div className="izhinga-row-media" style={feature.slug === 'immersive-experience' || feature.slug === 'ai-travel-brain' ? { background: '#f8eefb' } : undefined}>
             <Image
-              src={`/assets/product/${feature.slug}.webp`}
+              src={feature.slug === 'immersive-experience' ? '/assets/product/fifth-feature.webp' : `/assets/product/${feature.slug}.webp`}
               alt={feature.title}
               fill
               sizes="(max-width: 900px) 100vw, 1400px"
               quality={100}
               unoptimized
+              style={{ objectFit: 'cover' }}
             />
           </div>
           <div className="izhinga-row-body">

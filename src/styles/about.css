@@ -47,15 +47,18 @@
 
 .about-center h2 {
   margin: 0;
-  font-size: clamp(1.5rem, 2.4vw, 1.95rem);
-  font-weight: 700;
-  letter-spacing: -0.015em;
+  font-size: clamp(1.85rem, 3.2vw, 2.6rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
   color: var(--ab-navy);
 }
 
 .about-center p {
-  margin: 12px 0 0;
-  font-size: 0.94rem;
+  margin: 10px 0 0;
+  font-size: clamp(0.95rem, 1.2vw, 1.1rem);
+  font-weight: 500;
+  line-height: 1.6;
   color: var(--ab-muted);
 }
 
@@ -98,10 +101,10 @@
 
 .about-hero h1 {
   margin: 0;
-  font-size: clamp(2.1rem, 3.6vw, 3.1rem);
+  font-size: clamp(2.4rem, 4.5vw, 3.8rem);
   font-weight: 800;
-  letter-spacing: -0.025em;
-  line-height: 1.12;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
 }
 
 .about-hero h1 .p {
@@ -110,18 +113,19 @@
 
 .about-hero-tag {
   margin: 16px 0 0;
-  font-size: clamp(1rem, 1.5vw, 1.22rem);
+  font-size: clamp(1.05rem, 1.5vw, 1.25rem);
   font-weight: 600;
   line-height: 1.45;
   color: var(--ab-navy);
-  max-width: 470px;
+  max-width: 480px;
 }
 
 .about-hero-lead {
-  margin: 18px 0 0;
-  max-width: 460px;
-  font-size: 0.92rem;
-  line-height: 1.75;
+  margin: 16px 0 0;
+  max-width: 480px;
+  font-size: clamp(0.95rem, 1.18vw, 1.08rem);
+  line-height: 1.65;
+  font-weight: 450;
   color: var(--ab-muted);
 }
 
@@ -338,7 +342,7 @@
 .about-value {
   display: flex;
   gap: 16px;
-  align-items: flex-start;
+  align-items: center;
   padding: 22px 20px;
   border-radius: 20px;
   background: #ffffff;
@@ -584,10 +588,10 @@
 
 .about-team-copy h2 {
   margin: 0;
-  font-size: clamp(1.5rem, 2.5vw, 2rem);
-  font-weight: 700;
-  line-height: 1.25;
-  letter-spacing: -0.015em;
+  font-size: clamp(1.85rem, 3.2vw, 2.6rem);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
   color: var(--ab-navy);
 }
 
@@ -596,11 +600,11 @@
 }
 
 .about-team-copy p {
-  margin: 16px 0 0;
-  font-size: 0.9rem;
-  line-height: 1.75;
+  margin: 14px 0 0;
+  font-size: clamp(0.95rem, 1.18vw, 1.08rem);
+  line-height: 1.65;
   color: var(--ab-muted);
-  max-width: 460px;
+  max-width: 480px;
 }
 
 /* ---------- responsive ---------- */
@@ -772,7 +776,7 @@
 
   .about-value {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: 14px;
     padding: 16px 16px;
     border-radius: 16px;

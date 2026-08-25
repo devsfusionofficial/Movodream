@@ -75,19 +75,19 @@ export function ClosingCta() {
     <section className="ready-section">
       <div className="ready-card">
         <div className="ready-text">
-          <p className="ready-eyebrow">Ready to travel smarter?</p>
+          <p className="ready-eyebrow">READY TO TRAVEL SMARTER?</p>
           <h2 className="ready-headline">
-            Let <span className="gradient-text">AI</span> plan. You explore.
+            Re-imagine the journey.<br />
+            Re-discover the world.
           </h2>
           <p className="ready-subtext">
-            Smart itineraries, real-time recommendations, and local insights crafted by AI — so you can focus on the
-            journey.
+            Movodream - Travel Re-imagined
           </p>
         </div>
 
         <div className="ready-actions">
           <button type="button" className="demo-button qzv-launcher" onClick={openContactModal}>
-            Start Planning
+            Get in Touch
           </button>
           <button type="button" className="ready-secondary-button" onClick={openExploreModal}>
             Explore the App

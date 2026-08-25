@@ -2214,7 +2214,7 @@
 
 .section-3 {
   width: 100%;
-  padding: 90px 0 32px;
+  padding: 0px 0 0px !important;
   overflow: hidden;
   position: relative;
 }
@@ -2223,10 +2223,10 @@
   padding: 0 4vw;
   font-size: clamp(3rem, 6.2vw, 6.8rem);
   font-weight: 800;
-  line-height: 1.2;
+  line-height: 1.1;
   letter-spacing: -0.03em;
   white-space: nowrap;
-  margin: 0 auto 8px;
+  margin: 0 auto 0px !important;
   width: 100%;
   box-sizing: border-box;
   will-change: transform;
@@ -2243,15 +2243,16 @@
   grid-template-columns: 1fr 1fr;
   align-items: center;
   gap: 0;
-  padding: 0px 5% 8px;
-  min-height: 350px;
+  margin-top: -45px !important;
+  padding: 0px 5% 0px !important;
+  min-height: 240px !important;
 }
 .s3-left {
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 350px;
+  min-height: 260px !important;
 }
 .phone-glow {
   position: absolute;
@@ -2344,8 +2345,9 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 0px 0 32px;
+  gap: 10px;
+  margin-top: -95px !important;
+  padding: 0px 0 4px !important;
   mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
   -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
 }
@@ -2428,14 +2430,14 @@
 
 @media (max-width: 768px) {
   .section-3 {
-    padding: 70px 0 28px !important;
+    padding: 24px 0 12px !important;
   }
   .s3-heading {
-    font-size: clamp(2.1rem, 8.5vw, 3.4rem) !important;
+    font-size: clamp(2.1rem, 8.2vw, 3.3rem) !important;
     white-space: normal !important;
     text-align: center !important;
     padding: 0 5% !important;
-    margin: 0 auto 10px auto !important;
+    margin: 0 auto 12px auto !important;
     width: 100% !important;
     max-width: 100% !important;
     box-sizing: border-box !important;
@@ -2453,17 +2455,27 @@
   }
   .s3-body {
     grid-template-columns: 1fr;
-    padding: 8px 5% 16px;
-    gap: 16px;
+    padding: 4px 5% 12px !important;
+    gap: 8px !important;
+    margin-top: -32px !important;
+    min-height: auto !important;
   }
   .s3-left {
-    min-height: 300px !important;
-    margin-bottom: 8px;
+    min-height: 220px !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    margin-bottom: 0px !important;
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
     width: 100%;
+  }
+  .phone-wrap {
+    height: auto !important;
+    max-height: 250px !important;
+    overflow: visible !important;
   }
   /* Centred and viewport-capped: at left: 36% a fixed 280px blur pushed 80px
      off a 320px screen. Purely decorative, so it just needs to stay inside. */
@@ -2475,7 +2487,7 @@
     opacity: 0.85;
   }
   .phone-text {
-    font-size: clamp(1.6rem, 6.5vw, 2.4rem);
+    font-size: clamp(1.4rem, 6vw, 2.2rem);
     font-weight: 800;
     line-height: 1.15;
     margin-bottom: 0;
@@ -2495,26 +2507,28 @@
     padding-left: 0;
     align-items: center;
     text-align: center;
-    gap: 16px;
+    gap: 12px !important;
+    margin-top: -65px !important;
   }
   .s3-title {
     text-align: center;
-    font-size: clamp(1.4rem, 5.8vw, 2rem) !important;
+    font-size: clamp(1.3rem, 5.5vw, 1.85rem) !important;
     font-weight: 800 !important;
     line-height: 1.25 !important;
     letter-spacing: -0.02em !important;
   }
   .s3-desc-main {
-    font-size: 16px !important;
-    line-height: 1.55 !important;
+    font-size: 15px !important;
+    line-height: 1.5 !important;
     color: rgba(44, 47, 48, 0.85) !important;
   }
   .s3-desc-sub {
-    font-size: 15px !important;
+    font-size: 14px !important;
     color: rgba(44, 47, 48, 0.75) !important;
   }
   .s3-ticker-section {
-    padding: 10px 0 16px;
+    padding: 8px 0 12px !important;
+    margin-top: 0px !important;
     gap: 8px;
     mask-image: none !important;
     -webkit-mask-image: none !important;
@@ -2557,31 +2571,48 @@
 
 @media (max-width: 480px) {
   .s3-heading {
-    font-size: clamp(2.2rem, 9vw, 3.2rem) !important;
+    font-size: clamp(2rem, 8.5vw, 3rem) !important;
     padding: 0 4% !important;
-    margin-bottom: 20px !important;
+    margin-bottom: 12px !important;
   }
   .s3-left {
-    min-height: 320px !important;
+    min-height: 200px !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+  .phone-wrap {
+    height: auto !important;
+    max-height: 230px !important;
+    overflow: visible !important;
   }
   .phone-text {
-    font-size: clamp(1.4rem, 6vw, 2rem) !important;
+    font-size: clamp(1.3rem, 5.6vw, 1.9rem) !important;
   }
   .s3-title {
-    font-size: clamp(1.3rem, 5.4vw, 1.75rem) !important;
+    font-size: clamp(1.2rem, 5vw, 1.65rem) !important;
   }
 }
 
 @media (max-width: 360px) {
   .s3-heading {
-    font-size: clamp(1.9rem, 8.8vw, 2.5rem) !important;
+    font-size: clamp(1.8rem, 8vw, 2.4rem) !important;
     padding: 0 8px !important;
+    margin-bottom: 10px !important;
   }
   .s3-left {
-    min-height: 280px !important;
+    min-height: 190px !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+  .phone-wrap {
+    height: auto !important;
+    max-height: 210px !important;
+    overflow: visible !important;
   }
   .phone-text {
-    font-size: clamp(1.2rem, 5.5vw, 1.6rem) !important;
+    font-size: clamp(1.1rem, 5vw, 1.5rem) !important;
   }
 }
 
@@ -2600,7 +2631,7 @@
   --adv-violet: #5a2dd7;
   --adv-pink: #f03984;
   width: 100%;
-  padding: 88px 5%;
+  padding: 32px 5% 72px;
   background: linear-gradient(160deg, #fbecfb 0%, #f9f7fc 45%, #f5f1fb 100%);
 }
 .advantage-header {
@@ -3588,22 +3619,22 @@
 }
 .ready-eyebrow {
   position: relative;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 800;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--md-brand-pink, #d71789);
-  margin: 0 0 16px;
+  margin: 0 0 12px;
 }
 .ready-headline {
   position: relative;
   font-family: 'Manrope', sans-serif;
-  font-size: clamp(1.9rem, 2.9vw, 2.6rem);
+  font-size: clamp(1.6rem, 2.5vw, 2.2rem);
   font-weight: 800;
-  line-height: 1.15;
+  line-height: 1.18;
   letter-spacing: -0.02em;
   color: #ffffff;
-  margin: 0 0 16px;
+  margin: 0 0 12px;
 }
 .gradient-text {
   background: var(--md-brand-gradient, linear-gradient(105.63deg, #d71789 0%, #ff7294 100%));
@@ -3613,12 +3644,12 @@
 }
 .ready-subtext {
   position: relative;
-  font-size: 1.05rem;
-  line-height: 1.6;
-  color: rgba(255, 255, 255, 0.7);
-  max-width: 520px;
+  font-size: 0.98rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.72);
+  max-width: 500px;
   margin: 0;
-  font-weight: 400;
+  font-weight: 500;
 }
 .ready-actions {
   position: relative;
@@ -3626,15 +3657,12 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
 }
-/* Reference uses rounded rectangles here, not the pill shape `.demo-button`
-   carries elsewhere on the site — so the radius/sizing is scoped to this
-   section rather than changing the shared button globally. */
 .ready-actions .demo-button {
   border-radius: 12px;
-  padding: 15px 34px;
-  font-size: 1rem;
+  padding: 14px 30px;
+  font-size: 0.95rem;
   font-weight: 700;
 }
 .ready-secondary-button {
@@ -3697,19 +3725,22 @@
     text-align: center;
   }
   .ready-eyebrow {
-    font-size: 0.72rem !important;
-    margin-bottom: 8px !important;
+    font-size: 0.7rem !important;
+    letter-spacing: 0.12em !important;
+    margin-bottom: 6px !important;
     text-align: center;
   }
   .ready-headline {
-    font-size: 1.65rem !important;
-    line-height: 1.2 !important;
-    margin-bottom: 12px !important;
+    font-size: clamp(1.25rem, 5.2vw, 1.7rem) !important;
+    line-height: 1.25 !important;
+    margin-bottom: 8px !important;
     text-align: center;
   }
   .ready-subtext {
-    font-size: 0.88rem !important;
+    font-size: 0.85rem !important;
     line-height: 1.45 !important;
+    font-weight: 500 !important;
+    color: rgba(255, 255, 255, 0.75) !important;
     margin: 0 auto !important;
     text-align: center;
     max-width: 100% !important;
@@ -3723,10 +3754,10 @@
   .ready-actions .demo-button,
   .ready-actions .ready-secondary-button {
     width: 100% !important;
-    max-width: 260px !important;
+    max-width: 250px !important;
     padding: 12px 20px !important;
-    font-size: 0.92rem !important;
-    border-radius: 50px !important;
+    font-size: 0.88rem !important;
+    border-radius: 12px !important;
     text-align: center !important;
     justify-content: center !important;
   }
@@ -3795,17 +3826,22 @@
   margin: 0 0 4px;
 }
 
+.footer-col-brand {
+  margin-top: -6px;
+}
+
 .footer-logo-link {
   display: inline-block;
   width: fit-content;
+  margin-top: -2px;
 }
 
 .footer-tagline {
-  max-width: 320px;
-  font-size: 0.95rem;
-  color: rgba(255, 255, 255, 0.6);
-  line-height: 1.6;
-  margin: 4px 0 4px;
+  max-width: 380px;
+  font-size: 0.88rem;
+  color: rgba(255, 255, 255, 0.62);
+  line-height: 1.5;
+  margin: 6px 0 8px;
 }
 
 /* Children rely on this gap alone for their rhythm — they must not also
@@ -3814,6 +3850,11 @@
 .footer-newsletter-col {
   align-self: start;
   gap: 14px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  box-shadow: none;
+  backdrop-filter: none;
 }
 
 .footer-newsletter-heading {
@@ -3833,6 +3874,7 @@
   background: var(--md-brand-gradient, linear-gradient(105.63deg, #d71789 0%, #ff7294 100%));
   color: #fff;
   font-size: 13px;
+  box-shadow: 0 3px 12px rgba(215, 23, 137, 0.35);
 }
 
 .footer-newsletter-card-title {
@@ -3859,13 +3901,11 @@
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.social-icons-mobile {
-  display: none !important;
-}
-
 .social-icons {
   display: flex;
-  gap: 16px;
+  gap: 12px;
+  margin-top: 10px;
+  align-items: center;
 }
 
 .social-icon {
@@ -3990,10 +4030,6 @@
     font-size: 0.86rem !important;
     max-width: 280px !important;
   }
-  .footer-col-brand .social-icons {
-    display: none !important;
-  }
-  .social-icons-mobile { display: flex !important; margin-top: 14px !important; justify-content: flex-start !important; gap: 12px !important; }
   .footer-newsletter-col {
     align-items: center !important;
     text-align: center !important;
@@ -6304,14 +6340,16 @@ a.partner-card:hover {
   gap: 8px;
   padding: 5px 5px 5px 18px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  transition: border-color 0.2s ease, background 0.2s ease;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(8px);
+  transition: border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
 }
 
 .footer-newsletter-field:focus-within {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(215, 23, 137, 0.55);
+  box-shadow: 0 0 16px rgba(215, 23, 137, 0.25);
 }
 
 .footer-newsletter-input {
@@ -6343,11 +6381,13 @@ a.partner-card:hover {
   background: var(--md-brand-gradient, linear-gradient(105.63deg, #d71789 0%, #ff7294 100%));
   color: #fff;
   font-size: 0.85rem;
-  transition: transform 0.2s ease;
+  box-shadow: 0 3px 10px rgba(215, 23, 137, 0.35);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .footer-newsletter-submit:hover:not(:disabled) {
-  transform: scale(1.06);
+  transform: scale(1.06) translateX(1px);
+  box-shadow: 0 5px 15px rgba(215, 23, 137, 0.5);
 }
 
 .footer-newsletter-submit:disabled {

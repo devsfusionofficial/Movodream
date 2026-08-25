@@ -19,23 +19,8 @@ export function Footer() {
               <Image src="/assets/images/logo2.webp" alt="Movodream logo" width={150} height={39} style={{ width: '150px', height: '39px' }} />
             </Link>
             <p className="footer-tagline">
-              Your AI travel companion — smarter planning, live guidance, and one connection to everything your trip
-              needs.
+              Scalable, technology-driven products at the intersection of AI, digital innovation, and human experience—creating solutions designed to solve real-world problems and shape the future of industries.
             </p>
-            <div className="social-icons">
-              {SOCIAL_LINKS.map((social) => (
-                <a
-                  key={social.href}
-                  href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="social-icon"
-                  aria-label={social.label}
-                >
-                  <i className={`fa-brands ${social.icon}`} />
-                </a>
-              ))}
-            </div>
           </div>
 
           <div className="footer-col">
@@ -71,7 +56,7 @@ export function Footer() {
               Get travel and product updates. Occasional news, no spam.
             </p>
             <NewsletterForm />
-            <div className="social-icons social-icons-mobile">
+            <div className="social-icons">
               {SOCIAL_LINKS.map((social) => (
                 <a
                   key={social.href}
@@ -93,7 +78,10 @@ export function Footer() {
           <p className="footer-tagline-bottom">
             <i className="fa-solid fa-heart" /> Built with AI. For explorers like you.
           </p>
-          <div className="global-support">\n            <span className="status-dot" />\n            GLOBAL SUPPORT ACTIVE\n          </div>
+          <div className="global-support">
+            <span className="status-dot" />
+            GLOBAL SUPPORT ACTIVE
+          </div>
         </div>
       </div>
     </footer>

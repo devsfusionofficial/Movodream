@@ -23,10 +23,26 @@ export const metadata: Metadata = {
 }
 
 const VALUES = [
-  { icon: <HeartIcon />, title: 'Traveler First', desc: 'Every decision starts with the traveler.' },
-  { icon: <SparkleIcon />, title: 'Intelligent & Adaptive', desc: 'Our AI learns, adapts, and gets smarter every day.' },
-  { icon: <ShieldIcon />, title: 'Trusted & Transparent', desc: 'We protect your data and believe in honest systems.' },
-  { icon: <GlobeIcon />, title: 'Local, Yet Global', desc: 'Rooted in India, inspired by the world.' },
+  {
+    icon: <HeartIcon />,
+    title: 'Traveler First',
+    desc: 'Every innovation, decision, and experience begins with the people we move.',
+  },
+  {
+    icon: <SparkleIcon />,
+    title: 'Intelligence That Evolves',
+    desc: 'We build technology that learns, adapts, and evolves with every journey.',
+  },
+  {
+    icon: <ShieldIcon />,
+    title: 'Trust & Transparency',
+    desc: 'We believe and make intelligent systems that are transparent and responsible for every experience to be clear and trustworthy',
+  },
+  {
+    icon: <GlobeIcon />,
+    title: 'Built in India. Designed for the World.',
+    desc: 'Rooted in India, shaped by global perspectives, and built for journeys everywhere.',
+  },
 ]
 
 // Landmark art and the short role line are keyed by city slug. Anything not
@@ -63,7 +79,7 @@ export default async function AboutPage() {
     { value: '24/7', label: 'AI Assistance', sub: 'Always here for you' },
     {
       value: '100%',
-      label: 'India Born',
+      label: '100% Rooted',
       sub: (
         <>
           Built with <span className="about-heart">♥</span> in India
@@ -91,8 +107,10 @@ export default async function AboutPage() {
           </h1>
           <p className="about-hero-tag">Building the future of travel with AI, empathy and local intelligence.</p>
           <p className="about-hero-lead">
-            Movodream is a travel technology company on a mission to make every journey smarter, more personal, and
-            truly unforgettable.
+            Imagine trips that organize themselves as effortlessly as daydreams. Where we handle the how, so you only feel the wonder. No stress, no spreadsheets—just pure discovery and those perfect moments when a place transforms you forever.
+          </p>
+          <p className="about-hero-lead" style={{ marginTop: '12px' }}>
+            That&apos;s the future we&apos;re building at Movodream—where intelligent technology understands the journey, anticipates what you need, and makes every experience feel effortless, personal, and deeply connected to the world around you.
           </p>
           <span className="about-hero-badge">
             <SparkleIcon />
@@ -140,42 +158,7 @@ export default async function AboutPage() {
         </div>
       </section>
 
-      {/* Mission + Vision */}
-      <section className="about-pillars">
-        <div className="about-pillars-grid">
-          <article className="about-pillar">
-            <div className="about-pillar-head">
-              <span className="about-pillar-icon">
-                <TargetIcon />
-              </span>
-              <div className="about-pillar-title">
-                <span className="about-eyebrow">Our Mission</span>
-                <h3>Simplify Travel. Enrich Experiences.</h3>
-              </div>
-            </div>
-            <p>
-              We combine AI, contextual intelligence, and human expertise to help travelers plan better, decide
-              faster, and explore deeper.
-            </p>
-          </article>
 
-          <article className="about-pillar">
-            <div className="about-pillar-head">
-              <span className="about-pillar-icon">
-                <EyeIcon />
-              </span>
-              <div className="about-pillar-title">
-                <span className="about-eyebrow">Our Vision</span>
-                <h3>A World Where Travel Plans Itself.</h3>
-              </div>
-            </div>
-            <p>
-              Imagine trips that organize themselves as effortlessly as daydreams, powered by real-time insights and
-              local understanding.
-            </p>
-          </article>
-        </div>
-      </section>
 
       {/* What drives us */}
       <section className="about-values">

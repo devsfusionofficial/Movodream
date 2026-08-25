@@ -59,7 +59,6 @@ export function NewsletterForm() {
         </button>
       </div>
       {error && <div className="footer-newsletter-error">{error}</div>}
-      <p className="footer-newsletter-note">No spam. Unsubscribe anytime.</p>
     </form>
   )
 }

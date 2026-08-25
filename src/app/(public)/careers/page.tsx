@@ -30,12 +30,8 @@ export default async function CareersPage({ searchParams }: PageProps) {
       <section className="page-head">
         <span className="page-eyebrow">Careers at Movodream</span>
         <h1>
-          Help us build the future of <span className="p">AI-powered travel.</span>
+          Ideas. Impact. <span className="p">Opportunity.</span>
         </h1>
-        <p className="page-head-lead">
-          We&apos;re travelers, technologists, designers and storytellers building an intelligent travel companion
-          from India, for the world.
-        </p>
       </section>
 
       <main className="page-main">
