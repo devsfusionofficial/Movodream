@@ -1841,36 +1841,36 @@
 
 .floating-badge {
   position: absolute;
-  width: 44px;
-  height: 44px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.95);
-  border: 1px solid rgba(236, 42, 139, 0.25);
-  box-shadow: 0 8px 20px rgba(236, 42, 139, 0.15);
+  border: 1.5px solid rgba(236, 42, 139, 0.25);
+  box-shadow: 0 10px 25px rgba(236, 42, 139, 0.18);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.25rem;
+  font-size: 1.75rem;
   backdrop-filter: blur(10px);
   animation: floatBounce 4s ease-in-out infinite;
   z-index: 3;
 }
 
 .floating-badge.badge-1 {
-  top: 10px;
-  left: -15px;
+  top: 15px;
+  left: -22px;
   animation-delay: 0s;
 }
 
 .floating-badge.badge-2 {
-  top: 15px;
-  right: -15px;
+  top: 20px;
+  right: -22px;
   animation-delay: 1.3s;
 }
 
 .floating-badge.badge-3 {
-  bottom: 20px;
-  right: -10px;
+  bottom: 25px;
+  right: -16px;
   animation-delay: 2.6s;
 }
 
@@ -2481,7 +2481,26 @@
   }
 
   .floating-badge {
-    display: none;
+    display: flex;
+    width: 42px;
+    height: 42px;
+    font-size: 1.25rem;
+    box-shadow: 0 6px 16px rgba(236, 42, 139, 0.15);
+  }
+
+  .floating-badge.badge-1 {
+    top: 8px;
+    left: -8px;
+  }
+
+  .floating-badge.badge-2 {
+    top: 10px;
+    right: -8px;
+  }
+
+  .floating-badge.badge-3 {
+    bottom: 12px;
+    right: -6px;
   }
 
   .featured-grid {
