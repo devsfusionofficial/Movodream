@@ -828,6 +828,7 @@
     flex-direction: column;
     align-items: center;
     padding-top: 3%;
+    padding-bottom: 40px;
   }
   .hero-section .hero-right {
     position: relative;
@@ -836,7 +837,7 @@
     justify-content: center;
     align-items: center;
     width: 100%;
-    min-height: 70vh;
+    min-height: auto;
   }
   .hero-section .hero-left {
     flex-basis: 100%;
@@ -848,6 +849,13 @@
 }
 
 @media (max-width: 768px) {
+  .hero-section {
+    padding-bottom: 16px !important;
+  }
+  .hero-section .hero-right {
+    min-height: auto !important;
+    margin-bottom: 0 !important;
+  }
   .hero-section h1 {
     font-size: 2.5rem;
   }
@@ -887,7 +895,7 @@
     display: block;
     width: min(100%, 340px);
     height: 372px;
-    margin: 40px auto 28px;
+    margin: 28px auto 0;
   }
 
   .hero-right .cards-wrapper .card1,
@@ -1218,9 +1226,10 @@
   .section-2 {
     padding-left: 0px;
     padding-right: 0px;
+    padding-top: 48px !important;
   }
   .subs2-headline {
-    margin-bottom: 28px;
+    margin-bottom: 24px;
   }
   /* .s2-card no longer changes size on scroll (ImmersiveBooking.tsx used to
      scrub it from ~90vw up to 100svw/100svh — a genuine viewport takeover,
@@ -3576,13 +3585,22 @@
   .circle-wrapper .circle-images-container > img:nth-child(6) { top: 65%; left: 4%; transform: translate(-50%, -50%); }
   .circle-wrapper .circle-images-container > img:nth-child(7) { top: 27%; left: 6%; transform: translate(-50%, -50%); width: 56px; }
 
+  .hs3-wrapper {
+    padding: 12px !important;
+    gap: 0 !important;
+    justify-content: center !important;
+  }
   .hs3-companion-card {
-    scale: 0.7 !important;
-    transform-origin: bottom;
+    scale: 0.75 !important;
+    transform-origin: center !important;
+    margin: 0 auto !important;
+  }
+  .hs3-stats {
+    display: none !important;
   }
   .hs2-stack-wrapper {
     scale: 0.7;
-    transform-origin: center left;
+    transform-origin: center;
   }
 
   .hiw-modules-pane {
