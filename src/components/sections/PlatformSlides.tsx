@@ -42,32 +42,41 @@ export function PlatformSlides() {
     const s4Slides = Array.from(document.querySelectorAll<HTMLElement>('.s4-slide'))
     if (s4Slides.length === 0) return
 
-    // ── s4-card idle tilt (first .s4-card only — see doc comment) ──
-    const s4CardEl = document.querySelector<HTMLElement>('.s4-card')
-    let idleTilt: gsap.core.Timeline | null = null
-    const onCardEnter = () => {
-      idleTilt?.pause()
-      const s4Rotate = s4CardEl?.querySelector('.atropos-rotate')
-      if (s4Rotate) gsap.to(s4Rotate, { rotationX: 0, rotationY: 0, duration: 0.4, ease: 'power2.out' })
-    }
-    const onCardLeave = () => {
-      gsap.delayedCall(0.35, () => idleTilt?.resume())
-    }
+    // ── s4-card idle tilt on all cards ──
+    const s4CardEls = Array.from(document.querySelectorAll<HTMLElement>('.s4-card'))
+    const idleTilts: gsap.core.Timeline[] = []
+    const cardCleanups: (() => void)[] = []
 
-    if (s4CardEl) {
-      const s4Rotate = s4CardEl.querySelector('.atropos-inner')
+    s4CardEls.forEach((cardEl) => {
+      const s4Rotate = cardEl.querySelector<HTMLElement>('.atropos-inner')
       if (s4Rotate) {
-        gsap.set(s4CardEl.querySelector('.atropos-inner'), { transformStyle: 'preserve-3d' })
-        idleTilt = gsap.timeline({ repeat: -1, defaults: { ease: 'sine.inOut' } })
-        idleTilt
+        gsap.set(s4Rotate, { transformStyle: 'preserve-3d' })
+        const tiltTL = gsap.timeline({ repeat: -1, defaults: { ease: 'sine.inOut' } })
+        tiltTL
           .to(s4Rotate, { rotationX: 8, rotationY: -12, duration: 3.8 })
           .to(s4Rotate, { rotationX: -6, rotationY: 10, duration: 4.2 })
           .to(s4Rotate, { rotationX: 10, rotationY: 4, duration: 3.5 })
           .to(s4Rotate, { rotationX: -4, rotationY: -8, duration: 4.0 })
-        s4CardEl.addEventListener('mouseenter', onCardEnter)
-        s4CardEl.addEventListener('mouseleave', onCardLeave)
+        idleTilts.push(tiltTL)
+
+        const onEnter = () => {
+          tiltTL.pause()
+          const atroposRotate = cardEl.querySelector<HTMLElement>('.atropos-rotate')
+          if (atroposRotate) gsap.to(atroposRotate, { rotationX: 0, rotationY: 0, duration: 0.4, ease: 'power2.out' })
+        }
+        const onLeave = () => {
+          gsap.delayedCall(0.35, () => tiltTL.resume())
+        }
+
+        cardEl.addEventListener('mouseenter', onEnter)
+        cardEl.addEventListener('mouseleave', onLeave)
+
+        cardCleanups.push(() => {
+          cardEl.removeEventListener('mouseenter', onEnter)
+          cardEl.removeEventListener('mouseleave', onLeave)
+        })
       }
-    }
+    })
 
     let activeIndex = -1
 
@@ -114,10 +123,11 @@ export function PlatformSlides() {
       sectionEl.style.height = `${visual}px`
       wrapperEl.style.height = `${natural}px`
       wrapperEl.style.transform = scale < 1 ? `scale(${scale})` : ''
-      wrapperEl.style.transformOrigin = window.innerWidth <= 768 ? 'center center' : 'top center'
+      wrapperEl.style.transformOrigin = 'center center'
     }
     applySectionHeight()
     ScrollTrigger.addEventListener('refreshInit', applySectionHeight)
+    window.addEventListener('resize', applySectionHeight)
 
     const pinST = ScrollTrigger.create({
       trigger: '.section-4',
@@ -150,9 +160,9 @@ export function PlatformSlides() {
     return () => {
       pinST.kill()
       ScrollTrigger.removeEventListener('refreshInit', applySectionHeight)
-      idleTilt?.kill()
-      s4CardEl?.removeEventListener('mouseenter', onCardEnter)
-      s4CardEl?.removeEventListener('mouseleave', onCardLeave)
+      window.removeEventListener('resize', applySectionHeight)
+      idleTilts.forEach((t) => t.kill())
+      cardCleanups.forEach((c) => c())
     }
   }, [])
 
@@ -163,7 +173,7 @@ export function PlatformSlides() {
           <div className="s4-left">
             <Atropos className="s4-card" highlight={false} shadow={false}>
               <svg className="dashed-border-svg" xmlns="http://www.w3.org/2000/svg">
-                <rect x="1" y="1" width="calc(100% - 2px)" height="calc(100% - 2px)" rx="23" ry="23" fill="none" stroke="#D71789" strokeWidth="1.5" strokeDasharray="8 6" strokeLinecap="round" />
+                <rect x="1" y="1" width="calc(100% - 2px)" height="calc(100% - 2px)" rx="25" ry="25" fill="none" stroke="#D71789" strokeWidth="1.5" strokeDasharray="8 6" strokeLinecap="round" />
               </svg>
               <div className="photo-card">
                 <Image src="/assets/images/taj2.webp" className="card-img" alt="Movodream" width={320} height={420} style={{ width: '100%', height: '100%' }} />
@@ -239,10 +249,10 @@ export function PlatformSlides() {
           <div className="s4-left">
             <Atropos className="s4-card two" highlight={false} shadow={false}>
               <svg className="dashed-border-svg" xmlns="http://www.w3.org/2000/svg">
-                <rect x="1" y="1" width="calc(100% - 2px)" height="calc(100% - 2px)" rx="23" ry="23" fill="none" stroke="#D71789" strokeWidth="1.5" strokeDasharray="8 6" strokeLinecap="round" />
+                <rect x="1" y="1" width="calc(100% - 2px)" height="calc(100% - 2px)" rx="25" ry="25" fill="none" stroke="#D71789" strokeWidth="1.5" strokeDasharray="8 6" strokeLinecap="round" />
               </svg>
               <div className="photo-card">
-                <Image src="/assets/images/oneclickbooking.webp" className="card-img slide2-img" alt="Movodream" width={320} height={420} style={{ width: '100%', height: '100%' }} />
+                <Image src="/assets/images/brain-tourist-places.webp" className="card-img slide2-img" alt="Brain Indian Tourist Places" width={320} height={420} style={{ width: '100%', height: '100%' }} />
               </div>
               <div className="city-badge city-badge2">
                 <span className="imgs">
@@ -251,7 +261,7 @@ export function PlatformSlides() {
                 </span>
                 <span className="textsl2">
                   <span>VISITED</span>
-                  <span>Already visited 299 places</span>
+                  <span>Already visited<br />299 places</span>
                 </span>
               </div>
               <div className="sm-badge">

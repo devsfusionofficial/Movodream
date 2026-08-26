@@ -31,7 +31,7 @@ export function ProductFinalCta() {
   return (
     <div className="product-final-actions">
       <button type="button" className="product-btn product-btn--light" onClick={openContactModal}>
-        Start Planning Now
+        Get in Touch
       </button>
       <button type="button" className="product-btn product-btn--outline" onClick={openExploreModal}>
         Download App

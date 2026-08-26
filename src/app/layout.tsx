@@ -19,6 +19,8 @@ const SITE_TITLE = "AI Travel Companion for Modern Travelers | Movodream";
 const SITE_DESCRIPTION =
   "Movodream is your AI Travel Companion for smarter trip planning, bookings, live travel updates, personalized itineraries & guidance. Plan your trip today.";
 
+const GOOGLE_SITE_VERIFICATION = process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION;
+
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
@@ -28,6 +30,13 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: { default: SITE_TITLE, template: "%s | Movodream" },
   description: SITE_DESCRIPTION,
+  ...(GOOGLE_SITE_VERIFICATION
+    ? {
+        verification: {
+          google: GOOGLE_SITE_VERIFICATION,
+        },
+      }
+    : {}),
   // Favicon comes from src/app/icon.png via Next's file convention, not a
   // manual `icons` field here — avoids two competing icon declarations.
   openGraph: {

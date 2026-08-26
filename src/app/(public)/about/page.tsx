@@ -73,13 +73,13 @@ const MANAGEMENT_TEAM = [
     linkedin: 'https://www.linkedin.com/in/swanit-sankpal-1b9969109/',
   },
   {
-    name: 'Harman Singh',
-    role: 'Lead Marketing',
+    name: 'Harmanpreet Singh',
+    role: 'Lead Marketing & Design',
     image: '/assets/team/harman.webp',
     linkedin: 'https://www.linkedin.com/in/-harmanpreet-singh/',
   },
   {
-    name: 'Manjot Singh',
+    name: 'Dr. Manjot Singh',
     role: 'Head of Local Guru & Operations',
     image: '/assets/team/manjot-singh.webp',
     linkedin: 'https://www.linkedin.com/company/movodream/',

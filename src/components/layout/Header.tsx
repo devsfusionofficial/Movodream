@@ -81,7 +81,7 @@ export function Header() {
 
         <div className="nav-right flex items-center gap-3">
           <button type="button" className="nav-planning qzv-launcher" onClick={openContactModal}>
-            Start Planning
+            Get in Touch
           </button>
           {!mobileOpen && (
             <button
@@ -168,7 +168,7 @@ export function Header() {
                   openContactModal()
                 }}
               >
-                Start Planning
+                Get in Touch
               </button>
             </div>
           </div>,
