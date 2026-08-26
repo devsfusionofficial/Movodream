@@ -8,10 +8,10 @@ import { ChangingText } from './hero/ChangingText'
 import { HeroCards } from './hero/HeroCards'
 
 /**
- * Ported from script.js lines 840–907: headline splits into lines/chars
- * with a per-line staggered reveal, then desc/CTAs cascade in relative to
- * when the headline finishes (`timeOffset`) — not a fixed delay, so the
- * pacing self-adjusts to however many lines the headline wraps to.
+ * Headline splits into lines/chars with a per-line staggered reveal,
+ * then desc/CTAs cascade in relative to when the headline finishes.
+ * Uses a font-load race fallback (max 80ms) so text renders instantly
+ * on slow mobile/laptop connections without a blank screen.
  */
 export function Hero() {
   const openContactModal = useOpenContactModal()
@@ -24,62 +24,68 @@ export function Hero() {
     let splitDesc: SplitText | null = null
     let cancelled = false
 
-    // The headline starts at opacity:0 (inline style in the JSX below) and
-    // only becomes visible once this runs — if SplitText splits into
-    // lines/chars before the real webfont has loaded, it measures against
-    // the fallback font's metrics. The browser then reflows once the real
-    // font swaps in, but the split (and the char positions/timeline built
-    // from it) doesn't recompute — on a slow/cold-cache load this is common
-    // enough to be the likely cause of the hero occasionally staying blank
-    // after a hard refresh. Waiting for fonts.ready first means the split
-    // is always measured against final layout.
-    document.fonts.ready.then(() => {
+    // Race font readiness with a fast timeout (80ms) so users on slow networks
+    // immediately see the content without waiting 3-5 seconds for fonts.
+    const fontCheck = 'fonts' in document
+      ? Promise.race([document.fonts.ready, new Promise((res) => setTimeout(res, 80))])
+      : Promise.resolve()
+
+    fontCheck.then(() => {
       if (cancelled) return
 
-      splitAll = SplitText.create(headline, { type: 'lines,chars', linesClass: 'split-hero-line' })
-      gsap.set('.split-hero-line', { overflow: 'hidden' })
-      gsap.set(headline, { opacity: 1 })
-      gsap.set(splitAll.chars, { opacity: 0, xPercent: 45 })
+      try {
+        splitAll = SplitText.create(headline, { type: 'lines,chars', linesClass: 'split-hero-line' })
+        gsap.set('.split-hero-line', { overflow: 'hidden' })
+        gsap.set(headline, { opacity: 1 })
+        gsap.set(splitAll.chars, { opacity: 0, xPercent: 45 })
 
-      const master = gsap.timeline({ delay: 0.05 })
-      const CHAR_STAGGER = 0.038
-      const LINE_GAP = 0.1
-      let timeOffset = 0
+        const master = gsap.timeline({ delay: 0.04 })
+        const CHAR_STAGGER = 0.035
+        const LINE_GAP = 0.08
+        let timeOffset = 0
 
-      splitAll.lines.forEach((line) => {
-        const chars = splitAll!.chars.filter((char) => line.contains(char))
-        chars.forEach((char, i) => {
-          master.fromTo(
-            char,
-            { opacity: 0, xPercent: 45 },
-            { opacity: 1, xPercent: 0, duration: 0.38, ease: 'power2.out' },
-            timeOffset + i * CHAR_STAGGER
-          )
+        splitAll.lines.forEach((line) => {
+          const chars = splitAll!.chars.filter((char) => line.contains(char))
+          chars.forEach((char, i) => {
+            master.fromTo(
+              char,
+              { opacity: 0, xPercent: 45 },
+              { opacity: 1, xPercent: 0, duration: 0.35, ease: 'power2.out' },
+              timeOffset + i * CHAR_STAGGER
+            )
+          })
+          timeOffset += chars.length * CHAR_STAGGER + LINE_GAP
         })
-        timeOffset += chars.length * CHAR_STAGGER + LINE_GAP
-      })
 
-      const desc = document.querySelector<HTMLElement>('.hero-left .desc')
-      const ctas = document.querySelectorAll<HTMLElement>('.hero-ctas > div')
+        const desc = document.querySelector<HTMLElement>('.hero-left .desc')
+        const ctas = document.querySelectorAll<HTMLElement>('.hero-ctas > div')
 
-      gsap.set([...ctas], { opacity: 0 })
+        if (desc) {
+          splitDesc = SplitText.create(desc, { type: 'words' })
+          gsap.set(splitDesc.words, { opacity: 0, y: 14 })
+          master.to(
+            splitDesc.words,
+            { opacity: 1, y: 0, duration: 0.42, ease: 'power2.out', stagger: { each: 0.025, from: 'start' } },
+            timeOffset - 0.05
+          )
+        }
 
-      if (desc) {
-        splitDesc = SplitText.create(desc, { type: 'words' })
-        gsap.set(splitDesc.words, { opacity: 0, y: 14 })
-        master.to(
-          splitDesc.words,
-          { opacity: 1, y: 0, duration: 0.45, ease: 'power2.out', stagger: { each: 0.03, from: 'start' } },
-          timeOffset - 0.05
-        )
+        if (ctas.length > 0) {
+          gsap.set([...ctas], { opacity: 0, y: 20 })
+          master.to(
+            [...ctas],
+            { opacity: 1, y: 0, scale: 1, duration: 0.55, ease: 'back.out(1.4)', stagger: 0.1 },
+            timeOffset + 0.15
+          )
+        }
+      } catch {
+        // Safe fallback: ensure all content is fully visible if SplitText fails
+        gsap.set(headline, { opacity: 1 })
+        const desc = document.querySelector<HTMLElement>('.hero-left .desc')
+        const ctas = document.querySelectorAll<HTMLElement>('.hero-ctas > div')
+        if (desc) gsap.set(desc, { opacity: 1 })
+        if (ctas.length > 0) gsap.set([...ctas], { opacity: 1, y: 0 })
       }
-
-      master.fromTo(
-        [...ctas],
-        { opacity: 0, y: 28, scale: 0.94 },
-        { opacity: 1, y: 0, scale: 1, duration: 0.65, ease: 'back.out(1.4)', stagger: 0.1 },
-        timeOffset + 0.18
-      )
     })
 
     return () => {
@@ -92,7 +98,7 @@ export function Hero() {
   return (
     <div className="hero-section">
       <div className="hero-left">
-        <h1 style={{ opacity: 0 }}>
+        <h1>
           Building the{' '}
           <svg width="1em" height="1em" viewBox="0 0 53 53" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path

@@ -11,7 +11,11 @@ import '@/styles/pages.css'
 
 // Live site loads Manrope 200–800 via Google Fonts CDN; next/font self-hosts
 // the same variable range with no extra network request and no CLS.
-const manrope = Manrope({ subsets: ['latin'], weight: ['200', '300', '400', '500', '600', '700', '800'] })
+const manrope = Manrope({
+  subsets: ['latin'],
+  weight: ['200', '300', '400', '500', '600', '700', '800'],
+  display: 'swap',
+})
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
   return (

@@ -197,6 +197,7 @@ export function HeroCards() {
           alt="Travel Planner AI Lake"
           width={288}
           height={200}
+          priority
           style={{ width: '100%', height: 'auto' }}
         />
         <h2 data-atropos-offset="0">

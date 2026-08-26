@@ -1,10 +1,10 @@
 import 'server-only'
+import { unstable_cache } from 'next/cache'
 import { connectDB } from '@/lib/db'
 import { Job } from '@/models/Job'
 
 /**
- * Public, unauthenticated reads for /careers — distinct from actions/jobs.ts,
- * which is the admin-gated CRUD layer.
+ * Public, unauthenticated reads for /careers — cached with ISR for instant edge responses.
  */
 
 function serialize<T>(doc: T): T {
@@ -69,7 +69,7 @@ export async function getPublishedJobsPaginated({
   }
 }
 
-export async function getJobFilterOptions() {
+async function fetchJobFilterOptions() {
   await connectDB()
   const [departments, locations] = await Promise.all([
     Job.distinct('department', { status: 'published' }),
@@ -80,6 +80,12 @@ export async function getJobFilterOptions() {
     locations: locations.filter(Boolean) as string[],
   }
 }
+
+export const getJobFilterOptions = unstable_cache(
+  fetchJobFilterOptions,
+  ['job-filter-options'],
+  { revalidate: 3600, tags: ['jobs'] }
+)
 
 export async function getJobBySlug(slug: string) {
   await connectDB()
