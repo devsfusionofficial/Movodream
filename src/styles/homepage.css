@@ -2004,40 +2004,41 @@
     height: 28px !important;
     width: auto !important;
   }
+  /* ─── Section-4 mobile: unpin, stack slides naturally ─── */
   .section-4 {
-    height: 100svh;
-    min-height: 500px;
-    padding: 60px 16px 20px !important;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+    height: auto !important;
+    min-height: 0 !important;
+    padding: 50px 16px !important;
+    touch-action: pan-y !important;
   }
   .s4-slides-wrapper {
-    position: relative;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    position: static !important;
+    height: auto !important;
+    overflow: visible !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 60px !important;
+    touch-action: pan-y !important;
+    transform: none !important;
   }
   .s4-slide {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    opacity: 0;
-    pointer-events: none;
+    position: relative !important;
+    inset: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 16px !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    touch-action: pan-y !important;
+    transform: none !important;
   }
   .s4-slide.is-active {
-    opacity: 1;
-    pointer-events: auto;
+    opacity: 1 !important;
+    pointer-events: auto !important;
   }
-  .s4-slide .s4-left * {
-    pointer-events: none !important;
-  }
+  .s4-slide .s4-left *,
   .s4-slide.is-active .s4-left * {
     pointer-events: auto !important;
   }
@@ -2045,10 +2046,9 @@
     position: relative;
     min-height: 0;
     width: 100%;
-    max-width: 270px;
-    margin: 0 auto 10px auto;
-    transform: scale(0.85);
-    transform-origin: top center;
+    max-width: 275px;
+    margin: 0 auto;
+    transform: none !important;
   }
   .s4-right {
     align-items: center;
@@ -2056,32 +2056,68 @@
     text-align: center;
   }
   .s4-heading {
-    font-size: clamp(1.4rem, 5.5vw, 2rem) !important;
+    font-size: clamp(1.35rem, 5vw, 1.85rem) !important;
     line-height: 1.2 !important;
-    margin-bottom: 4px !important;
+    margin-bottom: 3px !important;
   }
   .s4-bullets {
     align-items: center;
     gap: 5px;
-    margin-top: 2px;
+    margin-top: 3px;
   }
   .s4-bullets li span {
     font-size: 13px;
     line-height: 1.35;
   }
   .s4-tags {
-    display: none !important;
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 6px 8px !important;
+    width: 100% !important;
+    max-width: 320px !important;
+    margin-top: 8px !important;
+    margin-inline: auto !important;
+    align-items: center !important;
+  }
+  .s4-tag {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 4px !important;
+    font-size: clamp(9.5px, 2.7vw, 11px) !important;
+    font-weight: 600 !important;
+    padding: 5px 8px !important;
+    border-radius: 999px !important;
+    white-space: nowrap !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    min-width: 0 !important;
+    line-height: 1 !important;
+  }
+  .s4-tag:first-child:nth-last-child(odd) {
+    grid-column: 1 / -1 !important;
+    width: auto !important;
+    max-width: max-content !important;
+    justify-self: center !important;
+    padding: 5px 14px !important;
+  }
+  .s4-tag img,
+  .s4-tag svg {
+    width: 12px !important;
+    height: 12px !important;
+    flex-shrink: 0 !important;
   }
   .s4-slide.three {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
   }
   .s4-eyebrow.s3 {
     border-radius: 999px;
   }
   .s4-eyebrow.s3 .s4-tag.green {
-    margin-top: 2px;
+    margin-top: 3px;
+    width: auto !important;
   }
   .s4-slide.three .s4-left {
     position: relative;
@@ -2091,22 +2127,27 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 0;
+    margin: 0 auto;
+    transform: none !important;
   }
   .s4-slide.three .s4-right {
     flex-basis: auto;
-    gap: 3px;
+    gap: 6px;
   }
   .s4-slide.three .s4-bullets {
-    gap: 3px;
+    gap: 5px;
   }
   .s4-slide.three .s4-bullets li span {
-    font-size: 12.5px;
-    line-height: 1.3;
+    font-size: 13px;
+    line-height: 1.35;
   }
   .s4-slide.three .s4-card {
     position: relative;
-    transform: scale(0.78);
+    width: min(72vw, 240px) !important;
+    max-width: 240px !important;
+    aspect-ratio: 1 / 1 !important;
+    height: auto !important;
+    transform: scale(0.82) !important;
     transform-origin: center center;
     margin: 0 auto;
     filter: drop-shadow(0px 8px 24px rgba(215, 23, 137, 0.18));
@@ -2114,18 +2155,13 @@
   .s4-slide.three .s4-card .circle-images-container > img {
     max-width: 52%;
     height: auto;
-    filter: drop-shadow(0px 4px 12px rgba(0, 0, 0, 0.12));
   }
-  .s4-slide.three .s4-card .circle-images-container > img:nth-child(1) { top: 6%; left: 34%; }
-  .s4-slide.three .s4-card .circle-images-container > img:nth-child(2) { top: 16%; left: 78%; }
-  .s4-slide.three .s4-card .circle-images-container > img:nth-child(3) { top: 48%; left: 84%; }
-  .s4-slide.three .s4-card .circle-images-container > img:nth-child(4) { top: 82%; left: 74%; }
-  .s4-slide.three .s4-card .circle-images-container > img:nth-child(5) { top: 92%; left: 38%; }
-  .s4-slide.three .s4-card .circle-images-container > img:nth-child(6) { top: 56%; left: 14%; }
-  .s4-slide.three .s4-card .circle-images-container > img:nth-child(7) { top: 22%; left: 12%; width: 40px; }
+  .s4-slide:not(.three) .s4-card,
   .s4-card {
-    width: min(68vw, 245px);
-    margin-inline: auto;
+    width: min(72vw, 255px) !important;
+    height: auto !important;
+    aspect-ratio: 9 / 13.2 !important;
+    margin-inline: auto !important;
   }
   /* Root cause of the "badges floating with no visible card" look: this is
      the ONLY width .photo-card ever had — 26.5vw of the VIEWPORT, no mobile

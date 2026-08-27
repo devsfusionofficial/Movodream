@@ -4,29 +4,6 @@ import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 
-/**
- * Ported from index.html's inline Three.js script (lines 1611–1795). The
- * live site loads three.js r128 + the old non-module GLTFLoader from a CDN
- * global; this uses the modern npm `three` package instead (same stable
- * APIs — Scene/PerspectiveCamera/WebGLRenderer/GLTFLoader/TextureLoader
- * haven't changed shape), which is the upgrade path the architecture doc
- * flagged rather than pinning an old CDN version.
- *
- * Preserved: render is skipped entirely while `.phone-wrap` is out of view
- * (IntersectionObserver), the model itself is only fetched once the section
- * is within 300px of the viewport (a second, earlier IntersectionObserver),
- * and the render loop is dirty-checked frame to frame — it only calls
- * renderer.render() when the lerp is still converging or a scroll just
- * happened.
- *
- * NOT ported: the live site flies `.phone-wrap` (position: fixed) across
- * the entire page via a separate ~120-line GSAP sequence spanning Vision →
- * Advantage → Ecosystem → footer, and this model's Y-axis rotation was
- * originally driven by that horizontal drift. That whole sequence is a
- * separate task. Here the phone instead gets its own self-contained
- * scroll-reactive spin (tied to scroll progress through just the Vision
- * section) so it isn't static — not full parity with the live site.
- */
 export function PhoneScene() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
@@ -46,7 +23,7 @@ export function PhoneScene() {
     })
 
     let needsRender = true
-    let isVisible = true
+    let isVisible = false
 
     function resizeCanvas() {
       const container = canvas!.parentElement
@@ -54,53 +31,17 @@ export function PhoneScene() {
       const rect = container.getBoundingClientRect()
       const width = rect.width
       const height = rect.height
-      // The container can still be 0x0 at mount (not yet laid out — timing
-      // depends on hydration/font-load races, which is why the phone only
-      // failed to appear intermittently rather than every time). Skip
-      // sizing off a zero dimension — it'd set camera.aspect to NaN/Infinity
-      // and the renderer to 0x0, and since nothing but window 'resize' used
-      // to re-run this, that broken state stuck around for the whole
-      // session. The ResizeObserver below re-fires as soon as the container
-      // actually gets real dimensions.
       if (width === 0 || height === 0) return
 
       canvas!.style.width = `${width}px`
       canvas!.style.height = `${height}px`
 
-      const maxDPR = window.matchMedia('(max-width: 768px)').matches ? 1.5 : 2
-      const pixelRatio = Math.min(window.devicePixelRatio || 1, maxDPR)
+      const pixelRatio = isMobileViewport ? 1 : Math.min(window.devicePixelRatio || 1, 2)
       renderer.setSize(width * pixelRatio, height * pixelRatio, false)
 
       camera.aspect = width / height
       camera.updateProjectionMatrix()
       needsRender = true
-    }
-
-    let visibilityObserver: IntersectionObserver | null = null
-    if ('IntersectionObserver' in window) {
-      visibilityObserver = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            const becameVisible = entry.isIntersecting && !isVisible
-            isVisible = entry.isIntersecting
-            if (becameVisible) needsRender = true
-          })
-        },
-        { root: null, threshold: 0.01 }
-      )
-      const phoneWrap = document.querySelector('.phone-wrap')
-      if (phoneWrap) visibilityObserver.observe(phoneWrap)
-    }
-
-    resizeCanvas()
-    window.addEventListener('resize', resizeCanvas)
-    // Catches the container going from 0x0 to its real size (and any later
-    // layout shift), which a one-shot measurement + window-resize-only
-    // listener can miss entirely if that transition happens between them.
-    let resizeObserver: ResizeObserver | null = null
-    if (canvas.parentElement && 'ResizeObserver' in window) {
-      resizeObserver = new ResizeObserver(() => resizeCanvas())
-      resizeObserver.observe(canvas.parentElement)
     }
 
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.6)
@@ -112,6 +53,7 @@ export function PhoneScene() {
     const textureLoader = new THREE.TextureLoader()
     let phoneModelRequested = false
     let animationFrameId: number | null = null
+    const cleanupFns: Array<() => void> = []
 
     function startPhoneModelLoad() {
       if (phoneModelRequested) return
@@ -188,8 +130,10 @@ export function PhoneScene() {
         function animate() {
           animationFrameId = requestAnimationFrame(animate)
 
+          // Throttle completely when offscreen to save mobile CPU/GPU
+          if (!isVisible) return
+
           const progress = getVisionScrollProgress()
-          // Smooth front-facing scroll sweep (-0.35 rad to +0.35 rad, centered at 0 when progress=0.5)
           const scrollYRotation = (progress - 0.5) * 0.7
           const targetY = scrollYRotation + mouseTilt.x
           const targetX = Math.max(-MAX_X, Math.min(MAX_X, scrollDelta * 0.0018)) - mouseTilt.y
@@ -230,10 +174,32 @@ export function PhoneScene() {
       })
     }
 
-    const cleanupFns: Array<() => void> = []
+    let visibilityObserver: IntersectionObserver | null = null
+    if ('IntersectionObserver' in window) {
+      visibilityObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            const becameVisible = entry.isIntersecting
+            isVisible = entry.isIntersecting
+            if (becameVisible) {
+              needsRender = true
+              startPhoneModelLoad()
+            }
+          })
+        },
+        { root: null, rootMargin: '250px', threshold: 0.01 }
+      )
+      const phoneWrap = document.querySelector('.phone-wrap')
+      if (phoneWrap) visibilityObserver.observe(phoneWrap)
+    }
 
-    // Start loading the model immediately on mount
-    startPhoneModelLoad()
+    resizeCanvas()
+    window.addEventListener('resize', resizeCanvas)
+    let resizeObserver: ResizeObserver | null = null
+    if (canvas.parentElement && 'ResizeObserver' in window) {
+      resizeObserver = new ResizeObserver(() => resizeCanvas())
+      resizeObserver.observe(canvas.parentElement)
+    }
 
     camera.position.z = 2
 

@@ -78,89 +78,118 @@ export function PlatformSlides() {
       }
     })
 
-    let activeIndex = -1
+    const mm = gsap.matchMedia()
 
-    function showSlide(targetIdx: number) {
-      if (targetIdx === activeIndex) return
-      activeIndex = targetIdx
+    // ── DESKTOP & TABLET (> 768px): Pinned 3-slide interactive showcase
+    mm.add('(min-width: 769px)', () => {
+      let activeIndex = -1
 
-      s4Slides.forEach((slide, idx) => {
-        if (idx === targetIdx) {
-          slide.classList.add('is-active')
-          gsap.killTweensOf(slide)
-          gsap.fromTo(
-            slide,
-            { opacity: 0, y: 15, pointerEvents: 'none' },
-            { opacity: 1, y: 0, pointerEvents: 'auto', duration: 0.35, ease: 'power2.out' }
-          )
-        } else {
-          slide.classList.remove('is-active')
-          gsap.killTweensOf(slide)
-          gsap.set(slide, { opacity: 0, pointerEvents: 'none', y: 0 })
-        }
+      function showSlide(targetIdx: number) {
+        if (targetIdx === activeIndex) return
+        activeIndex = targetIdx
+
+        s4Slides.forEach((slide, idx) => {
+          if (idx === targetIdx) {
+            slide.classList.add('is-active')
+            gsap.killTweensOf(slide)
+            gsap.fromTo(
+              slide,
+              { opacity: 0, y: 15, pointerEvents: 'none' },
+              { opacity: 1, y: 0, pointerEvents: 'auto', duration: 0.35, ease: 'power2.out' }
+            )
+          } else {
+            slide.classList.remove('is-active')
+            gsap.killTweensOf(slide)
+            gsap.set(slide, { opacity: 0, pointerEvents: 'none', y: 0 })
+          }
+        })
+      }
+
+      showSlide(0)
+
+      const sectionEl = document.querySelector<HTMLElement>('.section-4')
+      const wrapperEl = document.querySelector<HTMLElement>('.s4-slides-wrapper')
+
+      function applySectionHeight() {
+        if (!sectionEl || !wrapperEl) return
+        let max = window.innerHeight
+        s4Slides.forEach((slideEl) => {
+          const prevPosition = slideEl.style.position
+          const prevHeight = slideEl.style.height
+          slideEl.style.position = 'static'
+          slideEl.style.height = 'auto'
+          max = Math.max(max, slideEl.offsetHeight)
+          slideEl.style.position = prevPosition
+          slideEl.style.height = prevHeight
+        })
+        const natural = max + 10
+        const visual = Math.min(natural, window.innerHeight)
+        const scale = visual / natural
+        sectionEl.style.height = `${visual}px`
+        wrapperEl.style.height = `${natural}px`
+        wrapperEl.style.transform = scale < 1 ? `scale(${scale})` : ''
+        wrapperEl.style.transformOrigin = 'center center'
+      }
+      applySectionHeight()
+      ScrollTrigger.addEventListener('refreshInit', applySectionHeight)
+      window.addEventListener('resize', applySectionHeight)
+
+      const pinST = ScrollTrigger.create({
+        trigger: '.section-4',
+        scroller: document.body,
+        start: 'top top',
+        end: '+=140%',
+        pin: true,
+        pinSpacing: true,
+        anticipatePin: 1,
+        onUpdate(self) {
+          if (navClickGuard.current) return
+          const p = self.progress
+          const dir = self.direction
+
+          let targetIdx = activeIndex
+          if (dir >= 0) {
+            if (activeIndex === 0 && p > 0.22) targetIdx = 1
+            else if (activeIndex === 1 && p > 0.58) targetIdx = 2
+          } else {
+            if (activeIndex === 2 && p < 0.72) targetIdx = 1
+            else if (activeIndex === 1 && p < 0.38) targetIdx = 0
+          }
+
+          if (targetIdx !== activeIndex) {
+            showSlide(targetIdx)
+          }
+        },
+        invalidateOnRefresh: true,
       })
-    }
 
-    showSlide(0)
+      return () => {
+        pinST.kill()
+        ScrollTrigger.removeEventListener('refreshInit', applySectionHeight)
+        window.removeEventListener('resize', applySectionHeight)
+      }
+    })
 
-    const sectionEl = document.querySelector<HTMLElement>('.section-4')
-    const wrapperEl = document.querySelector<HTMLElement>('.s4-slides-wrapper')
-    function applySectionHeight() {
-      if (!sectionEl || !wrapperEl) return
-      let max = window.innerHeight
-      s4Slides.forEach((slideEl) => {
-        const prevPosition = slideEl.style.position
-        const prevHeight = slideEl.style.height
-        slideEl.style.position = 'static'
-        slideEl.style.height = 'auto'
-        max = Math.max(max, slideEl.offsetHeight)
-        slideEl.style.position = prevPosition
-        slideEl.style.height = prevHeight
+    // ── MOBILE (<= 768px): Natural stacked flow without pinning
+    mm.add('(max-width: 768px)', () => {
+      s4Slides.forEach((slide) => {
+        slide.classList.add('is-active')
+        gsap.set(slide, { opacity: 1, pointerEvents: 'auto', y: 0, clearProps: 'transform' })
       })
-      const natural = max + 10
-      const visual = Math.min(natural, window.innerHeight)
-      const scale = visual / natural
-      sectionEl.style.height = `${visual}px`
-      wrapperEl.style.height = `${natural}px`
-      wrapperEl.style.transform = scale < 1 ? `scale(${scale})` : ''
-      wrapperEl.style.transformOrigin = 'center center'
-    }
-    applySectionHeight()
-    ScrollTrigger.addEventListener('refreshInit', applySectionHeight)
-    window.addEventListener('resize', applySectionHeight)
-
-    const pinST = ScrollTrigger.create({
-      trigger: '.section-4',
-      scroller: document.body,
-      start: 'top top',
-      end: '+=140%',
-      pin: true,
-      pinSpacing: true,
-      onUpdate(self) {
-        if (navClickGuard.current) return
-        const p = self.progress
-        const dir = self.direction
-
-        let targetIdx = activeIndex
-        if (dir >= 0) {
-          if (activeIndex === 0 && p > 0.22) targetIdx = 1
-          else if (activeIndex === 1 && p > 0.58) targetIdx = 2
-        } else {
-          if (activeIndex === 2 && p < 0.72) targetIdx = 1
-          else if (activeIndex === 1 && p < 0.38) targetIdx = 0
-        }
-
-        if (targetIdx !== activeIndex) {
-          showSlide(targetIdx)
-        }
-      },
-      invalidateOnRefresh: true,
+      const sectionEl = document.querySelector<HTMLElement>('.section-4')
+      const wrapperEl = document.querySelector<HTMLElement>('.s4-slides-wrapper')
+      if (sectionEl) {
+        sectionEl.style.height = ''
+        sectionEl.style.minHeight = ''
+      }
+      if (wrapperEl) {
+        wrapperEl.style.height = ''
+        wrapperEl.style.transform = ''
+      }
     })
 
     return () => {
-      pinST.kill()
-      ScrollTrigger.removeEventListener('refreshInit', applySectionHeight)
-      window.removeEventListener('resize', applySectionHeight)
+      mm.revert()
       idleTilts.forEach((t) => t.kill())
       cardCleanups.forEach((c) => c())
     }
@@ -171,7 +200,7 @@ export function PlatformSlides() {
       <div className="s4-slides-wrapper">
         <div className="s4-slide slide1" data-slide="0">
           <div className="s4-left">
-            <Atropos className="s4-card" highlight={false} shadow={false}>
+            <Atropos className="s4-card" highlight={false} shadow={false} rotateTouch={false}>
               <svg className="dashed-border-svg" xmlns="http://www.w3.org/2000/svg">
                 <rect x="1" y="1" width="calc(100% - 2px)" height="calc(100% - 2px)" rx="25" ry="25" fill="none" stroke="#D71789" strokeWidth="1.5" strokeDasharray="8 6" strokeLinecap="round" />
               </svg>
@@ -247,7 +276,7 @@ export function PlatformSlides() {
 
         <div className="s4-slide" data-slide="1">
           <div className="s4-left">
-            <Atropos className="s4-card two" highlight={false} shadow={false}>
+            <Atropos className="s4-card two" highlight={false} shadow={false} rotateTouch={false}>
               <svg className="dashed-border-svg" xmlns="http://www.w3.org/2000/svg">
                 <rect x="1" y="1" width="calc(100% - 2px)" height="calc(100% - 2px)" rx="25" ry="25" fill="none" stroke="#D71789" strokeWidth="1.5" strokeDasharray="8 6" strokeLinecap="round" />
               </svg>
@@ -283,6 +312,10 @@ export function PlatformSlides() {
               <li><span>Never asks for the same info twice</span></li>
             </ul>
             <div className="s4-tags">
+              <span className="s4-tag purple">
+                <Image src="/assets/icons/s4-tag-purple-adaptive.svg" alt="" width={13} height={10} />
+                Adaptive
+              </span>
               <span className="s4-tag yellow">
                 <Image src="/assets/icons/s4-tag-yellow-memory.svg" alt="" width={11} height={12} />
                 Context memory
@@ -290,10 +323,6 @@ export function PlatformSlides() {
               <span className="s4-tag pink">
                 <Image src="/assets/icons/s4-tag-pink-understands.svg" alt="" width={13} height={13} />
                 Understands Intent
-              </span>
-              <span className="s4-tag purple">
-                <Image src="/assets/icons/s4-tag-purple-adaptive.svg" alt="" width={13} height={10} />
-                Adaptive
               </span>
             </div>
           </div>

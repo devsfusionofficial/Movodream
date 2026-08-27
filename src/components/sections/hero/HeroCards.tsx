@@ -162,7 +162,7 @@ export function HeroCards() {
 
   return (
     <div className="cards-wrapper">
-      <Atropos className="card1" highlight={false} shadow={false}>
+      <Atropos className="card1" highlight={false} shadow={false} rotateTouch={false}>
         <div className="card">
           <div data-atropos-offset="3" className="card-header">
             <Image src="/assets/icons/hero-card1-live-travel.svg" alt="" width={40} height={40} style={{ width: 'auto', height: 'auto' }} />
@@ -185,7 +185,7 @@ export function HeroCards() {
         </div>
       </Atropos>
 
-      <Atropos className="card2" highlight={false} shadow={false}>
+      <Atropos className="card2" highlight={false} shadow={false} rotateTouch={false}>
         <span data-atropos-offset="2" className="tag">
           <Image src="/assets/icons/hero-card2-tag.svg" alt="" width={14} height={14} style={{ width: 'auto', height: 'auto' }} />
           See Before You Go
@@ -221,7 +221,7 @@ export function HeroCards() {
         </div>
       </Atropos>
 
-      <Atropos className="card3" highlight={false} shadow={false}>
+      <Atropos className="card3" highlight={false} shadow={false} rotateTouch={false}>
         <Image
           data-atropos-offset="2"
           className="green-tick-stamp"
