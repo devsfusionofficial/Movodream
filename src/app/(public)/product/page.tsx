@@ -65,7 +65,7 @@ export default async function ProductPage() {
 
   return (
     <div className="product-page">
-      <section className="product-hero">
+      <section id="overview" className="product-hero">
         <div className="product-hero-text">
           <span className="product-eyebrow">Product</span>
           <h1>

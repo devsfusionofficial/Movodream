@@ -24,14 +24,79 @@ function LenisUrlListener({ lenisRef }: { lenisRef: React.RefObject<Lenis | null
   const searchParams = useSearchParams()
 
   useEffect(() => {
-    if (lenisRef.current) {
-      const timer = setTimeout(() => {
-        lenisRef.current?.resize()
-        ScrollTrigger.refresh()
-      }, 100)
-      return () => clearTimeout(timer)
+    const scrollToHash = () => {
+      const hash = window.location.hash
+      if (!hash) return
+      const target = document.querySelector(hash) as HTMLElement | null
+      if (!target) return
+
+      if (lenisRef.current) {
+        lenisRef.current.scrollTo(target, { offset: -90, duration: 1.0 })
+      } else {
+        const top = target.getBoundingClientRect().top + window.scrollY - 90
+        window.scrollTo({ top, behavior: 'smooth' })
+      }
     }
+
+    const timer = setTimeout(() => {
+      lenisRef.current?.resize()
+      ScrollTrigger.refresh()
+      if (window.location.hash) {
+        scrollToHash()
+      }
+    }, 150)
+
+    return () => clearTimeout(timer)
   }, [pathname, searchParams, lenisRef])
+
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash
+      if (!hash) return
+      const target = document.querySelector(hash) as HTMLElement | null
+      if (!target) return
+
+      if (lenisRef.current) {
+        lenisRef.current.scrollTo(target, { offset: -90, duration: 1.0 })
+      } else {
+        const top = target.getBoundingClientRect().top + window.scrollY - 90
+        window.scrollTo({ top, behavior: 'smooth' })
+      }
+    }
+
+    const handleClick = (e: MouseEvent) => {
+      const link = (e.target as HTMLElement).closest('a')
+      if (!link) return
+      const href = link.getAttribute('href')
+      if (!href || !href.includes('#')) return
+
+      try {
+        const url = new URL(link.href, window.location.href)
+        if (url.pathname === window.location.pathname && url.hash) {
+          const target = document.querySelector(url.hash) as HTMLElement | null
+          if (target) {
+            e.preventDefault()
+            window.history.pushState(null, '', url.hash)
+            if (lenisRef.current) {
+              lenisRef.current.scrollTo(target, { offset: -90, duration: 1.0 })
+            } else {
+              const top = target.getBoundingClientRect().top + window.scrollY - 90
+              window.scrollTo({ top, behavior: 'smooth' })
+            }
+          }
+        }
+      } catch {
+        // Safe ignore
+      }
+    }
+
+    window.addEventListener('hashchange', handleHashChange)
+    document.addEventListener('click', handleClick)
+    return () => {
+      window.removeEventListener('hashchange', handleHashChange)
+      document.removeEventListener('click', handleClick)
+    }
+  }, [lenisRef])
 
   return null
 }
@@ -41,20 +106,23 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
   const isMobile = useMediaQuery('(max-width: 768px)')
 
   useEffect(() => {
-    // Force scroll to top (0, 0) on page load / refresh
-    window.scrollTo(0, 0)
-    document.documentElement.scrollTop = 0
-    document.body.scrollTop = 0
+    // Force scroll to top (0, 0) on page load / refresh ONLY when there is no hash
+    if (!window.location.hash) {
+      window.scrollTo(0, 0)
+      document.documentElement.scrollTop = 0
+      document.body.scrollTop = 0
+    }
 
     const handleBeforeUnload = () => {
-      window.scrollTo(0, 0)
+      if (!window.location.hash) {
+        window.scrollTo(0, 0)
+      }
     }
     window.addEventListener('beforeunload', handleBeforeUnload)
 
     gsap.registerPlugin(ScrollTrigger)
 
-    // Enable lagSmoothing (500ms max, 33ms target) so GSAP smoothly recovers
-    // from frame drops during fast scrolling instead of locking up.
+    // Enable lagSmoothing (500ms max, 33ms target) so GSAP recovers smoothly
     gsap.ticker.lagSmoothing(500, 33)
 
     if (isMobile === null) return
@@ -81,7 +149,9 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
       syncTouch: false,
     })
     lenisRef.current = instance
-    instance.scrollTo(0, { immediate: true })
+    if (!window.location.hash) {
+      instance.scrollTo(0, { immediate: true })
+    }
 
     let iframeTimeout: ReturnType<typeof setTimeout>
     const iframes = document.querySelectorAll('iframe')

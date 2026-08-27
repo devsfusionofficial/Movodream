@@ -91,7 +91,7 @@ export function PlatformSlides() {
           gsap.fromTo(
             slide,
             { opacity: 0, y: 15, pointerEvents: 'none' },
-            { opacity: 1, y: 0, pointerEvents: 'auto', duration: 0.3, ease: 'power2.out' }
+            { opacity: 1, y: 0, pointerEvents: 'auto', duration: 0.35, ease: 'power2.out' }
           )
         } else {
           slide.classList.remove('is-active')
@@ -133,7 +133,7 @@ export function PlatformSlides() {
       trigger: '.section-4',
       scroller: document.body,
       start: 'top top',
-      end: '+=160%',
+      end: '+=140%',
       pin: true,
       pinSpacing: true,
       onUpdate(self) {
@@ -143,11 +143,11 @@ export function PlatformSlides() {
 
         let targetIdx = activeIndex
         if (dir >= 0) {
-          if (activeIndex === 0 && p > 0.18) targetIdx = 1
-          else if (activeIndex === 1 && p > 0.52) targetIdx = 2
+          if (activeIndex === 0 && p > 0.22) targetIdx = 1
+          else if (activeIndex === 1 && p > 0.58) targetIdx = 2
         } else {
-          if (activeIndex === 2 && p < 0.78) targetIdx = 1
-          else if (activeIndex === 1 && p < 0.42) targetIdx = 0
+          if (activeIndex === 2 && p < 0.72) targetIdx = 1
+          else if (activeIndex === 1 && p < 0.38) targetIdx = 0
         }
 
         if (targetIdx !== activeIndex) {

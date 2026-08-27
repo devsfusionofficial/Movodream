@@ -4890,6 +4890,9 @@ a.office-card:hover {
   --pp-pink: #f03984;
   --pp-muted: #6b6b7d;
 }
+.product-page section {
+  scroll-margin-top: 90px;
+}
 .product-accent {
   background: linear-gradient(100deg, var(--pp-pink) 0%, #b230bb 50%, var(--pp-violet) 100%);
   -webkit-background-clip: text;
