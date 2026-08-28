@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { Copy, Check, Eye, Mail, MessageSquare, Trash2, Calendar } from 'lucide-react'
+import { Copy, Check, Eye, Mail, Phone, MessageSquare, Trash2, Calendar } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import {
@@ -18,21 +18,22 @@ export function ContactRowActions({
   id,
   name,
   email,
-  subject,
+  phone,
   message,
   createdAt,
 }: {
   id: string
   name?: string
   email?: string
-  subject?: string
+  phone?: string
   message?: string
   createdAt?: string
 }) {
   const [isPending, startTransition] = useTransition()
   const [viewOpen, setViewOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
-  const [copied, setCopied] = useState(false)
+  const [copiedEmail, setCopiedEmail] = useState(false)
+  const [copiedPhone, setCopiedPhone] = useState(false)
 
   function handleDelete() {
     startTransition(async () => {
@@ -47,9 +48,18 @@ export function ContactRowActions({
   function handleCopyEmail() {
     if (email) {
       navigator.clipboard.writeText(email)
-      setCopied(true)
+      setCopiedEmail(true)
       toast.success('Email copied to clipboard')
-      setTimeout(() => setCopied(false), 2000)
+      setTimeout(() => setCopiedEmail(false), 2000)
+    }
+  }
+
+  function handleCopyPhone() {
+    if (phone) {
+      navigator.clipboard.writeText(phone)
+      setCopiedPhone(true)
+      toast.success('Phone copied to clipboard')
+      setTimeout(() => setCopiedPhone(false), 2000)
     }
   }
 
@@ -117,27 +127,46 @@ export function ContactRowActions({
                 </div>
               </div>
               <span className="rounded-full bg-[#fce8f2] px-3 py-1 text-[11px] font-semibold text-[#d71789] border border-[#f7d4e5]">
-                {subject || 'General Enquiry'}
+                Contact Enquiry
               </span>
             </div>
           </DialogHeader>
 
-          <div className="space-y-4 py-2 text-xs">
-            <div className="flex items-center justify-between rounded-xl border border-[#f0edf1] bg-[#faf8fb] px-4 py-3">
-              <div className="flex items-center gap-2 min-w-0">
-                <Mail className="h-4 w-4 shrink-0 text-[#d71789]" />
-                <span className="truncate text-sm font-medium text-[#21182a]">{email || 'No email provided'}</span>
+          <div className="space-y-3.5 py-2 text-xs">
+            <div className="grid gap-2.5 sm:grid-cols-2">
+              <div className="flex items-center justify-between rounded-xl border border-[#f0edf1] bg-[#faf8fb] px-3.5 py-2.5">
+                <div className="flex items-center gap-2 min-w-0">
+                  <Mail className="h-4 w-4 shrink-0 text-[#d71789]" />
+                  <span className="truncate text-xs font-medium text-[#21182a]">{email || 'No email'}</span>
+                </div>
+                {email && (
+                  <button
+                    type="button"
+                    onClick={handleCopyEmail}
+                    className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#d71789] hover:underline cursor-pointer shrink-0 ml-1.5"
+                  >
+                    {copiedEmail ? <Check className="h-3 w-3 text-emerald-600" /> : <Copy className="h-3 w-3" />}
+                    {copiedEmail ? 'Copied' : 'Copy'}
+                  </button>
+                )}
               </div>
-              {email && (
-                <button
-                  type="button"
-                  onClick={handleCopyEmail}
-                  className="inline-flex items-center gap-1 text-xs font-semibold text-[#d71789] hover:underline cursor-pointer shrink-0"
-                >
-                  {copied ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Copy className="h-3.5 w-3.5" />}
-                  {copied ? 'Copied' : 'Copy'}
-                </button>
-              )}
+
+              <div className="flex items-center justify-between rounded-xl border border-[#f0edf1] bg-[#faf8fb] px-3.5 py-2.5">
+                <div className="flex items-center gap-2 min-w-0">
+                  <Phone className="h-4 w-4 shrink-0 text-[#d71789]" />
+                  <span className="truncate text-xs font-medium text-[#21182a] font-mono">{phone || 'No phone'}</span>
+                </div>
+                {phone && (
+                  <button
+                    type="button"
+                    onClick={handleCopyPhone}
+                    className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#d71789] hover:underline cursor-pointer shrink-0 ml-1.5"
+                  >
+                    {copiedPhone ? <Check className="h-3 w-3 text-emerald-600" /> : <Copy className="h-3 w-3" />}
+                    {copiedPhone ? 'Copied' : 'Copy'}
+                  </button>
+                )}
+              </div>
             </div>
 
             <div>
@@ -162,7 +191,8 @@ export function ContactRowActions({
             </Button>
             {email && (
               <Button
-                render={<a href={`mailto:${email}?subject=Re: ${encodeURIComponent(subject || 'Enquiry')}`} />}
+                render={<a href={`mailto:${email}?subject=Re: Movodream Enquiry`} />}
+                size="sm"
                 className="gap-2 bg-gradient-to-r from-[#d71789] to-[#ff7294] text-white shadow-[0_6px_18px_rgba(215,23,137,0.25)] hover:opacity-95 border-0"
               >
                 <Mail className="h-4 w-4" />

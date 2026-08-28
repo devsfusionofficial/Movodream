@@ -43,7 +43,8 @@ export function ApplicationForm({ jobId }: { jobId: string }) {
     e.preventDefault()
     setError('')
 
-    const formData = new FormData(e.currentTarget)
+    const form = e.currentTarget
+    const formData = new FormData(form)
     const errors = validate(formData)
 
     if (Object.keys(errors).length > 0) {
@@ -59,7 +60,7 @@ export function ApplicationForm({ jobId }: { jobId: string }) {
         method: 'POST',
         body: formData,
       })
-      const result = await response.json()
+      const result = await response.json().catch(() => ({}))
 
       if (!response.ok || !result.success) {
         setError(result.error ?? 'Something went wrong. Please try again.')
@@ -69,7 +70,7 @@ export function ApplicationForm({ jobId }: { jobId: string }) {
 
       setStatus('success')
       setFileName('')
-      e.currentTarget.reset()
+      form.reset()
     } catch {
       setError('Something went wrong. Please try again.')
       setStatus('error')
