@@ -2047,13 +2047,14 @@
     min-height: 0;
     width: 100%;
     max-width: 275px;
-    margin: 0 auto;
+    margin: 0 auto 16px auto !important;
     transform: none !important;
   }
   .s4-right {
     align-items: center;
     gap: 6px;
     text-align: center;
+    margin-top: 0 !important;
   }
   .s4-heading {
     font-size: clamp(1.35rem, 5vw, 1.85rem) !important;
@@ -4134,6 +4135,33 @@
   background: rgba(255, 255, 255, 0.08);
   border-color: rgba(255, 255, 255, 0.45);
 }
+.ready-preview-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 10px !important;
+  padding: 15px 26px !important;
+}
+.ready-btn-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ff7294;
+  box-shadow: 0 0 10px #ff7294;
+  animation: sparkPulse 2s ease-in-out infinite alternate;
+  flex-shrink: 0;
+}
+.ready-btn-pill {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 2px 8px;
+  border-radius: 99px;
+  background: rgba(255, 114, 148, 0.2);
+  color: #ffc0d3;
+  border: 1px solid rgba(255, 114, 148, 0.4);
+}
 .demo-button {
   display: inline-block;
   padding: 16px 52px;
@@ -5643,6 +5671,10 @@ a.office-card:hover {
   gap: 10px;
 }
 .product-tech-tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
   padding: 12px 14px;
   border-radius: 12px;
   background: #fbf9fe;
@@ -5934,6 +5966,9 @@ a.office-card:hover {
     gap: 10px !important;
   }
   .product-tech-tile {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
     font-size: 0.78rem !important;
     padding: 12px 10px !important;
     text-align: center !important;
@@ -6969,34 +7004,6 @@ a.partner-card:hover {
     min-height: 44px;
   }
 }
-
-/* ---------------------------------------------------------------------------
-   Narrow phones (Galaxy Z Fold cover screen ~344px, small Androids ~360px).
-
-   `.phone-text` is `position: absolute` with a fixed 38px font below 768px,
-   and its two spans carry translateX(-4%) / translateX(10%) offsets — a
-   deliberate desktop art-direction stagger. At ~344px the type is simply
-   wider than the screen AND the stagger pushes line 1 off the left edge and
-   line 2 off the right. Below 480px: make the type fluid, anchor the block to
-   the container with real side padding, and drop the stagger.
-   --------------------------------------------------------------------------- */
-@media (max-width: 480px) {
-  .phone-text {
-    left: 0;
-    right: 0;
-    width: auto;
-    box-sizing: border-box;
-    padding-inline: 16px;
-    font-size: clamp(21px, 8.2vw, 38px);
-    text-wrap: balance;
-  }
-
-  .phone-text span:first-child,
-  .phone-text span:last-child {
-    transform: none;
-  }
-}
-
 @media (max-width: 768px) {
   .section-3 {
     padding: 70px 0 28px !important;
@@ -7028,24 +7035,49 @@ a.partner-card:hover {
     min-height: 300px !important;
     margin-bottom: 8px;
     width: 100%;
+    overflow: visible !important;
   }
   .phone-wrap {
     width: 82vw !important;
-    max-width: 340px !important;
+    max-width: 320px !important;
     height: auto !important;
     max-height: none !important;
     aspect-ratio: 400/800;
     margin-bottom: 0;
+    overflow: visible !important;
   }
   .phone-text {
-    position: absolute;
-    z-index: 3;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    z-index: 3 !important;
     font-size: clamp(2rem, 8vw, 2.8rem) !important;
     font-weight: 800 !important;
-    line-height: 1.15 !important;
+    line-height: 1.16 !important;
     text-align: center !important;
     letter-spacing: -0.03em !important;
-    width: 90% !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    pointer-events: none;
+    box-sizing: border-box !important;
+  }
+  .phone-text span,
+  .phone-text span:first-child,
+  .phone-text span:last-child {
+    transform: none !important;
+    margin: 0 !important;
+    text-align: center !important;
+    display: block !important;
+    width: 100% !important;
+    overflow: visible !important;
   }
   .phone-glow {
     width: min(320px, 90vw) !important;

@@ -190,12 +190,23 @@
   }
 
   @media (max-width: 760px) {
+    .admin-resource-page > form {
+      padding: 1.15rem;
+      border-radius: 1rem;
+    }
+
     .admin-resource-page > form > [data-slot='field-group'] {
       grid-template-columns: minmax(0, 1fr);
+      row-gap: 1.15rem;
     }
 
     .admin-resource-page > form > [data-slot='field-group'] > [data-slot='field'] {
       grid-column: auto;
+    }
+
+    .admin-resource-page > form button[type='submit'] {
+      width: 100%;
+      min-width: 0;
     }
   }
 

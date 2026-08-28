@@ -34,8 +34,11 @@ export function ProductFinalCta() {
         Get in Touch
       </button>
       <button type="button" className="product-btn product-btn--outline" onClick={openExploreModal}>
-        Download App
-        <i className="fa-solid fa-download" />
+        <span className="inline-flex items-center gap-2">
+          <span className="h-2 w-2 rounded-full bg-[#ec2a8b] shadow-[0_0_8px_#ec2a8b] animate-pulse" />
+          <span>Launching Soon</span>
+          <span className="rounded-full bg-[#fce8f2] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#d71789]">Preview</span>
+        </span>
       </button>
     </div>
   )

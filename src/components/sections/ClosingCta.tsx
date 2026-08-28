@@ -90,8 +90,10 @@ export function ClosingCta() {
           <button type="button" className="demo-button qzv-launcher" onClick={openContactModal}>
             Get in Touch
           </button>
-          <button type="button" className="ready-secondary-button" onClick={openExploreModal}>
-            Explore the App
+          <button type="button" className="ready-secondary-button ready-preview-btn" onClick={openExploreModal}>
+            <span className="ready-btn-dot" />
+            <span>Launching Soon</span>
+            <span className="ready-btn-pill">Preview</span>
           </button>
         </div>
       </div>

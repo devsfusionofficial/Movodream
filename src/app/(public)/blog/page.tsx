@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import type { Metadata } from 'next'
+import { ArrowRight } from 'lucide-react'
 import { getLatestPosts, getAllCategories, getPublishedPostsCount, searchPosts } from '@/lib/queries/posts'
 import { Pagination } from '@/components/ui/Pagination'
 
@@ -147,7 +148,9 @@ export default async function BlogIndexPage({ searchParams }: PageProps) {
                           {post.readingTime ?? 5} min read
                         </span>
                       </div>
-                      <span className="card-arrow-btn">→</span>
+                      <span className="card-arrow-btn">
+                        <ArrowRight className="h-4 w-4 stroke-[2.5]" />
+                      </span>
                     </div>
                   </div>
                 </Link>

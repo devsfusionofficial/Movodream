@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
+import { ArrowRight } from 'lucide-react'
 import { getPostsByCategorySlug, getAllCategories } from '@/lib/queries/posts'
 
 import { BlogCategoryFilter } from '../../category-filter'
@@ -135,7 +136,9 @@ export default async function BlogCategoryPage({ params }: PageProps) {
                         {post.readingTime ?? 5} min read
                       </span>
                     </div>
-                    <span className="card-arrow-btn">→</span>
+                    <span className="card-arrow-btn">
+                      <ArrowRight className="h-4 w-4 stroke-[2.5]" />
+                    </span>
                   </div>
                 </div>
               </Link>

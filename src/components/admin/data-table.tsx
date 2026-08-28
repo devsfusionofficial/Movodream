@@ -79,7 +79,7 @@ export function DataTable<TData>({
 
           <div className="flex flex-wrap items-center gap-3">
             {hasSearch && (
-              <div className="relative min-w-[200px] max-w-xs sm:w-64">
+              <div className="relative w-full min-w-0 max-w-xs sm:w-64">
                 <Search className="absolute left-3.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[#858b8f]" />
                 <input
                   type="text"
