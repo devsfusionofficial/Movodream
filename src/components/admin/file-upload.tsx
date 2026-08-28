@@ -28,37 +28,22 @@ export function FileUpload({ onUploaded, accept = 'image/*', label = 'Upload ima
 
     setIsUploading(true)
     try {
-      const presignRes = await fetch('/api/admin/media/presign', {
+      const formData = new FormData()
+      formData.append('file', file)
+
+      const uploadRes = await fetch('/api/admin/media/upload', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fileName: file.name, contentType: file.type }),
+        body: formData,
       })
 
-      if (!presignRes.ok) {
-        const { error } = await presignRes.json().catch(() => ({ error: 'Upload failed' }))
-        throw new Error(error ?? 'Upload failed')
+      if (!uploadRes.ok) {
+        const data = await uploadRes.json().catch(() => ({ error: 'Upload failed' }))
+        throw new Error(data.error ?? 'Upload failed')
       }
 
-      const { key, uploadUrl, publicUrl } = await presignRes.json()
-
-      const putRes = await fetch(uploadUrl, {
-        method: 'PUT',
-        headers: { 'Content-Type': file.type },
-        body: file,
-      })
-      if (!putRes.ok) throw new Error('Failed to upload file to storage')
-
-      const dimensions = await readImageDimensions(file).catch(() => undefined)
-
-      await createMediaRecord({
-        key,
-        url: publicUrl,
-        mimeType: file.type,
-        size: file.size,
-        ...dimensions,
-      })
-
-      onUploaded({ url: publicUrl, key })
+      const { url, key } = await uploadRes.json()
+      toast.success('Image uploaded successfully')
+      onUploaded({ url, key })
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Upload failed')
     } finally {

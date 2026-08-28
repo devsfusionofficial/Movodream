@@ -62,6 +62,20 @@ export async function createPresignedUpload(prefix: string, fileName: string, co
  * is no public URL for a résumé. Callers read it back through
  * `createDownloadUrl`, which issues a short-lived signed link.
  */
+export async function uploadMediaBuffer(prefix: string, fileName: string, contentType: string, body: Buffer) {
+  const key = buildKey(prefix, fileName)
+  const client = getClient()
+  await client.send(
+    new PutObjectCommand({
+      Bucket: R2_BUCKET,
+      Key: key,
+      Body: body,
+      ContentType: contentType,
+    })
+  )
+  return { key, publicUrl: `${R2_PUBLIC_URL}/${key}` }
+}
+
 export async function uploadBuffer(prefix: string, fileName: string, contentType: string, body: Buffer) {
   const key = buildKey(prefix, fileName)
   const client = getClient()

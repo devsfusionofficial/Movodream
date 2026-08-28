@@ -155,7 +155,7 @@ export function ApplicationForm({ jobId }: { jobId: string }) {
           id="coverLetter"
           name="coverLetter"
           rows={3}
-          placeholder="Briefly tell us why you are a great fit for this role..."
+          placeholder="Share a short note about why you're a great fit..."
           className="app-textarea"
         />
       </div>

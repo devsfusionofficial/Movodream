@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { connectDB } from '@/lib/db'
 import { Subscriber } from '@/models/Subscriber'
+import { MarketingCampaign } from '@/models/MarketingCampaign'
 import { sendMarketingBroadcast } from '@/lib/mailer'
 
 export type SyncEmailInput = {
@@ -139,19 +140,45 @@ export async function syncSubscriberEmail(input: SyncEmailInput) {
       </html>
     `
 
-    const result = await sendMarketingBroadcast({
+    // Persist campaign in database
+    await MarketingCampaign.create({
       subject: input.subject || 'Movodream Update',
-      text: `${input.heading || input.subject}
-
-${input.description || ''}
-
-Visit: ${baseUrl}`,
-      html: htmlBody,
-      subscriberEmails,
+      preheader: input.preheader || '',
+      template: input.template || 'custom',
+      icon: input.icon || 'mail',
+      theme: input.theme || 'pink',
+      heading: input.heading || '',
+      description: input.description || '',
+      imageUrl: input.imageUrl || '',
+      imageKey: input.imageKey || '',
+      ctaText: input.ctaText || '',
+      ctaUrl: input.ctaUrl || '',
+      infoBoxTitle: input.infoBoxTitle || '',
+      infoBoxContent: input.infoBoxContent || '',
+      status: 'synced',
     })
 
+    let sentCount = 0
+    try {
+      const result = await sendMarketingBroadcast({
+        subject: input.subject || 'Movodream Update',
+        text: `${input.heading || input.subject}\n\n${input.description || ''}\n\nVisit: ${baseUrl}`,
+        html: htmlBody,
+        subscriberEmails,
+      })
+      sentCount = result.count
+    } catch (smtpErr) {
+      console.warn('SMTP Broadcast error:', smtpErr)
+      revalidatePath('/admin/marketing-subscribers')
+      return {
+        success: true,
+        sentCount: 0,
+        warning: `Campaign saved! (Email dispatch paused: SMTP authentication failed for ${process.env.SMTP_USER || 'support@movodream.com'}. Please check your SMTP password / App Password in .env).`,
+      }
+    }
+
     revalidatePath('/admin/marketing-subscribers')
-    return { success: true, sentCount: result.count }
+    return { success: true, sentCount }
   } catch (err) {
     return { success: false, error: err instanceof Error ? err.message : 'Failed to sync marketing email' }
   }

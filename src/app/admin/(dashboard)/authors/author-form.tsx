@@ -107,7 +107,7 @@ export function AuthorForm({ authorId, defaultValues }: AuthorFormProps) {
               <Textarea
                 id="bio"
                 rows={4}
-                placeholder="Share a short bio, editorial focus, or travel philosophy..."
+                placeholder="Share a short bio or editorial focus..."
                 className="rounded-xl border-[#dedede] text-sm leading-relaxed focus:border-[#d71789]"
                 {...register('bio')}
               />

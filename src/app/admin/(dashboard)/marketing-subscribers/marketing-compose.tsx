@@ -112,7 +112,11 @@ export function MarketingCompose({ activeCount }: { activeCount: number }) {
         return
       }
 
-      toast.success('Marketing email saved and broadcast queued!')
+      if ('warning' in result && result.warning) {
+        toast.warning(result.warning, { duration: 6000 })
+      } else {
+        toast.success('Marketing email saved and broadcast dispatched!')
+      }
     })
   }
 
@@ -185,7 +189,7 @@ export function MarketingCompose({ activeCount }: { activeCount: number }) {
                 <Input
                   value={preheader}
                   onChange={(e) => setPreheader(e.target.value)}
-                  placeholder="Snippet shown in inbox preview..."
+                  placeholder="e.g. Special perk inside..."
                   className="h-10 rounded-xl text-xs"
                 />
               </div>
@@ -196,7 +200,7 @@ export function MarketingCompose({ activeCount }: { activeCount: number }) {
               <Input
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
-                placeholder="e.g. Exclusive Movodream offer just for you"
+                placeholder="e.g. Exclusive Movodream update"
                 className="h-10 rounded-xl text-xs"
               />
             </div>
@@ -275,7 +279,7 @@ export function MarketingCompose({ activeCount }: { activeCount: number }) {
                 rows={4}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="Write your main email announcement body content..."
+                placeholder="Write your email body content here..."
                 className="rounded-xl text-xs leading-relaxed"
               />
             </div>

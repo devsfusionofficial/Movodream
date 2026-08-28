@@ -167,7 +167,7 @@ export function OfficeForm({ officeId, defaultValues }: OfficeFormProps) {
             <Textarea
               id="description"
               rows={3}
-              placeholder="Describe this office hub location, operating team, or regional focus..."
+              placeholder="Describe this office hub location or regional focus..."
               className="rounded-xl border-[#dedede] text-sm leading-relaxed focus:border-[#d71789]"
               {...register('description')}
             />

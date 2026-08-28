@@ -86,10 +86,13 @@ export function JobForm({ jobId, defaultValues }: JobFormProps) {
               </FieldLabel>
               <Input
                 id="slug"
-                placeholder="Auto-generated from title if left blank"
+                placeholder="e.g. senior-frontend-engineer"
                 className="h-10 rounded-xl border-[#dedede] text-xs font-mono focus:border-[#d71789]"
                 {...register('slug')}
               />
+              <FieldDescription className="text-[11px] text-[#887f8e]">
+                Auto-generated from title if left blank.
+              </FieldDescription>
               <FieldError errors={[errors.slug]} />
             </Field>
           </div>
@@ -282,7 +285,7 @@ export function JobForm({ jobId, defaultValues }: JobFormProps) {
               </FieldLabel>
               <Input
                 id="skills"
-                placeholder="Comma-separated, e.g. React, Node.js, TypeScript"
+                placeholder="e.g. React, Node.js, TypeScript"
                 defaultValue={skills.join(', ')}
                 onBlur={(e) =>
                   setValue(
