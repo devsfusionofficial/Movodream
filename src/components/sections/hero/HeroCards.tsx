@@ -1,5 +1,6 @@
 'use client'
 
+import { useRef } from 'react'
 import Image from 'next/image'
 import Atropos from 'atropos/react'
 import { useGSAP } from '@gsap/react'
@@ -33,6 +34,8 @@ export function HeroCards() {
   // masked that. null is "not yet known" (first paint, before the browser
   // APIs useSyncExternalStore needs are available to compare against).
   const isMobile = useMediaQuery(MOBILE_QUERY)
+
+  const hasDealtRef = useRef(false)
 
   useGSAP(() => {
     const mobile = isMobile ?? (typeof window !== 'undefined' && window.innerWidth <= 768)
@@ -88,18 +91,7 @@ export function HeroCards() {
       return () => teardown.forEach((fn) => fn())
     }
 
-    gsap.set(card1, { opacity: 0, rotation: 0, y: 20, x: -30 })
-    gsap.set(card2, { opacity: 0, rotation: 0, y: 30, x: 40 })
-    gsap.set(card3, { opacity: 0, rotation: 0, y: 40, x: -20 })
-
-    const deal = gsap.timeline({ delay: 0.25 })
-
-    deal
-      .to(card1, { opacity: 1, rotation: 3, y: 0, x: 0, duration: 1.15, ease: 'expo.out' }, 0.1)
-      .to(card2, { opacity: 1, rotation: -6, y: 0, x: 0, duration: 1.25, ease: 'expo.out' }, 1)
-      .to(card3, { opacity: 1, rotation: 6, y: 0, x: 0, duration: 1.2, ease: 'expo.out' }, 2)
-
-    deal.eventCallback('onComplete', () => {
+    const bindScrollTriggers = () => {
       const r1 = card1.getBoundingClientRect()
       const r2 = card2.getBoundingClientRect()
       const r3 = card3.getBoundingClientRect()
@@ -118,9 +110,10 @@ export function HeroCards() {
         scrollTrigger: {
           trigger: '.hero-section',
           scroller: document.body,
-          start: isMobile ? 'top -70%' : 'top top',
+          start: 'top top',
           end: 'bottom top',
-          scrub: isMobile ? 0.5 : 2,
+          scrub: 2,
+          invalidateOnRefresh: true,
         },
       })
 
@@ -132,9 +125,10 @@ export function HeroCards() {
         scrollTrigger: {
           trigger: '.hero-section',
           scroller: document.body,
-          start: isMobile ? 'top -70%' : 'top top',
-          end: isMobile ? 'top -100%' : 'bottom 85%',
-          scrub: isMobile ? 0.5 : 1.4,
+          start: 'top top',
+          end: 'bottom 85%',
+          scrub: 1.4,
+          invalidateOnRefresh: true,
         },
       })
 
@@ -146,18 +140,33 @@ export function HeroCards() {
         scrollTrigger: {
           trigger: '.hero-section',
           scroller: document.body,
-          start: isMobile ? 'top -70%' : 'top top',
-          end: isMobile ? 'top -100%' : 'bottom 85%',
-          scrub: isMobile ? 0.5 : 2.6,
+          start: 'top top',
+          end: 'bottom 85%',
+          scrub: 2.6,
+          invalidateOnRefresh: true,
         },
       })
-    })
-    // revertOnUpdate is required, not optional, here: without it useGSAP
-    // defers cleanup to unmount instead of reverting on each dependency
-    // change, so re-running this effect after isMobile flips would layer
-    // the new branch's listeners/classes on top of the previous branch's
-    // still-live GSAP tweens and ScrollTriggers rather than replacing them
-    // — silently reintroducing the exact bug this state is meant to fix.
+    }
+
+    if (hasDealtRef.current) {
+      gsap.set(card1, { opacity: 1, rotation: 3, y: 0, x: 0 })
+      gsap.set(card2, { opacity: 1, rotation: -6, y: 0, x: 0 })
+      gsap.set(card3, { opacity: 1, rotation: 6, y: 0, x: 0 })
+      bindScrollTriggers()
+    } else {
+      hasDealtRef.current = true
+      gsap.set(card1, { opacity: 0, rotation: 0, y: 20, x: -30 })
+      gsap.set(card2, { opacity: 0, rotation: 0, y: 30, x: 40 })
+      gsap.set(card3, { opacity: 0, rotation: 0, y: 40, x: -20 })
+
+      const deal = gsap.timeline({ delay: 0.25 })
+      deal
+        .to(card1, { opacity: 1, rotation: 3, y: 0, x: 0, duration: 1.15, ease: 'expo.out' }, 0.1)
+        .to(card2, { opacity: 1, rotation: -6, y: 0, x: 0, duration: 1.25, ease: 'expo.out' }, 1)
+        .to(card3, { opacity: 1, rotation: 6, y: 0, x: 0, duration: 1.2, ease: 'expo.out' }, 2)
+
+      deal.eventCallback('onComplete', bindScrollTriggers)
+    }
   }, { dependencies: [isMobile], revertOnUpdate: true })
 
   return (

@@ -42,46 +42,46 @@ export function PlatformSlides() {
     const s4Slides = Array.from(document.querySelectorAll<HTMLElement>('.s4-slide'))
     if (s4Slides.length === 0) return
 
-    // ── s4-card idle tilt on all cards ──
-    const s4CardEls = Array.from(document.querySelectorAll<HTMLElement>('.s4-card'))
-    const idleTilts: gsap.core.Timeline[] = []
-    const cardCleanups: (() => void)[] = []
-
-    s4CardEls.forEach((cardEl) => {
-      const s4Rotate = cardEl.querySelector<HTMLElement>('.atropos-inner')
-      if (s4Rotate) {
-        gsap.set(s4Rotate, { transformStyle: 'preserve-3d' })
-        const tiltTL = gsap.timeline({ repeat: -1, defaults: { ease: 'sine.inOut' } })
-        tiltTL
-          .to(s4Rotate, { rotationX: 8, rotationY: -12, duration: 3.8 })
-          .to(s4Rotate, { rotationX: -6, rotationY: 10, duration: 4.2 })
-          .to(s4Rotate, { rotationX: 10, rotationY: 4, duration: 3.5 })
-          .to(s4Rotate, { rotationX: -4, rotationY: -8, duration: 4.0 })
-        idleTilts.push(tiltTL)
-
-        const onEnter = () => {
-          tiltTL.pause()
-          const atroposRotate = cardEl.querySelector<HTMLElement>('.atropos-rotate')
-          if (atroposRotate) gsap.to(atroposRotate, { rotationX: 0, rotationY: 0, duration: 0.4, ease: 'power2.out' })
-        }
-        const onLeave = () => {
-          gsap.delayedCall(0.35, () => tiltTL.resume())
-        }
-
-        cardEl.addEventListener('mouseenter', onEnter)
-        cardEl.addEventListener('mouseleave', onLeave)
-
-        cardCleanups.push(() => {
-          cardEl.removeEventListener('mouseenter', onEnter)
-          cardEl.removeEventListener('mouseleave', onLeave)
-        })
-      }
-    })
-
     const mm = gsap.matchMedia()
 
-    // ── DESKTOP & TABLET (> 768px): Pinned 3-slide interactive showcase
+    // ── DESKTOP & TABLET (> 768px): Pinned 3-slide interactive showcase & 3D tilt
     mm.add('(min-width: 769px)', () => {
+      // ── s4-card idle tilt on all cards ──
+      const s4CardEls = Array.from(document.querySelectorAll<HTMLElement>('.s4-card'))
+      const idleTilts: gsap.core.Timeline[] = []
+      const cardCleanups: (() => void)[] = []
+
+      s4CardEls.forEach((cardEl) => {
+        const s4Rotate = cardEl.querySelector<HTMLElement>('.atropos-inner')
+        if (s4Rotate) {
+          gsap.set(s4Rotate, { transformStyle: 'preserve-3d' })
+          const tiltTL = gsap.timeline({ repeat: -1, defaults: { ease: 'sine.inOut' } })
+          tiltTL
+            .to(s4Rotate, { rotationX: 8, rotationY: -12, duration: 3.8 })
+            .to(s4Rotate, { rotationX: -6, rotationY: 10, duration: 4.2 })
+            .to(s4Rotate, { rotationX: 10, rotationY: 4, duration: 3.5 })
+            .to(s4Rotate, { rotationX: -4, rotationY: -8, duration: 4.0 })
+          idleTilts.push(tiltTL)
+
+          const onEnter = () => {
+            tiltTL.pause()
+            const atroposRotate = cardEl.querySelector<HTMLElement>('.atropos-rotate')
+            if (atroposRotate) gsap.to(atroposRotate, { rotationX: 0, rotationY: 0, duration: 0.4, ease: 'power2.out' })
+          }
+          const onLeave = () => {
+            gsap.delayedCall(0.35, () => tiltTL.resume())
+          }
+
+          cardEl.addEventListener('mouseenter', onEnter)
+          cardEl.addEventListener('mouseleave', onLeave)
+
+          cardCleanups.push(() => {
+            cardEl.removeEventListener('mouseenter', onEnter)
+            cardEl.removeEventListener('mouseleave', onLeave)
+          })
+        }
+      })
+
       let activeIndex = -1
 
       function showSlide(targetIdx: number) {
@@ -160,22 +160,54 @@ export function PlatformSlides() {
             showSlide(targetIdx)
           }
         },
+        onRefresh(self) {
+          applySectionHeight()
+          const p = self.progress
+          let targetIdx = 0
+          if (p > 0.58) targetIdx = 2
+          else if (p > 0.22) targetIdx = 1
+          showSlide(targetIdx)
+        },
         invalidateOnRefresh: true,
       })
 
+      // Immediately sync slide on mount/desktop switch based on current scroll
+      const initP = pinST.progress
+      if (initP > 0.58) showSlide(2)
+      else if (initP > 0.22) showSlide(1)
+      else showSlide(0)
+
       return () => {
         pinST.kill()
+        idleTilts.forEach((t) => t.kill())
+        cardCleanups.forEach((c) => c())
         ScrollTrigger.removeEventListener('refreshInit', applySectionHeight)
         window.removeEventListener('resize', applySectionHeight)
       }
     })
 
-    // ── MOBILE (<= 768px): Natural stacked flow without pinning
+    // ── MOBILE (<= 768px): Completely static, natural stacked flow with NO animations
     mm.add('(max-width: 768px)', () => {
       s4Slides.forEach((slide) => {
         slide.classList.add('is-active')
+        gsap.killTweensOf(slide)
         gsap.set(slide, { opacity: 1, pointerEvents: 'auto', y: 0, clearProps: 'transform' })
       })
+
+      const s4CardEls = Array.from(document.querySelectorAll<HTMLElement>('.s4-card'))
+      s4CardEls.forEach((cardEl) => {
+        const s4Rotate = cardEl.querySelector<HTMLElement>('.atropos-inner')
+        const atroposRotate = cardEl.querySelector<HTMLElement>('.atropos-rotate')
+        if (s4Rotate) {
+          gsap.killTweensOf(s4Rotate)
+          gsap.set(s4Rotate, { rotationX: 0, rotationY: 0, clearProps: 'transform' })
+        }
+        if (atroposRotate) {
+          gsap.killTweensOf(atroposRotate)
+          gsap.set(atroposRotate, { rotationX: 0, rotationY: 0, clearProps: 'transform' })
+        }
+      })
+
       const sectionEl = document.querySelector<HTMLElement>('.section-4')
       const wrapperEl = document.querySelector<HTMLElement>('.s4-slides-wrapper')
       if (sectionEl) {
@@ -190,8 +222,6 @@ export function PlatformSlides() {
 
     return () => {
       mm.revert()
-      idleTilts.forEach((t) => t.kill())
-      cardCleanups.forEach((c) => c())
     }
   }, [])
 

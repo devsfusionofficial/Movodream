@@ -26,52 +26,46 @@ export function ClarityIntel() {
   useGSAP(() => {
     gsap.registerPlugin(ScrollTrigger, SplitText)
 
-    let cancelled = false
     const splits: SplitText[] = []
+    const mm = gsap.matchMedia()
 
-    const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768
+    // ── DESKTOP (> 768px): Full entrance & scroll-tied animations ──
+    mm.add('(min-width: 769px)', () => {
+      const splitS3Heading = SplitText.create('.s3-heading', { type: 'chars,words' })
+      splits.push(splitS3Heading)
 
-    // Bulletproof staggered entrance animation for .s3-heading spans ("Clarity Through" & "Intelligence")
-    gsap.fromTo(
-      '.s3-heading span',
-      { y: isMobile ? 25 : 45, opacity: 0 },
-      {
-        duration: isMobile ? 0.75 : 0.9,
-        y: 0,
-        opacity: 1,
-        stagger: 0.15,
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: '.s3-heading',
-          start: 'top 92%',
-          toggleActions: 'play none none none',
-        },
-      }
-    )
+      gsap.fromTo(
+        splitS3Heading.chars,
+        { y: 60, autoAlpha: 0 },
+        {
+          duration: 0.9,
+          y: 0,
+          autoAlpha: 1,
+          transformOrigin: '50% 100%',
+          stagger: { each: 0.04, ease: 'power2.in' },
+          ease: 'back.out(1.4)',
+          scrollTrigger: {
+            trigger: '.section-3',
+            start: 'top 85%',
+            toggleActions: 'play none play reverse',
+          },
+        }
+      )
 
-    if (!isMobile) {
-      // Continuous scrubbed horizontal motion across the section (desktop only)
       gsap.fromTo(
         '.s3-heading',
-        { x: '4vw' },
+        { x: '4.5vw' },
         {
-          x: '-2vw',
+          x: '-2.5vw',
           ease: 'none',
           scrollTrigger: {
             trigger: '.section-3',
-            start: 'top bottom',
-            end: 'bottom top',
+            start: 'top 100%',
+            end: 'bottom 15%',
             scrub: 1,
           },
         }
       )
-    }
-
-    document.fonts.ready.then(() => {
-      if (!cancelled) {
-        ScrollTrigger.refresh()
-      }
-    })
 
       const phoneText = document.querySelector('.phone-text')
       if (phoneText) {
@@ -79,13 +73,8 @@ export function ClarityIntel() {
         const tl = gsap.timeline({
           scrollTrigger: { trigger: '.section-3', start: 'top 75%', scrub: true },
         })
-        // The ±12% drift is a desktop flourish. On narrow phones the headline
-        // already fills the width, so swinging it sideways pushes each line
-        // off opposite edges. GSAP writes `transform` inline, which beats any
-        // CSS override — so the amplitude has to be reduced here, not in CSS.
-        const drift = isMobile ? 0 : 12
-        tl.fromTo(lines[0], { x: `${drift}%` }, { x: `${-drift}%`, duration: 1.1, ease: 'power3.out' })
-        tl.fromTo(lines[1], { x: `${-drift}%` }, { x: `${drift}%`, duration: 1.1, ease: 'power3.out' }, '-=0.75')
+        tl.fromTo(lines[0], { x: '12%' }, { x: '-12%', duration: 1.1, ease: 'power3.out' })
+        tl.fromTo(lines[1], { x: '-12%' }, { x: '12%', duration: 1.1, ease: 'power3.out' }, '-=0.75')
       }
 
       const s3Right = document.querySelector('.s3-right')
@@ -98,7 +87,7 @@ export function ClarityIntel() {
         const tl = gsap.timeline({
           scrollTrigger: {
             trigger: '.s3-right',
-            start: isMobile ? 'top 88%' : 'top 75%',
+            start: 'top 75%',
             toggleActions: 'play none play reverse',
           },
         })
@@ -109,18 +98,17 @@ export function ClarityIntel() {
 
         if (title) {
           gsap.set(title, { perspective: 800 })
-          const splitTitle = isMobile ? SplitText.create(title, { type: 'lines' }) : SplitText.create(title, { type: 'words' })
+          const splitTitle = SplitText.create(title, { type: 'words' })
           splits.push(splitTitle)
-          const targets = isMobile ? splitTitle.lines : splitTitle.words
           tl.fromTo(
-            targets,
+            splitTitle.words,
             { yPercent: 120, opacity: 0 },
             { yPercent: 0, opacity: 1, duration: 1.1, ease: 'expo.out', stagger: { each: 0.06, from: 'start' } },
             '-=0.4'
           )
         }
 
-        if (!isMobile && descMain) {
+        if (descMain) {
           const splitMain = SplitText.create(descMain, { type: 'lines' })
           splits.push(splitMain)
           tl.fromTo(
@@ -131,16 +119,66 @@ export function ClarityIntel() {
           )
         }
 
-        if (!isMobile && descSub) {
+        if (descSub) {
           tl.fromTo(descSub, { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, '-=0.4')
         }
       }
+    })
 
-      return () => {
-        cancelled = true
-        splits.forEach((s: SplitText) => s.revert())
+    // ── MOBILE & SMALL DEVICES (<= 768px): Completely static text, zero animation ──
+    mm.add('(max-width: 768px)', () => {
+      const s3Right = document.querySelector('.s3-right')
+      if (s3Right) {
+        const title = s3Right.querySelector<HTMLElement>('.s3-title')
+        const descMain = s3Right.querySelector<HTMLElement>('.s3-desc-main')
+        const descSub = s3Right.querySelector<HTMLElement>('.s3-desc-sub')
+
+        if (title) {
+          gsap.killTweensOf(title)
+          gsap.set(title, { opacity: 1, y: 0, yPercent: 0, clearProps: 'all' })
+        }
+        if (descMain) {
+          gsap.killTweensOf(descMain)
+          gsap.set(descMain, { opacity: 1, y: 0, clearProps: 'all' })
+        }
+        if (descSub) {
+          gsap.killTweensOf(descSub)
+          gsap.set(descSub, { opacity: 1, y: 0, clearProps: 'all' })
+        }
       }
-    }, [])
+
+      const splitS3HeadingMobile = SplitText.create('.s3-heading', { type: 'chars,words' })
+      splits.push(splitS3HeadingMobile)
+
+      gsap.fromTo(
+        splitS3HeadingMobile.chars,
+        { y: 30, opacity: 0 },
+        {
+          duration: 0.75,
+          y: 0,
+          opacity: 1,
+          transformOrigin: '50% 100%',
+          stagger: { each: 0.03, ease: 'power2.in' },
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: '.s3-heading',
+            start: 'top 92%',
+            toggleActions: 'play none play reverse',
+            invalidateOnRefresh: true,
+          },
+        }
+      )
+    })
+
+    document.fonts.ready.then(() => {
+      ScrollTrigger.refresh()
+    })
+
+    return () => {
+      mm.revert()
+      splits.forEach((s: SplitText) => s.revert())
+    }
+  }, [])
 
   return (
     <section id="vision" className="section-3">

@@ -68,6 +68,16 @@ export function CompanionModules() {
           m.style.removeProperty('--timer-pct')
         }
       })
+
+      const dots = document.querySelectorAll<HTMLElement>('.stepper-dot')
+      dots.forEach((d, i) => {
+        if (i === idx) {
+          d.classList.add('active')
+        } else {
+          d.classList.remove('active')
+          d.style.removeProperty('--timer-pct')
+        }
+      })
     }
 
     function goTo(idx: number) {
@@ -91,6 +101,10 @@ export function CompanionModules() {
         const activeModule = document.querySelector<HTMLElement>(`.module.module-${currentRef.current + 1}`)
         if (activeModule) {
           activeModule.style.setProperty('--timer-pct', `${pct}%`)
+        }
+        const activeDot = document.querySelector<HTMLElement>(`.stepper-dot.active`)
+        if (activeDot) {
+          activeDot.style.setProperty('--timer-pct', `${pct}%`)
         }
 
         if (elapsed >= SLIDE_DURATION) {

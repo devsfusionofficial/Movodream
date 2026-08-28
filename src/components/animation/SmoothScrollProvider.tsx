@@ -149,9 +149,7 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
       syncTouch: false,
     })
     lenisRef.current = instance
-    if (!window.location.hash) {
-      instance.scrollTo(0, { immediate: true })
-    }
+    instance.scrollTo(window.scrollY || 0, { immediate: true })
 
     let iframeTimeout: ReturnType<typeof setTimeout>
     const iframes = document.querySelectorAll('iframe')
@@ -190,13 +188,14 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
       pinType: 'transform',
     })
 
-    // Debounced window resize listener to trigger ScrollTrigger.refresh() on DevTools view switch
+    // Instant/debounced window resize listener to trigger ScrollTrigger.refresh() on DevTools view switch
     let resizeTimer: ReturnType<typeof setTimeout>
     const handleResize = () => {
       clearTimeout(resizeTimer)
       resizeTimer = setTimeout(() => {
+        instance.resize()
         ScrollTrigger.refresh()
-      }, 200)
+      }, 50)
     }
     window.addEventListener('resize', handleResize)
 

@@ -46,13 +46,12 @@ export function ClosingCta() {
         },
       })
 
-      splitSub = SplitText.create(readySubtext, { type: 'words' })
       gsap.set(readySubtext, { autoAlpha: 1 })
 
       readyTl.fromTo(
-        splitSub.words,
-        { opacity: 0, y: 22 },
-        { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out', stagger: { each: 0.025, from: 'start' } }
+        readySubtext,
+        { opacity: 0, y: 18 },
+        { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' }
       )
 
       if (readyActions) {
@@ -67,7 +66,6 @@ export function ClosingCta() {
 
     return () => {
       cancelled = true
-      splitSub?.revert()
     }
   }, [])
 
@@ -80,9 +78,12 @@ export function ClosingCta() {
             Re-imagine the journey.<br />
             Re-discover the world.
           </h2>
-          <p className="ready-subtext">
-            Movodream - Travel Re-imagined
-          </p>
+          <div className="ready-subtext">
+            <span className="ready-subtext-spark">✦</span>
+            <span className="ready-subtext-brand">Movodream</span>
+            <span className="ready-subtext-divider">—</span>
+            <span className="ready-subtext-gradient">Travel Re-imagined</span>
+          </div>
         </div>
 
         <div className="ready-actions">
