@@ -28,6 +28,7 @@ import { syncSubscriberEmail } from '@/actions/subscribers'
 import { FileUpload } from '@/components/admin/file-upload'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 
 const templates = {
@@ -165,17 +166,18 @@ export function MarketingCompose({ activeCount }: { activeCount: number }) {
             <div className="grid gap-3 sm:grid-cols-2">
               <div>
                 <label className="mb-1 block text-xs font-semibold text-[#21182a]">Select Template</label>
-                <select
-                  value={template}
-                  onChange={(e) => applyTemplate(e.target.value)}
-                  className="h-10 w-full rounded-xl border border-[#dedede] bg-white px-3 text-xs text-[#21182a] outline-none focus:border-[#d71789] transition-colors"
-                >
-                  {Object.entries(templates).map(([key, val]) => (
-                    <option key={key} value={key}>
-                      {val.label}
-                    </option>
-                  ))}
-                </select>
+                <Select value={template} onValueChange={(val) => val && applyTemplate(val)}>
+                  <SelectTrigger className="h-10 w-full rounded-xl border-[#dedede] bg-white text-xs text-[#21182a]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.entries(templates).map(([key, val]) => (
+                      <SelectItem key={key} value={key}>
+                        {val.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               <div>

@@ -14,6 +14,7 @@ import { useState } from 'react'
 import { Search, X, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 type DataTableProps<TData> = {
   columns: ColumnDef<TData, unknown>[]
@@ -164,17 +165,21 @@ export function DataTable<TData>({
           {/* Rows per page selector */}
           <div className="flex items-center gap-1.5 border-l border-[#e8e1ea] pl-3">
             <span>Rows:</span>
-            <select
-              value={table.getState().pagination.pageSize}
-              onChange={(e) => table.setPageSize(Number(e.target.value))}
-              className="h-7 rounded-lg border border-[#dedede] bg-white px-2 text-xs font-semibold text-[#21182a] outline-none focus:border-[#d71789]"
+            <Select
+              value={String(table.getState().pagination.pageSize)}
+              onValueChange={(val) => val && table.setPageSize(Number(val))}
             >
-              {[5, 10, 20, 50, 100].map((size) => (
-                <option key={size} value={size}>
-                  {size}
-                </option>
-              ))}
-            </select>
+              <SelectTrigger size="sm" className="h-7 w-16 rounded-lg border-[#dedede] bg-white text-xs font-semibold text-[#21182a]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {[5, 10, 20, 50, 100].map((size) => (
+                  <SelectItem key={size} value={String(size)}>
+                    {size}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
 

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Search, X, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 export type SubscriberItem = {
   _id: string
@@ -105,46 +106,62 @@ export function MarketingSubscribersFilter({ subscribers }: { subscribers: Subsc
           )}
         </label>
 
-        <select
+        <Select
           value={userFilter}
-          onChange={(e) => handleFilterChange(setUserFilter, e.target.value as 'all' | 'active' | 'unsubscribed')}
-          className="h-9 rounded-xl border border-[#dedede] bg-white px-3 text-xs text-[#333] outline-none focus:border-[#d71789] transition-colors cursor-pointer"
+          onValueChange={(v) => v && handleFilterChange(setUserFilter, v as 'all' | 'active' | 'unsubscribed')}
         >
-          <option value="all">All users</option>
-          <option value="active">Opted-in users</option>
-          <option value="unsubscribed">Opted-out users</option>
-        </select>
+          <SelectTrigger className="h-9 w-auto min-w-[130px] rounded-xl border-[#dedede] bg-white text-xs text-[#333]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All users</SelectItem>
+            <SelectItem value="active">Opted-in users</SelectItem>
+            <SelectItem value="unsubscribed">Opted-out users</SelectItem>
+          </SelectContent>
+        </Select>
 
-        <select
+        <Select
           value={statusFilter}
-          onChange={(e) => handleFilterChange(setStatusFilter, e.target.value as 'all' | 'active' | 'unsubscribed')}
-          className="h-9 rounded-xl border border-[#dedede] bg-white px-3 text-xs text-[#333] outline-none focus:border-[#d71789] transition-colors cursor-pointer"
+          onValueChange={(v) => v && handleFilterChange(setStatusFilter, v as 'all' | 'active' | 'unsubscribed')}
         >
-          <option value="all">All statuses</option>
-          <option value="active">Opted in</option>
-          <option value="unsubscribed">Opted out</option>
-        </select>
+          <SelectTrigger className="h-9 w-auto min-w-[130px] rounded-xl border-[#dedede] bg-white text-xs text-[#333]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All statuses</SelectItem>
+            <SelectItem value="active">Opted in</SelectItem>
+            <SelectItem value="unsubscribed">Opted out</SelectItem>
+          </SelectContent>
+        </Select>
 
-        <select
+        <Select
           value={joinedFilter}
-          onChange={(e) => handleFilterChange(setJoinedFilter, e.target.value as 'all' | '7d' | '30d' | '90d')}
-          className="h-9 rounded-xl border border-[#dedede] bg-white px-3 text-xs text-[#333] outline-none focus:border-[#d71789] transition-colors cursor-pointer"
+          onValueChange={(v) => v && handleFilterChange(setJoinedFilter, v as 'all' | '7d' | '30d' | '90d')}
         >
-          <option value="all">Joined (All time)</option>
-          <option value="7d">Joined (Last 7 days)</option>
-          <option value="30d">Joined (Last 30 days)</option>
-          <option value="90d">Joined (Last 90 days)</option>
-        </select>
+          <SelectTrigger className="h-9 w-auto min-w-[140px] rounded-xl border-[#dedede] bg-white text-xs text-[#333]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Joined (All time)</SelectItem>
+            <SelectItem value="7d">Joined (Last 7 days)</SelectItem>
+            <SelectItem value="30d">Joined (Last 30 days)</SelectItem>
+            <SelectItem value="90d">Joined (Last 90 days)</SelectItem>
+          </SelectContent>
+        </Select>
 
-        <select
+        <Select
           value={exitDateFilter}
-          onChange={(e) => handleFilterChange(setExitDateFilter, e.target.value as 'all' | 'has_exit' | 'no_exit')}
-          className="h-9 rounded-xl border border-[#dedede] bg-white px-3 text-xs text-[#333] outline-none focus:border-[#d71789] transition-colors cursor-pointer"
+          onValueChange={(v) => v && handleFilterChange(setExitDateFilter, v as 'all' | 'has_exit' | 'no_exit')}
         >
-          <option value="all">Exit date (All)</option>
-          <option value="has_exit">Has exit date</option>
-          <option value="no_exit">No exit date</option>
-        </select>
+          <SelectTrigger className="h-9 w-auto min-w-[130px] rounded-xl border-[#dedede] bg-white text-xs text-[#333]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Exit date (All)</SelectItem>
+            <SelectItem value="has_exit">Has exit date</SelectItem>
+            <SelectItem value="no_exit">No exit date</SelectItem>
+          </SelectContent>
+        </Select>
 
         {hasActiveFilters && (
           <button
@@ -222,20 +239,26 @@ export function MarketingSubscribersFilter({ subscribers }: { subscribers: Subsc
 
           <div className="flex items-center gap-1.5 border-l border-[#e8e1ea] pl-3">
             <span>Rows:</span>
-            <select
-              value={pageSize}
-              onChange={(e) => {
-                setPageSize(Number(e.target.value))
-                setPageIndex(0)
+            <Select
+              value={String(pageSize)}
+              onValueChange={(val) => {
+                if (val) {
+                  setPageSize(Number(val))
+                  setPageIndex(0)
+                }
               }}
-              className="h-7 rounded-lg border border-[#dedede] bg-white px-2 text-xs font-semibold text-[#21182a] outline-none focus:border-[#d71789]"
             >
-              {[5, 10, 20, 50, 100].map((size) => (
-                <option key={size} value={size}>
-                  {size}
-                </option>
-              ))}
-            </select>
+              <SelectTrigger size="sm" className="h-7 w-16 rounded-lg border-[#dedede] bg-white text-xs font-semibold text-[#21182a]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {[5, 10, 20, 50, 100].map((size) => (
+                  <SelectItem key={size} value={String(size)}>
+                    {size}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
 

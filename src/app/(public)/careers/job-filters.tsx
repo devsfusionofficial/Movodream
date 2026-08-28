@@ -1,12 +1,106 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useRef, useEffect } from 'react'
+import { ChevronDown, Check, Briefcase, MapPin } from 'lucide-react'
 
 type JobFiltersProps = {
   departments: string[]
   locations: string[]
   initialDepartment?: string
   initialLocation?: string
+}
+
+function CustomSelect({
+  label,
+  value,
+  options,
+  defaultLabel,
+  icon: Icon,
+  onChange,
+}: {
+  label: string
+  value: string
+  options: string[]
+  defaultLabel: string
+  icon?: React.ComponentType<{ className?: string }>
+  onChange: (val: string) => void
+}) {
+  const [isOpen, setIsOpen] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false)
+      }
+    }
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [isOpen])
+
+  const selectedText = value || defaultLabel
+
+  return (
+    <div className={`career-custom-select-wrap ${isOpen ? 'is-open z-50' : 'z-10'}`} ref={dropdownRef}>
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        aria-expanded={isOpen}
+        aria-label={label}
+        className={`career-custom-select-btn ${value ? 'has-value' : ''}`}
+      >
+        <span className="flex items-center gap-2 truncate">
+          {Icon && <Icon className="h-3.5 w-3.5 text-[#ec2a8b] shrink-0" />}
+          <span className="truncate">{selectedText}</span>
+        </span>
+        <ChevronDown
+          className={`h-4 w-4 text-[#ec2a8b] transition-transform duration-200 shrink-0 ${
+            isOpen ? 'rotate-180' : ''
+          }`}
+        />
+      </button>
+
+      {isOpen && (
+        <div className="career-custom-select-menu">
+          <div className="career-custom-select-list">
+            <button
+              type="button"
+              onClick={() => {
+                onChange('')
+                setIsOpen(false)
+              }}
+              className={`career-custom-select-item ${!value ? 'active' : ''}`}
+            >
+              <span>{defaultLabel}</span>
+              {!value && <Check className="h-3.5 w-3.5 text-[#ec2a8b]" />}
+            </button>
+            <div className="career-select-divider" />
+            {options.map((opt) => {
+              const isSelected = value.toLowerCase() === opt.toLowerCase()
+              return (
+                <button
+                  key={opt}
+                  type="button"
+                  onClick={() => {
+                    onChange(opt)
+                    setIsOpen(false)
+                  }}
+                  className={`career-custom-select-item ${isSelected ? 'active' : ''}`}
+                >
+                  <span className="truncate">{opt}</span>
+                  {isSelected && <Check className="h-3.5 w-3.5 text-[#ec2a8b] shrink-0" />}
+                </button>
+              )
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  )
 }
 
 export function JobFilters({
@@ -48,33 +142,23 @@ export function JobFilters({
 
   return (
     <form onSubmit={handleApply} className="page-filters">
-      <select
+      <CustomSelect
+        label="Filter by department"
         value={selectedDept}
-        onChange={(e) => setSelectedDept(e.target.value)}
-        aria-label="Filter by department"
-        className="page-select"
-      >
-        <option value="">All departments</option>
-        {departments.map((dept) => (
-          <option key={dept} value={dept}>
-            {dept}
-          </option>
-        ))}
-      </select>
+        options={departments}
+        defaultLabel="All departments"
+        icon={Briefcase}
+        onChange={(val) => setSelectedDept(val)}
+      />
 
-      <select
+      <CustomSelect
+        label="Filter by location"
         value={selectedLoc}
-        onChange={(e) => setSelectedLoc(e.target.value)}
-        aria-label="Filter by location"
-        className="page-select"
-      >
-        <option value="">All locations</option>
-        {locations.map((loc) => (
-          <option key={loc} value={loc}>
-            {loc}
-          </option>
-        ))}
-      </select>
+        options={locations}
+        defaultLabel="All locations"
+        icon={MapPin}
+        onChange={(val) => setSelectedLoc(val)}
+      />
 
       <button type="submit" className="page-pill active">
         Apply filters
