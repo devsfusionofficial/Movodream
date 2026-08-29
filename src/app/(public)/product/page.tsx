@@ -126,6 +126,7 @@ export default async function ProductPage() {
         <IzhingaFeatures />
       </section>
 
+      {/*
       <section className="product-ecosystem-section">
         <h2 className="product-section-title">
           All-in-one <span className="product-accent">intelligent</span> travel ecosystem
@@ -189,6 +190,7 @@ export default async function ProductPage() {
           ))}
         </div>
       </section>
+      */}
 
       <section id="technology" className="product-tech-section">
         <h2 className="product-section-title">

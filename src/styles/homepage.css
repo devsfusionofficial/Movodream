@@ -5413,33 +5413,36 @@ a.office-card:hover {
 
 /* ── Alternating feature rows ── */
 .izhinga-features-section {
-  padding: 24px 5% 32px;
-  background: #ffffff;
+  position: relative;
+  padding: 36px 5% 48px;
+  background: linear-gradient(175deg, #faf6fd 0%, #f3ebfc 35%, #fbf5f9 70%, #f5eefc 100%);
+  border-top: 1px solid rgba(90, 45, 215, 0.06);
+  border-bottom: 1px solid rgba(90, 45, 215, 0.06);
+  overflow: hidden;
 }
 .izhinga-rows {
   max-width: 1240px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 24px;
 }
 .izhinga-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   align-items: center;
   gap: 32px;
-  padding: 20px 24px;
-  border-radius: 20px;
+  padding: 24px 28px;
+  border-radius: 22px;
   background: #ffffff;
-  border: 1px solid rgba(90, 45, 215, 0.07);
-  box-shadow: 0 8px 24px rgba(90, 45, 215, 0.04);
-  opacity: 0;
-  transform: translateY(20px);
-  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  border: 1px solid rgba(90, 45, 215, 0.09);
+  box-shadow: 0 12px 36px rgba(90, 45, 215, 0.06);
+  transition: box-shadow 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
 }
 .izhinga-row:hover {
-  border-color: rgba(90, 45, 215, 0.16);
-  box-shadow: 0 14px 32px rgba(90, 45, 215, 0.08);
+  border-color: rgba(215, 23, 137, 0.22);
+  box-shadow: 0 18px 44px rgba(90, 45, 215, 0.12);
+  transform: translateY(-2px);
 }
 .izhinga-row.is-reversed .izhinga-row-media {
   order: 2;
@@ -5457,27 +5460,118 @@ a.office-card:hover {
   transform: translateY(-3px);
   box-shadow: 0 14px 36px rgba(90, 45, 215, 0.15);
 }
-.izhinga-row-media img {
+.izhinga-row-media img,
+.izhinga-row-media video {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
+  display: block;
+  transform: translate3d(0, 0, 0);
+  -webkit-transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  will-change: transform;
 }
-.izhinga-row-num {
+.izhinga-row-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.izhinga-row-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  padding: 5px 14px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(215, 23, 137, 0.08) 0%, rgba(90, 45, 215, 0.08) 100%);
+  border: 1px solid rgba(215, 23, 137, 0.2);
+  margin-bottom: 8px;
+}
+.izhinga-badge-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #d71789;
+  box-shadow: 0 0 10px rgba(215, 23, 137, 0.8);
+  animation: izhingaPulse 2s infinite ease-in-out;
+}
+@keyframes izhingaPulse {
+  0%, 100% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.3); opacity: 1; }
+}
+.izhinga-badge-text {
   font-size: 0.78rem;
-  font-weight: 800;
-  color: var(--pp-pink);
+  font-weight: 850;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #d71789;
 }
 .izhinga-row-body h3 {
-  margin: 3px 0 6px;
-  font-size: clamp(1.2rem, 2vw, 1.45rem);
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  color: var(--pp-navy);
+  margin: 0 0 8px 0;
+  font-size: clamp(1.8rem, 2.4vw, 2.3rem);
+  font-weight: 850;
+  letter-spacing: -0.035em;
+  line-height: 1.16;
+  color: #140b24;
 }
-.izhinga-row-body p {
-  margin: 0 0 12px;
-  max-width: 440px;
-  font-size: 0.9rem;
-  line-height: 1.55;
-  color: var(--pp-muted);
+.izhinga-row-body p.izhinga-row-lead {
+  margin: 0 0 18px 0;
+  max-width: 520px;
+  font-size: 1.02rem;
+  line-height: 1.62;
+  color: #55485c;
+  font-weight: 450;
+}
+.izhinga-benefit-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0 0 20px 0;
+}
+.izhinga-benefit-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: #faf8fd;
+  border: 1px solid rgba(90, 45, 215, 0.07);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.izhinga-benefit-card:hover {
+  background: #ffffff;
+  border-color: rgba(215, 23, 137, 0.25);
+  box-shadow: 0 6px 18px rgba(90, 45, 215, 0.08);
+  transform: translateY(-2px);
+}
+.izhinga-benefit-icon {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(215, 23, 137, 0.12) 0%, rgba(90, 45, 215, 0.12) 100%);
+  color: #d71789;
+  font-size: 0.85rem;
+}
+.izhinga-benefit-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.izhinga-benefit-info strong {
+  font-size: 0.88rem;
+  font-weight: 750;
+  color: #1a0f2e;
+  letter-spacing: -0.01em;
+}
+.izhinga-benefit-info span {
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: #6a5a72;
 }
 .izhinga-row-tags {
   margin: 0;
@@ -5485,16 +5579,17 @@ a.office-card:hover {
   list-style: none;
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 7px 8px;
 }
 .izhinga-row-tags li {
-  padding: 4px 10px;
+  padding: 5px 12px;
   border-radius: 999px;
-  background: #f6eefd;
+  background: #f4ecfc;
   border: 1px solid rgba(90, 45, 215, 0.08);
   color: #5a2dd7;
-  font-size: 0.72rem;
-  font-weight: 600;
+  font-size: 0.76rem;
+  font-weight: 650;
+  letter-spacing: -0.01em;
   transition: all 0.2s ease;
 }
 .izhinga-row-tags li:hover {
@@ -5826,6 +5921,32 @@ a.office-card:hover {
   .izhinga-row.is-reversed .izhinga-row-media {
     grid-template-columns: 1fr;
     order: 0;
+  }
+  .izhinga-row {
+    gap: 16px;
+    padding: 18px 16px;
+    border-radius: 18px;
+  }
+  .izhinga-benefit-cards {
+    display: none !important;
+  }
+  .izhinga-row-num {
+    font-size: 0.78rem !important;
+    font-weight: 800 !important;
+    color: var(--pp-pink) !important;
+    margin-bottom: 3px !important;
+    display: block !important;
+  }
+  .izhinga-row-body h3 {
+    font-size: clamp(1.3rem, 4vw, 1.55rem) !important;
+    margin: 2px 0 6px 0 !important;
+  }
+  .izhinga-row-body p.izhinga-row-lead {
+    font-size: 0.88rem !important;
+    line-height: 1.5 !important;
+    margin-bottom: 12px !important;
+    max-width: 100% !important;
+    color: var(--pp-muted) !important;
   }
 }
 
