@@ -1,9 +1,11 @@
 import { listUsers } from '@/actions/users'
+import { requirePagePermission } from '@/lib/auth-guard'
 import { DataTable } from '@/components/admin/data-table'
 import { CreateUserDialog } from './create-user-dialog'
 import { columns } from './columns'
 
 export default async function UsersPage() {
+  await requirePagePermission('user', ['list'])
   const users = await listUsers()
 
   return (

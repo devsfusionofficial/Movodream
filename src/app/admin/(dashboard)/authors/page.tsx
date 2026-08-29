@@ -1,11 +1,13 @@
 import Link from 'next/link'
 import { Plus, Sparkles, UserRound } from 'lucide-react'
 import { listAuthors } from '@/actions/authors'
+import { requirePagePermission } from '@/lib/auth-guard'
 import { DataTable } from '@/components/admin/data-table'
 import { Button } from '@/components/ui/button'
 import { columns } from './columns'
 
 export default async function AuthorsPage() {
+  await requirePagePermission('authors', ['read'])
   const authors = await listAuthors()
 
   return (

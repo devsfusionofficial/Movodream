@@ -1,11 +1,13 @@
 import Link from 'next/link'
 import { ArrowUpRight, BriefcaseBusiness, CheckCircle2, Clock3, Plus, UsersRound } from 'lucide-react'
 import { listJobs } from '@/actions/jobs'
+import { requirePagePermission } from '@/lib/auth-guard'
 import { DataTable } from '@/components/admin/data-table'
 import { Button } from '@/components/ui/button'
 import { columns } from './columns'
 
 export default async function JobsPage() {
+  await requirePagePermission('jobs', ['read'])
   const jobs = await listJobs()
   const open = jobs.filter((job) => job.status === 'published').length
   const drafts = jobs.filter((job) => job.status === 'draft').length

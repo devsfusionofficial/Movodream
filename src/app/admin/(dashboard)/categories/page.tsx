@@ -1,11 +1,13 @@
 import Link from 'next/link'
 import { FolderKanban, Plus, Sparkles } from 'lucide-react'
 import { listCategories } from '@/actions/categories'
+import { requirePagePermission } from '@/lib/auth-guard'
 import { DataTable } from '@/components/admin/data-table'
 import { Button } from '@/components/ui/button'
 import { columns } from './columns'
 
 export default async function CategoriesPage() {
+  await requirePagePermission('categories', ['read'])
   const categories = await listCategories()
 
   return (

@@ -15,9 +15,33 @@ const STATUS_VARIANT: Record<string, 'default' | 'secondary' | 'outline' | 'dest
 }
 
 export const columns: ColumnDef<JobRow, unknown>[] = [
-  { accessorKey: 'title', header: 'Title' },
-  { accessorKey: 'department', header: 'Department' },
-  { accessorKey: 'location', header: 'Location' },
+  {
+    accessorKey: 'title',
+    header: 'Title',
+    cell: ({ row }) => (
+      <span className="max-w-[240px] truncate block font-medium text-[#21182a]" title={row.original.title}>
+        {row.original.title}
+      </span>
+    ),
+  },
+  {
+    accessorKey: 'department',
+    header: 'Department',
+    cell: ({ row }) => (
+      <span className="max-w-[140px] truncate block text-xs text-[#524458]" title={row.original.department}>
+        {row.original.department}
+      </span>
+    ),
+  },
+  {
+    accessorKey: 'location',
+    header: 'Location',
+    cell: ({ row }) => (
+      <span className="max-w-[140px] truncate block text-xs text-[#524458]" title={row.original.location}>
+        {row.original.location}
+      </span>
+    ),
+  },
   {
     accessorKey: 'status',
     header: 'Status',

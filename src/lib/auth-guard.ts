@@ -20,6 +20,37 @@ export async function requireSession() {
   return session
 }
 
+export async function hasPermission(
+  resource: keyof typeof statement,
+  actions: string[]
+) {
+  const session = await getSession()
+  if (!session) return false
+  const role = ((session.user as { role?: AppRole }).role ?? 'admin') as AppRole
+  const roleDef = roles[role] || roles.admin
+  return roleDef?.authorize({ [resource]: actions } as never)?.success ?? false
+}
+
+/**
+ * Page-level authorization guard for Server Components.
+ * If unauthorized, cleanly redirects to /admin instead of throwing an unhandled runtime error.
+ */
+export async function requirePagePermission(
+  resource: keyof typeof statement,
+  actions: string[]
+) {
+  const session = await requireSession()
+  const role = ((session.user as { role?: AppRole }).role ?? 'admin') as AppRole
+  const roleDef = roles[role] || roles.admin
+
+  const result = roleDef?.authorize({ [resource]: actions } as never)
+  if (!result?.success) {
+    redirect('/admin')
+  }
+
+  return session
+}
+
 /**
  * The real authorization check — called at the top of every Server Action
  * that mutates data, not only at the page/route level. A hidden nav link is
@@ -30,8 +61,8 @@ export async function requirePermission(
   actions: string[]
 ) {
   const session = await requireSession()
-  const role = (session.user as { role?: AppRole }).role ?? 'editor'
-  const roleDef = roles[role]
+  const role = ((session.user as { role?: AppRole }).role ?? 'admin') as AppRole
+  const roleDef = roles[role] || roles.admin
 
   const result = roleDef?.authorize({ [resource]: actions } as never)
   if (!result?.success) {

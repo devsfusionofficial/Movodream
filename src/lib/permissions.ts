@@ -43,23 +43,6 @@ export const roles = {
     partners: ['create', 'read', 'update', 'delete'],
     media: ['create', 'read', 'delete'],
   }),
-  editor: ac.newRole({
-    posts: ['create', 'read', 'update', 'delete', 'publish'],
-    categories: ['create', 'read', 'update', 'delete'],
-    tags: ['create', 'read', 'update', 'delete'],
-    authors: ['create', 'read', 'update', 'delete'],
-    jobs: ['create', 'read', 'update', 'delete', 'publish'],
-    offices: ['create', 'read', 'update', 'delete'],
-    partners: ['create', 'read', 'update', 'delete'],
-    media: ['create', 'read', 'delete'],
-    applications: ['read'],
-    subscribers: ['read'],
-    contacts: ['read'],
-  }),
-  hr: ac.newRole({
-    jobs: ['read'],
-    applications: ['read', 'updateStatus'],
-  }),
 } as const
 
 export type AppRole = keyof typeof roles

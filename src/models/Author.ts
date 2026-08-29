@@ -3,6 +3,7 @@ import { Schema, model, models, type InferSchemaType } from 'mongoose'
 const authorSchema = new Schema(
   {
     name: { type: String, required: true },
+    email: { type: String, lowercase: true, trim: true },
     bio: { type: String },
     avatar: {
       url: { type: String },

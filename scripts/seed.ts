@@ -91,8 +91,15 @@ async function seedCategories() {
 async function seedBlogSamples() {
   let author = await Author.findOne({ name: 'Movodream Team' })
   if (!author) {
-    author = await Author.create({ name: 'Movodream Team', bio: 'Insights from the team building Movodream.' })
+    author = await Author.create({
+      name: 'Movodream Team',
+      email: 'editorial@movodream.com',
+      bio: 'Insights from the team building Movodream.',
+    })
     console.log('Created author: Movodream Team')
+  } else if (!author.email) {
+    author.email = 'editorial@movodream.com'
+    await author.save()
   }
 
   const aiCategory = await Category.findOne({ slug: slugify('Artificial Intelligence') })

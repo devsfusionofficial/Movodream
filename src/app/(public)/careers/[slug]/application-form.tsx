@@ -39,6 +39,39 @@ export function ApplicationForm({ jobId }: { jobId: string }) {
     return errors
   }
 
+  const isSubmitting = status === 'submitting'
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) {
+      setFileName('')
+      return
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setFieldErrors((prev) => ({ ...prev, resume: 'Resume file size must not exceed 5MB' }))
+      setFileName('')
+      e.target.value = ''
+      return
+    }
+
+    const validExtensions = ['.pdf', '.doc', '.docx']
+    const ext = file.name.slice(file.name.lastIndexOf('.')).toLowerCase()
+    if (!validExtensions.includes(ext)) {
+      setFieldErrors((prev) => ({ ...prev, resume: 'File must be a PDF, DOC, or DOCX' }))
+      setFileName('')
+      e.target.value = ''
+      return
+    }
+
+    setFieldErrors((prev) => {
+      const next = { ...prev }
+      delete next.resume
+      return next
+    })
+    setFileName(file.name)
+  }
+
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setError('')
@@ -98,6 +131,7 @@ export function ApplicationForm({ jobId }: { jobId: string }) {
             type="text"
             placeholder="John Doe"
             required
+            disabled={isSubmitting}
             className={`app-input ${fieldErrors.name ? 'invalid' : ''}`}
           />
           {fieldErrors.name && <span className="field-error-text">{fieldErrors.name}</span>}
@@ -111,6 +145,7 @@ export function ApplicationForm({ jobId }: { jobId: string }) {
             type="email"
             placeholder="john@example.com"
             required
+            disabled={isSubmitting}
             className={`app-input ${fieldErrors.email ? 'invalid' : ''}`}
           />
           {fieldErrors.email && <span className="field-error-text">{fieldErrors.email}</span>}
@@ -127,6 +162,7 @@ export function ApplicationForm({ jobId }: { jobId: string }) {
             maxLength={14}
             placeholder="9876543210"
             required
+            disabled={isSubmitting}
             className={`app-input ${fieldErrors.phone ? 'invalid' : ''}`}
           />
           {fieldErrors.phone && <span className="field-error-text">{fieldErrors.phone}</span>}
@@ -134,19 +170,40 @@ export function ApplicationForm({ jobId }: { jobId: string }) {
 
         <div className="app-field">
           <label htmlFor="location">Current Location</label>
-          <input id="location" name="location" type="text" placeholder="e.g. Delhi, India" className="app-input" />
+          <input
+            id="location"
+            name="location"
+            type="text"
+            placeholder="e.g. Delhi, India"
+            disabled={isSubmitting}
+            className="app-input"
+          />
         </div>
       </div>
 
       <div className="app-form-grid">
         <div className="app-field">
           <label htmlFor="experience">Relevant Experience</label>
-          <input id="experience" name="experience" type="text" placeholder="e.g. 3 Years" className="app-input" />
+          <input
+            id="experience"
+            name="experience"
+            type="text"
+            placeholder="e.g. 3 Years"
+            disabled={isSubmitting}
+            className="app-input"
+          />
         </div>
 
         <div className="app-field">
           <label htmlFor="qualification">Highest Qualification</label>
-          <input id="qualification" name="qualification" type="text" placeholder="e.g. Graduation" className="app-input" />
+          <input
+            id="qualification"
+            name="qualification"
+            type="text"
+            placeholder="e.g. Graduation"
+            disabled={isSubmitting}
+            className="app-input"
+          />
         </div>
       </div>
 
@@ -157,6 +214,7 @@ export function ApplicationForm({ jobId }: { jobId: string }) {
           name="coverLetter"
           rows={3}
           placeholder="Share a short note about why you're a great fit..."
+          disabled={isSubmitting}
           className="app-textarea"
         />
       </div>
@@ -170,11 +228,9 @@ export function ApplicationForm({ jobId }: { jobId: string }) {
             type="file"
             accept=".pdf,.doc,.docx"
             required
+            disabled={isSubmitting}
             className="file-upload-input"
-            onChange={(e) => {
-              const file = e.target.files?.[0]
-              setFileName(file ? file.name : '')
-            }}
+            onChange={handleFileChange}
           />
           <div className="file-upload-content">
             <span className="upload-icon">📄</span>
@@ -189,8 +245,15 @@ export function ApplicationForm({ jobId }: { jobId: string }) {
 
       {error && <div className="app-error-box">{error}</div>}
 
-      <button type="submit" className="app-submit-btn" disabled={status === 'submitting'}>
-        {status === 'submitting' ? 'Submitting Application…' : '🚀 Submit Application'}
+      <button type="submit" className="app-submit-btn" disabled={isSubmitting}>
+        {isSubmitting ? (
+          <>
+            <span className="app-btn-spinner" />
+            <span>Submitting Application…</span>
+          </>
+        ) : (
+          '🚀 Submit Application'
+        )}
       </button>
     </form>
   )

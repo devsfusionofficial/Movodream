@@ -1,9 +1,11 @@
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
 import { listSubscribers } from '@/actions/subscribers'
+import { requirePagePermission } from '@/lib/auth-guard'
 import { MarketingCompose } from '../marketing-compose'
 
 export default async function MarketingComposePage() {
+  await requirePagePermission('subscribers', ['send'])
   const subscribers = await listSubscribers()
   const activeCount = subscribers.filter((subscriber) => subscriber.status === 'active').length
   return (

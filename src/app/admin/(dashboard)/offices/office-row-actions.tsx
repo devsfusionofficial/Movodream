@@ -88,30 +88,30 @@ export function OfficeRowActions({
       />
 
       <Dialog open={viewOpen} onOpenChange={setViewOpen}>
-        <DialogContent className="max-w-md rounded-2xl border border-[#ebe6ee] bg-white p-6 shadow-2xl">
-          <DialogHeader className="border-b border-[#f0edf1] pb-4 pr-10">
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <DialogTitle className="text-xl font-bold tracking-tight text-[#21182a]">
+        <DialogContent className="w-full max-w-[calc(100vw-2rem)] sm:max-w-md max-h-[90vh] overflow-y-auto rounded-2xl border border-[#ebe6ee] bg-white p-5 sm:p-6 shadow-2xl min-w-0">
+          <DialogHeader className="border-b border-[#f0edf1] pb-4 pr-10 min-w-0">
+            <div className="flex flex-wrap items-center justify-between gap-3 min-w-0">
+              <div className="min-w-0 flex-1">
+                <DialogTitle className="text-xl font-bold tracking-tight text-[#21182a] break-words [overflow-wrap:anywhere]">
                   {name}
                 </DialogTitle>
-                <DialogDescription className="mt-0.5 text-xs text-[#857c8b]">
+                <DialogDescription className="mt-0.5 text-xs text-[#857c8b] min-w-0 truncate">
                   {office?.city ? `${office.city}, ${office.country || ''}` : 'Global Location'}
                 </DialogDescription>
               </div>
-              <span className="rounded-full bg-[#fce8f2] p-2 text-[#d71789]">
+              <span className="rounded-full bg-[#fce8f2] p-2 text-[#d71789] shrink-0">
                 <Building2 className="h-5 w-5" />
               </span>
             </div>
           </DialogHeader>
 
-          <div className="space-y-3 py-3 text-xs">
+          <div className="space-y-3 py-3 text-xs min-w-0">
             {office?.address && (
-              <div className="rounded-xl border border-[#ebe6ee] bg-[#faf8fb] p-3">
+              <div className="rounded-xl border border-[#ebe6ee] bg-[#faf8fb] p-3 min-w-0">
                 <span className="text-[#857c8b] block mb-1 font-semibold uppercase tracking-wider">Address</span>
-                <p className="font-medium text-[#21182a] flex items-center gap-1.5">
-                  <MapPin className="h-3.5 w-3.5 text-[#d71789]" />
-                  {office.address}
+                <p className="font-medium text-[#21182a] flex items-center gap-1.5 break-words [overflow-wrap:anywhere]">
+                  <MapPin className="h-3.5 w-3.5 shrink-0 text-[#d71789]" />
+                  <span>{office.address}</span>
                 </p>
               </div>
             )}

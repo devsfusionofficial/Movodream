@@ -13,6 +13,7 @@ export default async function EditAuthorPage({ params }: { params: Promise<{ id:
         authorId={id}
         defaultValues={{
           name: author.name,
+          email: author.email ?? '',
           bio: author.bio,
           avatarUrl: author.avatar?.url,
           avatarKey: author.avatar?.key,

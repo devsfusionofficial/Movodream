@@ -1,10 +1,12 @@
 import Link from 'next/link'
 import { Download, Mail, RefreshCw } from 'lucide-react'
 import { listSubscribers } from '@/actions/subscribers'
+import { requirePagePermission } from '@/lib/auth-guard'
 import { Button } from '@/components/ui/button'
 import { MarketingSubscribersFilter, type SubscriberItem } from './marketing-subscribers-filter'
 
 export default async function MarketingSubscribersPage() {
+  await requirePagePermission('subscribers', ['read'])
   const rawSubscribers = await listSubscribers()
   const subscribers = JSON.parse(JSON.stringify(rawSubscribers)) as SubscriberItem[]
   const active = subscribers.filter((subscriber) => subscriber.status === 'active')

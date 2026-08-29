@@ -1,9 +1,11 @@
 import { Inbox } from 'lucide-react'
 import { listContactSubmissions } from '@/actions/contacts'
+import { requirePagePermission } from '@/lib/auth-guard'
 import { DataTable } from '@/components/admin/data-table'
 import { columns } from './columns'
 
 export default async function ContactsPage() {
+  await requirePagePermission('contacts', ['read'])
   const submissions = await listContactSubmissions()
 
   return (

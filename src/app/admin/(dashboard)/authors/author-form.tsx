@@ -6,7 +6,7 @@ import Image from 'next/image'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
-import { User, FileText, Camera, Globe, Sparkles, CheckCircle2, ArrowRight, Share2, Link2 } from 'lucide-react'
+import { User, FileText, Camera, Globe, Sparkles, CheckCircle2, ArrowRight, Share2, Link2, Mail } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -32,6 +32,7 @@ export function AuthorForm({ authorId, defaultValues }: AuthorFormProps) {
     resolver: zodResolver(authorSchema),
     defaultValues: {
       name: '',
+      email: '',
       bio: '',
       avatarUrl: '',
       twitter: '',
@@ -53,6 +54,7 @@ export function AuthorForm({ authorId, defaultValues }: AuthorFormProps) {
   }
 
   const name = watch('name')
+  const email = watch('email')
   const bio = watch('bio')
   const avatarUrl = watch('avatarUrl')
   const twitter = watch('twitter')
@@ -88,6 +90,25 @@ export function AuthorForm({ authorId, defaultValues }: AuthorFormProps) {
                 />
               </div>
               <FieldError errors={[errors.name]} />
+            </Field>
+
+            <Field>
+              <FieldLabel htmlFor="email" className="text-xs font-semibold text-[#21182a]">
+                Email Address
+              </FieldLabel>
+              <div className="relative">
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="e.g. author@movodream.com"
+                  className="h-10 rounded-xl border-[#dedede] pl-3 text-sm focus:border-[#d71789]"
+                  {...register('email')}
+                />
+              </div>
+              <FieldDescription className="text-[11px] text-[#887f8e]">
+                Contact or administrative email address for this author.
+              </FieldDescription>
+              <FieldError errors={[errors.email]} />
             </Field>
           </div>
 
@@ -271,6 +292,12 @@ export function AuthorForm({ authorId, defaultValues }: AuthorFormProps) {
               <p className="text-xs font-medium text-[#d71789] mt-0.5">
                 Editorial Contributor
               </p>
+              {email && (
+                <p className="mt-1 flex items-center gap-1.5 text-xs text-[#857c8b]">
+                  <Mail className="h-3.5 w-3.5 text-[#d71789]" />
+                  {email}
+                </p>
+              )}
 
               {/* Bio Preview */}
               <div className="mt-4 rounded-xl border border-[#f0edf1] bg-[#faf8fb] p-3 text-xs leading-relaxed text-[#382b40] italic">

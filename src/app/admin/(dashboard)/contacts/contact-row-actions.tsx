@@ -109,35 +109,37 @@ export function ContactRowActions({
       />
 
       <Dialog open={viewOpen} onOpenChange={setViewOpen}>
-        <DialogContent className="max-w-lg rounded-2xl border border-[#ebe6ee] bg-white p-6 shadow-2xl sm:max-w-xl">
-          <DialogHeader className="border-b border-[#f0edf1] pb-4 pr-10">
-            <div className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-3">
-                <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#fce8f2] text-base font-bold text-[#d71789]">
+        <DialogContent className="w-full max-w-[calc(100vw-2rem)] sm:max-w-xl max-h-[90vh] overflow-y-auto rounded-2xl border border-[#ebe6ee] bg-white p-5 sm:p-6 shadow-2xl min-w-0">
+          <DialogHeader className="border-b border-[#f0edf1] pb-4 pr-10 min-w-0">
+            <div className="flex flex-wrap items-center justify-between gap-3 min-w-0">
+              <div className="flex items-center gap-3 min-w-0 flex-1">
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#fce8f2] text-base font-bold text-[#d71789]">
                   {initial}
                 </span>
-                <div>
-                  <DialogTitle className="text-lg font-bold tracking-tight text-[#21182a]">
+                <div className="min-w-0 flex-1">
+                  <DialogTitle className="text-lg font-bold tracking-tight text-[#21182a] break-words [overflow-wrap:anywhere]">
                     {name || 'Contact Enquiry'}
                   </DialogTitle>
-                  <DialogDescription className="text-xs text-[#857c8b] flex items-center gap-1.5 mt-0.5">
-                    <Calendar className="h-3.5 w-3.5 text-[#d71789]" />
+                  <DialogDescription className="text-xs text-[#857c8b] flex items-center gap-1.5 mt-0.5 min-w-0 truncate">
+                    <Calendar className="h-3.5 w-3.5 shrink-0 text-[#d71789]" />
                     Received {formattedDate}
                   </DialogDescription>
                 </div>
               </div>
-              <span className="rounded-full bg-[#fce8f2] px-3 py-1 text-[11px] font-semibold text-[#d71789] border border-[#f7d4e5]">
+              <span className="rounded-full bg-[#fce8f2] px-3 py-1 text-[11px] font-semibold text-[#d71789] border border-[#f7d4e5] shrink-0">
                 Contact Enquiry
               </span>
             </div>
           </DialogHeader>
 
-          <div className="space-y-3.5 py-2 text-xs">
-            <div className="grid gap-2.5 sm:grid-cols-2">
-              <div className="flex items-center justify-between rounded-xl border border-[#f0edf1] bg-[#faf8fb] px-3.5 py-2.5">
-                <div className="flex items-center gap-2 min-w-0">
+          <div className="space-y-3.5 py-2 text-xs min-w-0">
+            <div className="grid gap-2.5 sm:grid-cols-2 min-w-0">
+              <div className="flex items-center justify-between rounded-xl border border-[#f0edf1] bg-[#faf8fb] px-3.5 py-2.5 min-w-0 overflow-hidden">
+                <div className="flex items-center gap-2 min-w-0 flex-1 overflow-hidden">
                   <Mail className="h-4 w-4 shrink-0 text-[#d71789]" />
-                  <span className="truncate text-xs font-medium text-[#21182a]">{email || 'No email'}</span>
+                  <span className="truncate block w-full text-xs font-medium text-[#21182a]" title={email || 'No email'}>
+                    {email || 'No email'}
+                  </span>
                 </div>
                 {email && (
                   <button
@@ -151,10 +153,12 @@ export function ContactRowActions({
                 )}
               </div>
 
-              <div className="flex items-center justify-between rounded-xl border border-[#f0edf1] bg-[#faf8fb] px-3.5 py-2.5">
-                <div className="flex items-center gap-2 min-w-0">
+              <div className="flex items-center justify-between rounded-xl border border-[#f0edf1] bg-[#faf8fb] px-3.5 py-2.5 min-w-0 overflow-hidden">
+                <div className="flex items-center gap-2 min-w-0 flex-1 overflow-hidden">
                   <Phone className="h-4 w-4 shrink-0 text-[#d71789]" />
-                  <span className="truncate text-xs font-medium text-[#21182a] font-mono">{phone || 'No phone'}</span>
+                  <span className="truncate block w-full text-xs font-medium text-[#21182a] font-mono" title={phone || 'No phone'}>
+                    {phone || 'No phone'}
+                  </span>
                 </div>
                 {phone && (
                   <button
@@ -169,12 +173,12 @@ export function ContactRowActions({
               </div>
             </div>
 
-            <div>
+            <div className="min-w-0">
               <p className="mb-2 text-xs font-bold uppercase tracking-[0.12em] text-[#857c8b] flex items-center gap-1.5">
-                <MessageSquare className="h-3.5 w-3.5 text-[#d71789]" />
+                <MessageSquare className="h-3.5 w-3.5 shrink-0 text-[#d71789]" />
                 Message Content
               </p>
-              <div className="max-h-72 overflow-y-auto rounded-xl border border-[#ebe6ee] bg-[#ffffff] p-4 text-sm leading-relaxed text-[#2b2032] shadow-inner whitespace-pre-wrap">
+              <div className="max-h-72 overflow-y-auto rounded-xl border border-[#ebe6ee] bg-[#ffffff] p-4 text-sm leading-relaxed text-[#2b2032] shadow-inner whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word] min-w-0">
                 {message || 'No message text provided in this contact enquiry.'}
               </div>
             </div>

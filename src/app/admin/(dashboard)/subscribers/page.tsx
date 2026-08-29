@@ -1,10 +1,12 @@
 import { listSubscribers } from '@/actions/subscribers'
+import { requirePagePermission } from '@/lib/auth-guard'
 import { DataTable } from '@/components/admin/data-table'
 import { Button } from '@/components/ui/button'
 import { columns } from './columns'
 import { CampaignComposer } from './campaign-composer'
 
 export default async function SubscribersPage() {
+  await requirePagePermission('subscribers', ['read'])
   const subscribers = await listSubscribers()
 
   return (

@@ -61,25 +61,17 @@ const NAV_GROUPS: { label: string; items: NavItem[] }[] = [
   },
 ]
 
-function canSee(role: AppRole, item: NavItem) {
-  if (!item.requires) return true
-  return roles[role]?.authorize({ [item.requires.resource]: [item.requires.action] } as never)?.success ?? false
-}
-
 interface AdminShellProps {
-  role: AppRole
+  role?: AppRole | string
   name: string
   email: string
   children: React.ReactNode
 }
 
-export function AdminShell({ role, name, email, children }: AdminShellProps) {
+export function AdminShell({ role = 'admin', name, email, children }: AdminShellProps) {
   const pathname = usePathname()
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const visibleGroups = NAV_GROUPS.map((group) => ({
-    ...group,
-    items: group.items.filter((item) => canSee(role, item)),
-  })).filter((group) => group.items.length)
+  const visibleGroups = NAV_GROUPS
 
   return (
     <div className="admin-shell min-h-screen bg-[#f7f7f8] text-[#21182a] lg:flex lg:items-start">
@@ -158,11 +150,11 @@ export function AdminShell({ role, name, email, children }: AdminShellProps) {
         <div className="border-t border-white/10 p-4">
           <div className="flex items-center gap-2.5 rounded-xl bg-white/6 p-2.5">
             <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#ff7294] text-xs font-bold text-[#35102c]">
-              {role.slice(0, 1).toUpperCase()}
+              A
             </span>
             <div className="min-w-0 flex-1">
-              <p className="text-xs font-semibold capitalize text-white truncate">{role} account</p>
-              <p className="mt-0.5 text-[10px] text-white/40 truncate">Movodream team</p>
+              <p className="text-xs font-semibold capitalize text-white truncate">Admin account</p>
+              <p className="mt-0.5 text-[10px] text-white/40 truncate">Movodream workspace</p>
             </div>
             <Link
               href="/"

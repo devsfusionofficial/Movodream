@@ -15,6 +15,7 @@ function serialize<T>(doc: T): T {
 function toAuthorDoc(input: AuthorInput) {
   return {
     name: input.name,
+    email: input.email ? input.email.trim().toLowerCase() : undefined,
     bio: input.bio,
     avatar: input.avatarUrl ? { url: input.avatarUrl, key: input.avatarKey } : undefined,
     socialLinks: {

@@ -1,11 +1,13 @@
 import Link from 'next/link'
 import { FolderKanban, Plus, Sparkles } from 'lucide-react'
 import { listPartners } from '@/actions/partners'
+import { requirePagePermission } from '@/lib/auth-guard'
 import { DataTable } from '@/components/admin/data-table'
 import { Button } from '@/components/ui/button'
 import { columns } from './columns'
 
 export default async function PartnersPage() {
+  await requirePagePermission('partners', ['read'])
   const partners = await listPartners()
 
   return (

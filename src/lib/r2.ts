@@ -19,15 +19,20 @@ const R2_PUBLIC_URL = process.env.R2_PUBLIC_URL
  */
 const R2_PRIVATE_BUCKET = process.env.R2_PRIVATE_BUCKET || process.env.R2_BUCKET
 
+let s3ClientInstance: S3Client | null = null
+
 function getClient() {
-  return new S3Client({
-    region: 'auto',
-    endpoint: R2_ENDPOINT,
-    credentials: {
-      accessKeyId: process.env.R2_ACCESS_KEY_ID!,
-      secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
-    },
-  })
+  if (!s3ClientInstance) {
+    s3ClientInstance = new S3Client({
+      region: 'auto',
+      endpoint: R2_ENDPOINT,
+      credentials: {
+        accessKeyId: process.env.R2_ACCESS_KEY_ID!,
+        secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
+      },
+    })
+  }
+  return s3ClientInstance
 }
 
 function buildKey(prefix: string, fileName: string) {

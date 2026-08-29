@@ -13,8 +13,24 @@ export type ContactRow = {
 }
 
 export const columns: ColumnDef<ContactRow, unknown>[] = [
-  { accessorKey: 'name', header: 'Name' },
-  { accessorKey: 'email', header: 'Email' },
+  {
+    accessorKey: 'name',
+    header: 'Name',
+    cell: ({ row }) => (
+      <span className="max-w-[180px] truncate block font-medium text-[#21182a]" title={row.original.name}>
+        {row.original.name || '—'}
+      </span>
+    ),
+  },
+  {
+    accessorKey: 'email',
+    header: 'Email',
+    cell: ({ row }) => (
+      <span className="max-w-[220px] truncate block text-xs text-[#524458]" title={row.original.email}>
+        {row.original.email || '—'}
+      </span>
+    ),
+  },
   {
     accessorKey: 'phone',
     header: 'Phone',

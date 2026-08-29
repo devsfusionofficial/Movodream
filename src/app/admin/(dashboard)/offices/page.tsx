@@ -1,11 +1,13 @@
 import Link from 'next/link'
 import { Building2, Plus, Sparkles } from 'lucide-react'
 import { listOffices } from '@/actions/offices'
+import { requirePagePermission } from '@/lib/auth-guard'
 import { DataTable } from '@/components/admin/data-table'
 import { Button } from '@/components/ui/button'
 import { columns } from './columns'
 
 export default async function OfficesPage() {
+  await requirePagePermission('offices', ['read'])
   const offices = await listOffices()
 
   return (

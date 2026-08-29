@@ -76,29 +76,29 @@ export function SubscriberRowActions({
       />
 
       <Dialog open={viewOpen} onOpenChange={setViewOpen}>
-        <DialogContent className="max-w-md rounded-2xl border border-[#ebe6ee] bg-white p-6 shadow-2xl">
-          <DialogHeader className="border-b border-[#f0edf1] pb-4 pr-10">
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <DialogTitle className="text-xl font-bold tracking-tight text-[#21182a]">
+        <DialogContent className="w-full max-w-[calc(100vw-2rem)] sm:max-w-md max-h-[90vh] overflow-y-auto rounded-2xl border border-[#ebe6ee] bg-white p-5 sm:p-6 shadow-2xl min-w-0">
+          <DialogHeader className="border-b border-[#f0edf1] pb-4 pr-10 min-w-0">
+            <div className="flex flex-wrap items-center justify-between gap-3 min-w-0">
+              <div className="min-w-0 flex-1">
+                <DialogTitle className="text-xl font-bold tracking-tight text-[#21182a] break-words [overflow-wrap:anywhere]">
                   Subscriber Profile
                 </DialogTitle>
-                <DialogDescription className="mt-0.5 text-xs text-[#857c8b]">
+                <DialogDescription className="mt-0.5 text-xs text-[#857c8b] min-w-0 truncate">
                   Newsletter subscriber record
                 </DialogDescription>
               </div>
-              <span className="rounded-full bg-[#fce8f2] px-3 py-1 text-xs font-semibold capitalize text-[#d71789] border border-[#f7d4e5]">
+              <span className="rounded-full bg-[#fce8f2] px-3 py-1 text-xs font-semibold capitalize text-[#d71789] border border-[#f7d4e5] shrink-0">
                 {subscriber?.status || 'Active'}
               </span>
             </div>
           </DialogHeader>
 
-          <div className="space-y-3 py-3 text-xs">
-            <div className="rounded-xl border border-[#f0edf1] bg-[#faf8fb] p-3">
+          <div className="space-y-3 py-3 text-xs min-w-0">
+            <div className="rounded-xl border border-[#f0edf1] bg-[#faf8fb] p-3 min-w-0 overflow-hidden">
               <span className="text-[#857c8b] block mb-1 font-semibold uppercase tracking-wider">Email Address</span>
-              <span className="font-medium text-[#21182a] flex items-center gap-1.5">
-                <Mail className="h-3.5 w-3.5 text-[#d71789]" />
-                {email}
+              <span className="font-medium text-[#21182a] flex items-center gap-1.5 min-w-0 break-all [overflow-wrap:anywhere]">
+                <Mail className="h-3.5 w-3.5 shrink-0 text-[#d71789]" />
+                <span className="break-all">{email}</span>
               </span>
             </div>
           </div>

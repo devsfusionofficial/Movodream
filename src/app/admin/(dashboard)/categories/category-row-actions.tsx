@@ -89,25 +89,25 @@ export function CategoryRowActions({
 
       {/* View Modal */}
       <Dialog open={viewOpen} onOpenChange={setViewOpen}>
-        <DialogContent className="max-w-md rounded-2xl border border-[#ebe6ee] bg-white p-6 shadow-2xl">
-          <DialogHeader className="border-b border-[#f0edf1] pb-4 pr-10">
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <DialogTitle className="text-xl font-bold tracking-tight text-[#21182a]">
+        <DialogContent className="w-full max-w-[calc(100vw-2rem)] sm:max-w-md max-h-[90vh] overflow-y-auto rounded-2xl border border-[#ebe6ee] bg-white p-5 sm:p-6 shadow-2xl min-w-0">
+          <DialogHeader className="border-b border-[#f0edf1] pb-4 pr-10 min-w-0">
+            <div className="flex flex-wrap items-center justify-between gap-3 min-w-0">
+              <div className="min-w-0 flex-1">
+                <DialogTitle className="text-xl font-bold tracking-tight text-[#21182a] break-words [overflow-wrap:anywhere]">
                   {name}
                 </DialogTitle>
-                <DialogDescription className="mt-0.5 font-mono text-xs text-[#857c8b]">
+                <DialogDescription className="mt-0.5 font-mono text-xs text-[#857c8b] min-w-0 break-all [overflow-wrap:anywhere]">
                   /{category?.slug || 'category-slug'}
                 </DialogDescription>
               </div>
-              <span className="rounded-full bg-[#fce8f2] p-2 text-[#d71789]">
+              <span className="rounded-full bg-[#fce8f2] p-2 text-[#d71789] shrink-0">
                 <FolderKanban className="h-5 w-5" />
               </span>
             </div>
           </DialogHeader>
 
-          <div className="space-y-4 py-3">
-            <div className="rounded-xl border border-[#ebe6ee] bg-[#faf8fb] p-4 text-xs leading-relaxed text-[#382b40]">
+          <div className="space-y-4 py-3 min-w-0">
+            <div className="rounded-xl border border-[#ebe6ee] bg-[#faf8fb] p-4 text-xs leading-relaxed text-[#382b40] whitespace-pre-wrap break-words [overflow-wrap:anywhere] min-w-0">
               <p className="mb-1 font-bold uppercase tracking-wider text-[#857c8b]">Description</p>
               {category?.description || 'No description provided for this category.'}
             </div>

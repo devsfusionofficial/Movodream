@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { ArrowUpRight, FileText, Plus, Send, SlidersHorizontal } from 'lucide-react'
 import { listPosts } from '@/actions/posts'
+import { requirePagePermission } from '@/lib/auth-guard'
 import { DataTable } from '@/components/admin/data-table'
 import { Button } from '@/components/ui/button'
 import { columns } from './columns'
@@ -15,6 +16,7 @@ const STATUS_TABS = [
 type PageProps = { searchParams: Promise<{ status?: string }> }
 
 export default async function PostsPage({ searchParams }: PageProps) {
+  await requirePagePermission('posts', ['read'])
   const { status } = await searchParams
   const allPosts = await listPosts()
   const posts = status ? allPosts.filter((post) => post.status === status) : allPosts

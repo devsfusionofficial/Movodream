@@ -25,13 +25,12 @@ function statusTone(status?: string) {
 
 export default async function AdminDashboardPage() {
   const session = await requireSession()
-  const role = ((session.user as { role?: AppRole }).role ?? 'editor') as AppRole
 
   const { metrics: counts, recentPosts, recentApplications } = await getDashboardData({
-    canReadPosts: canRead(role, 'posts'),
-    canReadJobs: canRead(role, 'jobs'),
-    canReadApplications: canRead(role, 'applications'),
-    canReadSubscribers: canRead(role, 'subscribers'),
+    canReadPosts: true,
+    canReadJobs: true,
+    canReadApplications: true,
+    canReadSubscribers: true,
   })
 
   const metrics = [

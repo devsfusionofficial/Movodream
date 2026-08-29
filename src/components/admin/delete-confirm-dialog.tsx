@@ -38,32 +38,32 @@ export function DeleteConfirmDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md rounded-2xl border border-[#fee4e2] bg-white p-6 shadow-2xl">
-        <DialogHeader className="pb-2">
-          <div className="flex items-center gap-3">
+      <DialogContent className="w-full max-w-[calc(100vw-2rem)] sm:max-w-md max-h-[90vh] overflow-y-auto rounded-2xl border border-[#fee4e2] bg-white p-5 sm:p-6 shadow-2xl min-w-0">
+        <DialogHeader className="pb-2 min-w-0">
+          <div className="flex items-center gap-3 min-w-0">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#fff1f0] text-[#d92d20] border border-[#fecdca]">
               <AlertTriangle className="h-5 w-5" />
             </div>
-            <div>
-              <DialogTitle className="text-lg font-bold text-[#21182a]">
+            <div className="min-w-0 flex-1">
+              <DialogTitle className="text-lg font-bold text-[#21182a] break-words [overflow-wrap:anywhere]">
                 {modalTitle}
               </DialogTitle>
-              <DialogDescription className="mt-0.5 text-xs text-[#857c8b]">
+              <DialogDescription className="mt-0.5 text-xs text-[#857c8b] min-w-0 truncate">
                 Permanent action warning
               </DialogDescription>
             </div>
           </div>
         </DialogHeader>
 
-        <div className="space-y-3 py-3">
-          <div className="rounded-xl border border-[#fecdca] bg-[#fffbfa] p-3 text-xs leading-relaxed text-[#b42318]">
+        <div className="space-y-3 py-3 min-w-0">
+          <div className="rounded-xl border border-[#fecdca] bg-[#fffbfa] p-3 text-xs leading-relaxed text-[#b42318] whitespace-pre-wrap break-words [overflow-wrap:anywhere] min-w-0">
             {modalDescription}
           </div>
 
           {itemName && (
-            <div className="rounded-xl border border-[#ebe6ee] bg-[#faf8fb] p-3 text-xs flex items-center justify-between">
-              <span className="text-[#857c8b] font-medium">Target {itemType}:</span>
-              <span className="font-bold text-[#21182a] truncate max-w-[200px]">{itemName}</span>
+            <div className="rounded-xl border border-[#ebe6ee] bg-[#faf8fb] p-3 text-xs flex items-center justify-between gap-2 min-w-0 overflow-hidden">
+              <span className="text-[#857c8b] font-medium shrink-0">Target {itemType}:</span>
+              <span className="font-bold text-[#21182a] truncate min-w-0" title={itemName}>{itemName}</span>
             </div>
           )}
         </div>

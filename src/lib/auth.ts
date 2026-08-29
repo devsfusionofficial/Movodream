@@ -22,7 +22,7 @@ async function createAuth() {
       adminPlugin({
         ac,
         roles,
-        defaultRole: 'editor',
+        defaultRole: 'admin',
         adminRoles: ['admin'],
       }),
     ],
