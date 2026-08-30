@@ -54,11 +54,12 @@ export default async function BlogCategoryPage({ params }: PageProps) {
           <div className="mascot-glow-backdrop" />
           <div className="mascot-image-wrap">
             <Image
-              src="/assets/images/blog_hero_mascot.jpg"
+              src="/assets/images/blog_hero_mascot.webp"
               alt="Movodream AI Travel Companion"
               fill
-              sizes="(max-width: 768px) 100vw, 500px"
+              sizes="(max-width: 768px) 90vw, 440px"
               priority
+              quality={85}
               className="mascot-img"
             />
           </div>

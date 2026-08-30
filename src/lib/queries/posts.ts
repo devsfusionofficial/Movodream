@@ -40,7 +40,7 @@ export const getFeaturedPosts = unstable_cache(
   { revalidate: 1800, tags: ['posts'] }
 )
 
-export async function getLatestPosts({ skip = 0, limit = 9 }: { skip?: number; limit?: number } = {}) {
+async function fetchLatestPosts(skip = 0, limit = 9) {
   await connectDB()
   const posts = await Post.find(PUBLISHED)
     .sort({ publishedAt: -1 })
@@ -50,6 +50,14 @@ export async function getLatestPosts({ skip = 0, limit = 9 }: { skip?: number; l
     .populate('categories', 'name slug')
     .lean()
   return serialize(posts)
+}
+
+export function getLatestPosts({ skip = 0, limit = 9 }: { skip?: number; limit?: number } = {}) {
+  return unstable_cache(
+    () => fetchLatestPosts(skip, limit),
+    [`latest-posts-${skip}-${limit}`],
+    { revalidate: 1800, tags: ['posts'] }
+  )()
 }
 
 async function fetchPublishedPostsCount() {
@@ -63,7 +71,7 @@ export const getPublishedPostsCount = unstable_cache(
   { revalidate: 1800, tags: ['posts'] }
 )
 
-export async function getPostsByCategorySlug(categorySlug: string) {
+async function fetchPostsByCategorySlug(categorySlug: string) {
   await connectDB()
   const category = await Category.findOne({ slug: categorySlug }).lean()
   if (!category) return { category: null, posts: [] }
@@ -77,6 +85,14 @@ export async function getPostsByCategorySlug(categorySlug: string) {
   return { category: serialize(category), posts: serialize(posts) }
 }
 
+export function getPostsByCategorySlug(categorySlug: string) {
+  return unstable_cache(
+    () => fetchPostsByCategorySlug(categorySlug),
+    [`posts-category-${categorySlug}`],
+    { revalidate: 1800, tags: ['posts', 'categories'] }
+  )()
+}
+
 export async function searchPosts(query: string) {
   if (!query.trim()) return []
   await connectDB()
@@ -87,7 +103,7 @@ export async function searchPosts(query: string) {
   return serialize(posts)
 }
 
-export async function getPostBySlug(slug: string) {
+async function fetchPostBySlug(slug: string) {
   await connectDB()
   const post = await Post.findOne({ slug, ...PUBLISHED })
     .populate('author', 'name bio avatar socialLinks')
@@ -97,14 +113,21 @@ export async function getPostBySlug(slug: string) {
   return post ? serialize(post) : null
 }
 
-export async function getRelatedPosts(post: { _id: string; categories: { _id: string }[] }, limit = 3) {
+export function getPostBySlug(slug: string) {
+  return unstable_cache(
+    () => fetchPostBySlug(slug),
+    [`post-slug-${slug}`],
+    { revalidate: 1800, tags: ['posts'] }
+  )()
+}
+
+async function fetchRelatedPosts(postId: string, categoryIds: string[], limit = 3) {
   await connectDB()
-  const categoryIds = post.categories.map((c) => c._id)
   if (categoryIds.length === 0) return []
 
   const posts = await Post.find({
     ...PUBLISHED,
-    _id: { $ne: post._id },
+    _id: { $ne: postId },
     categories: { $in: categoryIds },
   })
     .sort({ publishedAt: -1 })
@@ -112,6 +135,15 @@ export async function getRelatedPosts(post: { _id: string; categories: { _id: st
     .populate('categories', 'name slug')
     .lean()
   return serialize(posts)
+}
+
+export function getRelatedPosts(post: { _id: string; categories: { _id: string }[] }, limit = 3) {
+  const categoryIds = (post.categories || []).map((c) => c._id)
+  return unstable_cache(
+    () => fetchRelatedPosts(post._id, categoryIds, limit),
+    [`related-posts-${post._id}-${limit}`],
+    { revalidate: 1800, tags: ['posts'] }
+  )()
 }
 
 async function fetchAllCategories() {

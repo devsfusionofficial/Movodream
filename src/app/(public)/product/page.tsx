@@ -115,9 +115,8 @@ export default async function ProductPage() {
             src="/assets/product/hero-window.webp"
             alt="iZhinga AI Travel Companion"
             fill
-            sizes="(max-width: 900px) 100vw, 1400px"
-            quality={100}
-            unoptimized
+            sizes="(max-width: 900px) 100vw, (max-width: 1400px) 50vw, 700px"
+            quality={85}
             priority
           />
         </div>
@@ -257,9 +256,8 @@ export default async function ProductPage() {
             src="/assets/product/immersive-experience.webp"
             alt="The Future of Travel"
             fill
-            sizes="(max-width: 900px) 100vw, 1200px"
-            quality={100}
-            unoptimized
+            sizes="(max-width: 900px) 100vw, (max-width: 1400px) 50vw, 600px"
+            quality={85}
           />
         </div>
       </section>

@@ -21,7 +21,7 @@ const FEATURES = [
         text: 'Tailored recommendations delivered on the fly without guesswork.',
       },
     ],
-    videoSrc: '/assets/product/v1.mp4',
+    videoSrc: '/assets/product/v2.mp4',
     imageSrc: '/assets/product/ai-travel-brain.webp',
     tags: [
       'Context AI',
@@ -54,7 +54,7 @@ const FEATURES = [
         text: 'Instant multi-language voice guides and cultural etiquette tips.',
       },
     ],
-    videoSrc: '/assets/product/v2.mp4',
+    videoSrc: '/assets/product/v1.mp4',
     imageSrc: '/assets/product/live-travel-mode.webp',
     tags: [
       'Live Navigation',
@@ -119,7 +119,7 @@ const FEATURES = [
         text: 'Access off-the-beaten-path locations away from tourist crowds.',
       },
     ],
-    videoSrc: '/assets/product/v4.mp4',
+    videoSrc: '/assets/product/v6.mp4',
     imageSrc: '/assets/product/local-guru.webp',
     tags: [
       'Hidden Gems',
@@ -154,7 +154,7 @@ const FEATURES = [
         text: 'Scan monument facades to unlock instant historical insights.',
       },
     ],
-    videoSrc: '/assets/product/v5.mp4',
+    videoSrc: '/assets/product/v4.mp4',
     imageSrc: '/assets/product/fifth-feature.webp',
     tags: [
       '360° Previews',
@@ -187,7 +187,7 @@ const FEATURES = [
         text: 'Easily collaborate with friends and family on shared trip stories.',
       },
     ],
-    videoSrc: '/assets/product/v6.mp4',
+    videoSrc: '/assets/product/v5.mp4',
     imageSrc: '/assets/product/memory-curation.webp',
     tags: [
       'AI Journal',
@@ -219,7 +219,9 @@ export function IzhingaFeatures() {
           >
             <ProductVideoPlayer
               src={feature.videoSrc}
+              poster={feature.imageSrc}
               title={feature.title}
+              priority={i === 0}
             />
           </div>
           <div className="izhinga-row-body">

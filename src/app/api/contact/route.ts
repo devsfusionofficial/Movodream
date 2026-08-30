@@ -14,9 +14,23 @@ export async function POST(request: Request) {
 
   await connectDB()
 
-  const emailSent = await sendContactNotification(parsed.data).catch(() => false)
+  // Save to database immediately (~10-20ms)
+  const submission = await ContactSubmission.create({
+    ...parsed.data,
+    emailSent: false,
+  })
 
-  await ContactSubmission.create({ ...parsed.data, emailSent })
+  // Dispatch email notification asynchronously in background without blocking user response
+  sendContactNotification(parsed.data)
+    .then(async (sent) => {
+      if (sent) {
+        await ContactSubmission.updateOne({ _id: submission._id }, { emailSent: true }).catch(() => {})
+      }
+    })
+    .catch((err) => {
+      console.error('Background contact notification error:', err)
+    })
 
+  // Instant response to the visitor
   return NextResponse.json({ success: true })
 }

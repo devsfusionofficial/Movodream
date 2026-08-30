@@ -28,34 +28,35 @@ applicationSchema.pre<ApplicationDocument>('save', function () {
   this.$locals.isNewApplication = this.isNew
 })
 
-// HR notification only fires on the initial application, and only inside a
-// real request scope — guarded the same way as Post's revalidation, so this
-// model stays safe to import from scripts/seed.ts.
-applicationSchema.post<ApplicationDocument>('save', async function (doc) {
+// HR notification only fires on the initial application in background
+applicationSchema.post<ApplicationDocument>('save', function (doc) {
   if (!doc.$locals.isNewApplication) return
 
-  try {
-    const { sendApplicationNotification } = await import('@/lib/mailer')
-    const { Job } = await import('@/models/Job')
+  // Fire in the background without blocking the HTTP response
+  ;(async () => {
+    try {
+      const { sendApplicationNotification } = await import('@/lib/mailer')
+      const { Job } = await import('@/models/Job')
 
-    const job = await Job.findById(doc.job).lean<{ title: string } | null>()
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ?? ''
+      const job = await Job.findById(doc.job).lean<{ title: string } | null>()
+      const baseUrl = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ?? ''
 
-    await sendApplicationNotification({
-      jobTitle: job?.title ?? 'Unknown role',
-      name: doc.name,
-      email: doc.email,
-      phone: doc.phone,
-      location: doc.location ?? undefined,
-      experience: doc.experience ?? undefined,
-      qualification: doc.qualification ?? undefined,
-      coverLetter: doc.coverLetter ?? undefined,
-      applicationUrl: `${baseUrl}/admin/applications/${doc._id}`,
-      resumeFileName: doc.resumeFileName,
-    })
-  } catch (err) {
-    console.error('Failed to send application notification email:', err)
-  }
+      await sendApplicationNotification({
+        jobTitle: job?.title ?? 'Unknown role',
+        name: doc.name,
+        email: doc.email,
+        phone: doc.phone,
+        location: doc.location ?? undefined,
+        experience: doc.experience ?? undefined,
+        qualification: doc.qualification ?? undefined,
+        coverLetter: doc.coverLetter ?? undefined,
+        applicationUrl: `${baseUrl}/admin/applications/${doc._id}`,
+        resumeFileName: doc.resumeFileName,
+      })
+    } catch (err) {
+      console.error('Failed to send application notification email in background:', err)
+    }
+  })()
 })
 
 // Every admin list sorts by createdAt. Without this index MongoDB does an

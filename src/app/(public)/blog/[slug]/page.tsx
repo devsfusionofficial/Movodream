@@ -109,7 +109,7 @@ export default async function BlogPostPage({ params }: PageProps) {
 
           {post.heroImage?.url && (
             <div className="article-hero">
-              <Image src={post.heroImage.url} alt="" fill sizes="(max-width: 900px) 100vw, 760px" priority />
+              <Image src={post.heroImage.url} alt="" fill sizes="(max-width: 900px) 100vw, 760px" priority quality={85} />
             </div>
           )}
 

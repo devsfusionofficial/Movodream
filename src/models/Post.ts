@@ -57,23 +57,29 @@ postSchema.post<PostDocument>('save', async function (doc) {
     // Not in a request scope (e.g. seed script) — nothing to revalidate.
   }
 
-  try {
-    const { sendPostPublishedBroadcast } = await import('@/lib/mailer')
-    const { Subscriber } = await import('@/models/Subscriber')
+  // Subscriber broadcast email trigger commented out — all subscriber marketing
+  // emails are managed and sent intentionally from the Marketing Subscribers page.
+  /*
+  ;(async () => {
+    try {
+      const { sendPostPublishedBroadcast } = await import('@/lib/mailer')
+      const { Subscriber } = await import('@/models/Subscriber')
 
-    const subscribers = await Subscriber.find({ status: 'active' }).select('email').lean<{ email: string }[]>()
-    if (subscribers.length > 0) {
-      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://movodream.com'
-      await sendPostPublishedBroadcast({
-        postTitle: doc.title,
-        postExcerpt: doc.excerpt ?? undefined,
-        postUrl: `${siteUrl}/blog/${doc.slug}`,
-        subscriberEmails: subscribers.map((s) => s.email),
-      })
+      const subscribers = await Subscriber.find({ status: 'active' }).select('email').lean<{ email: string }[]>()
+      if (subscribers.length > 0) {
+        const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://movodream.com'
+        await sendPostPublishedBroadcast({
+          postTitle: doc.title,
+          postExcerpt: doc.excerpt ?? undefined,
+          postUrl: `${siteUrl}/blog/${doc.slug}`,
+          subscriberEmails: subscribers.map((s) => s.email),
+        })
+      }
+    } catch (err) {
+      console.error('Failed to send post-published subscriber broadcast in background:', err)
     }
-  } catch (err) {
-    console.error('Failed to send post-published subscriber broadcast:', err)
-  }
+  })()
+  */
 })
 
 // Every admin list sorts by createdAt. Without this index MongoDB does an
