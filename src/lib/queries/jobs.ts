@@ -89,6 +89,13 @@ export const getJobFilterOptions = unstable_cache(
 
 export async function getJobBySlug(slug: string) {
   await connectDB()
-  const job = await Job.findOne({ slug }).lean()
+  if (!slug) return null
+  const decoded = decodeURIComponent(slug).trim()
+  const job = await Job.findOne({
+    $or: [
+      { slug: decoded },
+      { slug: { $regex: new RegExp(`^${escapeRegex(decoded)}$`, 'i') } },
+    ],
+  }).lean()
   return job ? serialize(job) : null
 }

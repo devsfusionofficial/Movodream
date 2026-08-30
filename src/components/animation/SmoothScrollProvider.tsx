@@ -122,8 +122,8 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
 
     gsap.registerPlugin(ScrollTrigger)
 
-    // Enable lagSmoothing (500ms max, 33ms target) so GSAP recovers smoothly
-    gsap.ticker.lagSmoothing(500, 33)
+    // Lenis + GSAP official best practice: disable lagSmoothing for frame-lockstep sync
+    gsap.ticker.lagSmoothing(0)
 
     if (isMobile === null) return
 
@@ -143,59 +143,27 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
       easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       prevent: (node: HTMLElement) =>
         node.closest('#qzvOverlay') !== null ||
-        node.closest('[data-lenis-prevent]') !== null ||
-        node.closest('textarea') !== null ||
-        node.closest('.job-sticky-panel') !== null,
+        node.closest('[data-lenis-prevent]') !== null,
       syncTouch: false,
     })
     lenisRef.current = instance
     instance.scrollTo(window.scrollY || 0, { immediate: true })
 
-    let iframeTimeout: ReturnType<typeof setTimeout>
-    const iframes = document.querySelectorAll('iframe')
-
     const updateFunc = (time: number) => {
       instance.raf(time * 1000)
     }
 
-    instance.on('scroll', () => {
-      ScrollTrigger.update()
-
-      iframes.forEach((iframe) => {
-        if (iframe.style.pointerEvents !== 'none') iframe.style.pointerEvents = 'none'
-      })
-
-      clearTimeout(iframeTimeout)
-      iframeTimeout = setTimeout(() => {
-        iframes.forEach((iframe) => {
-          iframe.style.pointerEvents = 'auto'
-        })
-      }, 150)
-    })
-
+    instance.on('scroll', ScrollTrigger.update)
     gsap.ticker.add(updateFunc)
 
-    ScrollTrigger.scrollerProxy(document.body, {
-      scrollTop(value) {
-        if (value !== undefined) {
-          instance.scrollTo(value, { immediate: true })
-        }
-        return instance.scroll
-      },
-      getBoundingClientRect() {
-        return { top: 0, left: 0, width: window.innerWidth, height: window.innerHeight }
-      },
-      pinType: 'transform',
-    })
-
-    // Instant/debounced window resize listener to trigger ScrollTrigger.refresh() on DevTools view switch
+    // Instant/debounced window resize listener to trigger ScrollTrigger.refresh()
     let resizeTimer: ReturnType<typeof setTimeout>
     const handleResize = () => {
       clearTimeout(resizeTimer)
       resizeTimer = setTimeout(() => {
         instance.resize()
         ScrollTrigger.refresh()
-      }, 50)
+      }, 100)
     }
     window.addEventListener('resize', handleResize)
 
@@ -217,11 +185,16 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
     }
     document.addEventListener('keydown', handleKeydown, { passive: false })
 
-    // ResizeObserver dynamically recalculates Lenis limits on accordion/DOM expansion
+    // ResizeObserver dynamically recalculates Lenis limits on accordion/DOM expansion with debounce
     let resizeObserver: ResizeObserver | null = null
+    let roTimer: ReturnType<typeof setTimeout>
     if (typeof window !== 'undefined' && 'ResizeObserver' in window) {
       resizeObserver = new ResizeObserver(() => {
-        instance.resize()
+        clearTimeout(roTimer)
+        roTimer = setTimeout(() => {
+          instance.resize()
+          ScrollTrigger.refresh()
+        }, 150)
       })
       resizeObserver.observe(document.body)
     }
@@ -229,6 +202,8 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
     ScrollTrigger.refresh()
 
     return () => {
+      clearTimeout(resizeTimer)
+      clearTimeout(roTimer)
       if (resizeObserver) resizeObserver.disconnect()
       gsap.ticker.remove(updateFunc)
       window.removeEventListener('beforeunload', handleBeforeUnload)

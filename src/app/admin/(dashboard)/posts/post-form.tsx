@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
-import { ArrowLeft, Check, Clock3, ImagePlus, LayoutTemplate, Search, Tag, UserRound } from 'lucide-react'
+import { ArrowLeft, Check, Clock3, ImagePlus, LayoutTemplate, Search, Tag, UserRound, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -61,7 +61,72 @@ export function PostForm({ postId, defaultValues, authors, categories, tags }: P
           <section className="rounded-2xl border border-[#ebe5ed] bg-white p-6 shadow-[0_5px_18px_rgba(34,20,40,0.025)] sm:p-7">
             <SectionTitle icon={ImagePlus} title="Featured image" description="Choose a strong visual to represent this post across the site." />
             <div className={`rounded-2xl border border-dashed ${heroImageUrl ? 'border-[#e8d4e2] bg-[#fffafe]' : 'border-[#ded5e1] bg-[#fcfafc]'} p-4`}>
-              {heroImageUrl ? <div className="flex flex-col gap-4 sm:flex-row sm:items-center"><Image src={heroImageUrl} alt="Post hero preview" width={180} height={110} className="h-[110px] w-[180px] rounded-xl object-cover ring-1 ring-[#eadde7]" /><div><p className="text-sm font-semibold text-[#403445]">Featured image ready</p><p className="mt-1 text-xs text-[#998f9f]">This image will appear on blog cards and social previews.</p><FileUpload label="Replace image" onUploaded={({ url, key }) => { setValue('heroImageUrl', url, { shouldDirty: true }); setValue('heroImageKey', key, { shouldDirty: true }) }} /></div></div> : <div className="flex flex-col items-center justify-center py-7 text-center"><span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-[#d71789] shadow-sm"><ImagePlus className="h-5 w-5" /></span><p className="mt-3 text-sm font-semibold text-[#403445]">Add a featured image</p><p className="mt-1 mb-4 text-xs text-[#998f9f]">JPG, PNG or WEBP · Recommended 1200 × 630px</p><FileUpload label="Upload image" onUploaded={({ url, key }) => { setValue('heroImageUrl', url, { shouldDirty: true }); setValue('heroImageKey', key, { shouldDirty: true }) }} /></div>}
+              {heroImageUrl ? (
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+                  <div className="relative group shrink-0">
+                    <Image
+                      src={heroImageUrl}
+                      alt="Post hero preview"
+                      width={180}
+                      height={110}
+                      className="h-[110px] w-[180px] rounded-xl object-cover ring-1 ring-[#eadde7]"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setValue('heroImageUrl', '', { shouldDirty: true })
+                        setValue('heroImageKey', '', { shouldDirty: true })
+                      }}
+                      className="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-white text-[#b42318] shadow-md border border-[#f3d5d5] hover:bg-[#fef3f2] hover:text-[#912018] transition-transform hover:scale-110"
+                      title="Remove image"
+                      aria-label="Remove image"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-[#403445]">Featured image ready</p>
+                    <p className="mt-1 text-xs text-[#998f9f]">This image will appear on blog cards and social previews.</p>
+                    <div className="mt-3 flex items-center gap-2">
+                      <FileUpload
+                        label="Replace image"
+                        onUploaded={({ url, key }) => {
+                          setValue('heroImageUrl', url, { shouldDirty: true })
+                          setValue('heroImageKey', key, { shouldDirty: true })
+                        }}
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setValue('heroImageUrl', '', { shouldDirty: true })
+                          setValue('heroImageKey', '', { shouldDirty: true })
+                        }}
+                        className="border-[#f3d5d5] text-[#b42318] hover:bg-[#fef3f2] hover:text-[#912018]"
+                      >
+                        <Trash2 className="mr-1.5 h-3.5 w-3.5" />
+                        Remove image
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-7 text-center">
+                  <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-[#d71789] shadow-sm">
+                    <ImagePlus className="h-5 w-5" />
+                  </span>
+                  <p className="mt-3 text-sm font-semibold text-[#403445]">Add a featured image</p>
+                  <p className="mt-1 mb-4 text-xs text-[#998f9f]">JPG, PNG or WEBP · Recommended 1200 × 630px</p>
+                  <FileUpload
+                    label="Upload image"
+                    onUploaded={({ url, key }) => {
+                      setValue('heroImageUrl', url, { shouldDirty: true })
+                      setValue('heroImageKey', key, { shouldDirty: true })
+                    }}
+                  />
+                </div>
+              )}
             </div>
           </section>
 
@@ -75,9 +140,8 @@ export function PostForm({ postId, defaultValues, authors, categories, tags }: P
           <section className="rounded-2xl border border-[#ebe5ed] bg-white p-6 shadow-[0_5px_18px_rgba(34,20,40,0.025)]">
             <SectionTitle icon={Check} title="Publishing" description="Choose who owns this story and when it becomes visible." />
             <FieldGroup className="gap-5">
-              <Field><FieldLabel htmlFor="status" className="text-[13px] font-semibold text-[#403445]">Status</FieldLabel><Select value={status || 'draft'} onValueChange={(v) => v && setValue('status', v as PostInput['status'], { shouldDirty: true })}><SelectTrigger id="status" className={inputClass}><SelectValue /></SelectTrigger><SelectContent><SelectItem value="draft">Draft · only visible to your team</SelectItem><SelectItem value="scheduled">Scheduled · publish later</SelectItem><SelectItem value="published">Published · visible on the site</SelectItem></SelectContent></Select><FieldError errors={[errors.status]} /></Field>
-              {status === 'scheduled' && <Field><FieldLabel htmlFor="publishedAt" className="text-[13px] font-semibold text-[#403445]">Publish at</FieldLabel><div className="relative"><Clock3 className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#a79ba9]" /><Input id="publishedAt" type="datetime-local" className={`${inputClass} pl-10`} {...register('publishedAt')} /></div></Field>}
-              <Field><FieldLabel htmlFor="authorId" className="text-[13px] font-semibold text-[#403445]">Author</FieldLabel><div className="relative"><UserRound className="pointer-events-none absolute left-3.5 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-[#a79ba9]" /><Select value={authorId || ''} onValueChange={(v) => v && setValue('authorId', v, { shouldDirty: true })}><SelectTrigger id="authorId" className={`${inputClass} pl-10`}><span className={`flex flex-1 text-left ${selectedAuthor ? 'text-[#33283a]' : 'text-[#a79ba9]'}`}>{selectedAuthor?.name ?? 'Select author'}</span></SelectTrigger><SelectContent>{authors.map((author) => <SelectItem key={author._id} value={author._id}>{author.name}</SelectItem>)}</SelectContent></Select></div></Field>
+              <Field><FieldLabel htmlFor="status" className="text-[13px] font-semibold text-[#403445]">Status</FieldLabel><Select value={status || 'draft'} onValueChange={(v) => v && setValue('status', v as PostInput['status'], { shouldDirty: true })}><SelectTrigger id="status" className={inputClass}><SelectValue /></SelectTrigger><SelectContent><SelectItem value="draft">Draft · only visible to your team</SelectItem><SelectItem value="published">Published · visible on the site</SelectItem></SelectContent></Select><FieldError errors={[errors.status]} /></Field>
+              <Field><FieldLabel htmlFor="authorId" className="text-[13px] font-semibold text-[#403445]">Author</FieldLabel><div className="relative min-w-0"><UserRound className="pointer-events-none absolute left-3.5 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-[#a79ba9]" /><Select value={authorId || ''} onValueChange={(v) => v && setValue('authorId', v, { shouldDirty: true })}><SelectTrigger id="authorId" className={`${inputClass} pl-10 min-w-0 overflow-hidden`}><span className={`block flex-1 min-w-0 truncate text-left pr-2 ${selectedAuthor ? 'text-[#33283a]' : 'text-[#a79ba9]'}`} title={selectedAuthor?.name}>{selectedAuthor?.name ?? 'Select author'}</span></SelectTrigger><SelectContent className="max-w-[calc(100vw-2rem)] sm:max-w-md">{authors.map((author) => <SelectItem key={author._id} value={author._id} className="min-w-0"><span className="truncate block" title={author.name}>{author.name}</span></SelectItem>)}</SelectContent></Select></div></Field>
             </FieldGroup>
           </section>
 

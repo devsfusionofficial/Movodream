@@ -2,6 +2,7 @@
 
 import type { ColumnDef } from '@tanstack/react-table'
 import { SubscriberRowActions } from './subscriber-row-actions'
+import { formatAdminDate } from '@/lib/date-format'
 
 export type SubscriberRow = {
   _id: string
@@ -34,11 +35,12 @@ export const columns: ColumnDef<SubscriberRow, unknown>[] = [
   },
   {
     accessorKey: 'createdAt',
-    header: 'Date',
-    cell: ({ row }) => {
-      const d = row.original.createdAt || row.original.subscribedAt
-      return d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Recently'
-    },
+    header: 'Subscribed',
+    cell: ({ row }) => (
+      <span className="text-xs text-[#524458] font-medium">
+        {formatAdminDate(row.original.createdAt || row.original.subscribedAt)}
+      </span>
+    ),
   },
   {
     id: 'actions',

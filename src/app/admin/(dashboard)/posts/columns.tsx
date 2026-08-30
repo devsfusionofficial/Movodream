@@ -3,13 +3,13 @@
 import type { ColumnDef } from '@tanstack/react-table'
 import { Badge } from '@/components/ui/badge'
 import { PostRowActions } from './post-row-actions'
+import { formatAdminDate } from '@/lib/date-format'
 import type { listPosts } from '@/actions/posts'
 
 export type PostRow = Awaited<ReturnType<typeof listPosts>>[number]
 
-const STATUS_VARIANT: Record<string, 'default' | 'secondary' | 'outline'> = {
+const STATUS_VARIANT: Record<string, 'default' | 'outline'> = {
   published: 'default',
-  scheduled: 'secondary',
   draft: 'outline',
 }
 
@@ -53,6 +53,15 @@ export const columns: ColumnDef<PostRow, unknown>[] = [
     header: 'Status',
     cell: ({ row }) => (
       <Badge variant={STATUS_VARIANT[row.original.status] ?? 'outline'}>{row.original.status}</Badge>
+    ),
+  },
+  {
+    accessorKey: 'createdAt',
+    header: 'Date',
+    cell: ({ row }) => (
+      <span className="text-xs text-[#524458] font-medium whitespace-nowrap">
+        {formatAdminDate(row.original.createdAt)}
+      </span>
     ),
   },
   {

@@ -14,6 +14,8 @@ import {
 } from '@/components/ui/dialog'
 import { deleteJob } from '@/actions/jobs'
 import { DeleteConfirmDialog } from '@/components/admin/delete-confirm-dialog'
+import { formatAdminDate } from '@/lib/date-format'
+import { Calendar } from 'lucide-react'
 
 export function JobRowActions({
   id,
@@ -31,6 +33,8 @@ export function JobRowActions({
     skills?: string[]
     descriptionHtml?: string
     responsibilitiesHtml?: string
+    applicationDeadline?: string | Date
+    createdAt?: string | Date
   }
 }) {
   const [isPending, startTransition] = useTransition()
@@ -120,6 +124,12 @@ export function JobRowActions({
                       {job.type}
                     </span>
                   )}
+                  {job?.applicationDeadline && (
+                    <span className="flex items-center gap-1 text-[#524458] font-medium shrink-0">
+                      <Calendar className="h-3.5 w-3.5 shrink-0 text-[#d71789]" />
+                      Deadline: {formatAdminDate(job.applicationDeadline)}
+                    </span>
+                  )}
                 </DialogDescription>
               </div>
               <span className="rounded-full bg-[#fce8f2] px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-[#d71789] border border-[#f7d4e5] shrink-0">
@@ -142,7 +152,7 @@ export function JobRowActions({
             {job?.descriptionHtml && (
               <div className="rounded-xl border border-[#ebe6ee] bg-[#faf8fb] p-4 text-xs leading-relaxed text-[#382b40] break-words [overflow-wrap:anywhere] min-w-0 overflow-x-auto">
                 <p className="mb-1 font-bold uppercase tracking-wider text-[#857c8b]">Job Overview</p>
-                <div dangerouslySetInnerHTML={{ __html: job.descriptionHtml }} />
+                <div className="admin-prose text-xs text-[#382b40]" dangerouslySetInnerHTML={{ __html: job.descriptionHtml }} />
               </div>
             )}
           </div>

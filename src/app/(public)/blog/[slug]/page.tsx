@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { getPostBySlug, getRelatedPosts } from '@/lib/queries/posts'
 import { PostCard } from '../post-card'
 import { ArticleShare } from './article-share'
+import { formatDate } from '@/lib/date-format'
 
 type PageProps = { params: Promise<{ slug: string }> }
 
@@ -97,7 +98,7 @@ export default async function BlogPostPage({ params }: PageProps) {
               {published && (
                 <>
                   <time dateTime={published.toISOString()}>
-                    {published.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })}
+                    {formatDate(published)}
                   </time>
                   <i>·</i>
                 </>

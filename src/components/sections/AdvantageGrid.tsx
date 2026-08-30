@@ -116,7 +116,6 @@ export function AdvantageGrid() {
       stagger: 0.08,
       scrollTrigger: {
         trigger: '.advantage-grid',
-        scroller: document.body,
         start: 'top 80%',
         once: true,
       },

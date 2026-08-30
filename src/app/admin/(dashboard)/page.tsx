@@ -1,21 +1,8 @@
 import Link from 'next/link'
 import { ArrowUpRight, BriefcaseBusiness, FileText, Plus, Sparkles, Users, UserRound } from 'lucide-react'
 import { requireSession } from '@/lib/auth-guard'
-import { roles, type AppRole } from '@/lib/permissions'
 import { getDashboardData } from '@/lib/queries/dashboard'
-
-function canRead(role: AppRole, resource: keyof typeof import('@/lib/permissions').statement) {
-  return roles[role]?.authorize({ [resource]: ['read'] } as never)?.success ?? false
-}
-
-function relativeDate(value?: string) {
-  if (!value) return 'Recently'
-  const date = new Date(value)
-  const days = Math.floor((Date.now() - date.getTime()) / 86400000)
-  if (days <= 0) return 'Today'
-  if (days === 1) return 'Yesterday'
-  return `${days} days ago`
-}
+import { FormattedDate, FormattedRelativeDate } from '@/components/admin/formatted-date'
 
 function statusTone(status?: string) {
   if (status === 'published' || status === 'active' || status === 'Hired') return 'bg-[#fce8f2] text-[#d71789]'
@@ -149,7 +136,9 @@ export default async function AdminDashboardPage() {
                     <p className="truncate text-xs sm:text-sm font-semibold text-[#382b40]">
                       {post.title ?? 'Untitled post'}
                     </p>
-                    <p className="mt-0.5 text-[11px] text-[#a39aa7]">Updated {relativeDate(post.createdAt)}</p>
+                    <p className="mt-0.5 text-[11px] text-[#a39aa7]">
+                      <FormattedDate date={post.createdAt} /> · <FormattedRelativeDate date={post.createdAt} />
+                    </p>
                   </div>
                   <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-semibold capitalize shrink-0 ${statusTone(post.status)}`}>
                     {post.status ?? 'draft'}
@@ -195,7 +184,7 @@ export default async function AdminDashboardPage() {
                       {application.name ?? 'Applicant'}
                     </p>
                     <p className="mt-0.5 truncate text-[11px] text-[#a39aa7]">
-                      {application.job?.title ?? 'General application'}
+                      {application.job?.title ?? 'General application'} · <FormattedRelativeDate date={application.createdAt} />
                     </p>
                   </div>
                   <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold shrink-0 ${statusTone(application.status)}`}>

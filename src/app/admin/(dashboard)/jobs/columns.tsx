@@ -3,6 +3,7 @@
 import type { ColumnDef } from '@tanstack/react-table'
 import { Badge } from '@/components/ui/badge'
 import { JobRowActions } from './job-row-actions'
+import { formatAdminDate } from '@/lib/date-format'
 import type { listJobs } from '@/actions/jobs'
 
 export type JobRow = Awaited<ReturnType<typeof listJobs>>[number]
@@ -46,6 +47,15 @@ export const columns: ColumnDef<JobRow, unknown>[] = [
     accessorKey: 'status',
     header: 'Status',
     cell: ({ row }) => <Badge variant={STATUS_VARIANT[row.original.status] ?? 'outline'}>{row.original.status}</Badge>,
+  },
+  {
+    accessorKey: 'applicationDeadline',
+    header: 'Deadline',
+    cell: ({ row }) => (
+      <span className="text-xs text-[#524458] font-medium whitespace-nowrap">
+        {formatAdminDate(row.original.applicationDeadline)}
+      </span>
+    ),
   },
   {
     id: 'actions',

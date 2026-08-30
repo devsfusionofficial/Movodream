@@ -220,6 +220,30 @@
   html {
     @apply font-sans;
   }
+
+  /* Universal text wrap safety guard: Prevents long strings, continuous characters,
+     unbroken URLs, or foreign words from expanding beyond their containers or
+     breaking mobile/desktop layouts. */
+  *,
+  *::before,
+  *::after {
+    overflow-wrap: break-word;
+    word-break: normal;
+  }
+
+  /* Universal media containment */
+  img,
+  svg,
+  video,
+  canvas,
+  audio,
+  iframe,
+  embed,
+  object {
+    max-width: 100%;
+    height: auto;
+  }
+
   /* Hard safety net: no section on this site intentionally scrolls
      horizontally. Without this, a single decorative element a pixel wider
      than the viewport (common with 100vw on a page that already has a
@@ -235,6 +259,7 @@
   html,
   body {
     max-width: 100%;
+    min-width: 0;
   }
 
   @supports (overflow: clip) {
@@ -258,3 +283,183 @@
     text-overflow: ellipsis;
   }
 }
+
+/* ==========================================================================
+   Admin Rich Text Editor & Preview Typography Styles
+   ========================================================================== */
+
+.admin-editor-content .ProseMirror {
+  min-height: 220px;
+  outline: none !important;
+  padding: 1.25rem 1.5rem;
+  font-size: 0.9375rem;
+  line-height: 1.75;
+  color: #2b1f33;
+}
+
+.admin-editor-content .ProseMirror > *:first-child {
+  margin-top: 0;
+}
+
+.admin-editor-content .ProseMirror p {
+  margin-bottom: 0.85rem;
+}
+
+.admin-editor-content .ProseMirror h1 {
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: #1a0f23;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  line-height: 1.3;
+}
+
+.admin-editor-content .ProseMirror h2 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #1a0f23;
+  margin-top: 1.35rem;
+  margin-bottom: 0.65rem;
+  line-height: 1.35;
+}
+
+.admin-editor-content .ProseMirror h3 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #1a0f23;
+  margin-top: 1.15rem;
+  margin-bottom: 0.5rem;
+  line-height: 1.4;
+}
+
+.admin-editor-content .ProseMirror ul {
+  list-style-type: disc !important;
+  padding-left: 1.75rem !important;
+  margin: 0.85rem 0 !important;
+}
+
+.admin-editor-content .ProseMirror ol {
+  list-style-type: decimal !important;
+  padding-left: 1.75rem !important;
+  margin: 0.85rem 0 !important;
+}
+
+.admin-editor-content .ProseMirror li {
+  display: list-item !important;
+  margin-bottom: 0.4rem;
+}
+
+.admin-editor-content .ProseMirror blockquote {
+  border-left: 4px solid #d71789;
+  background: #faf4fb;
+  padding: 0.75rem 1.25rem;
+  margin: 1rem 0;
+  border-radius: 0 10px 10px 0;
+  font-style: italic;
+  color: #4a3852;
+}
+
+.admin-editor-content .ProseMirror pre {
+  background: #190f23;
+  color: #f7eff9;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  padding: 0.9rem 1.2rem;
+  border-radius: 8px;
+  margin: 1rem 0;
+  overflow-x: auto;
+  font-size: 0.85rem;
+}
+
+.admin-editor-content .ProseMirror code {
+  background: #f3edf4;
+  color: #b40d6d;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  font-size: 0.875em;
+}
+
+.admin-editor-content .ProseMirror hr {
+  border: none;
+  border-top: 2px dashed #e6dbe8;
+  margin: 1.5rem 0;
+}
+
+.admin-editor-content .ProseMirror img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
+  margin: 1rem 0;
+  display: block;
+  cursor: pointer;
+  border: 2.5px solid transparent;
+  transition: all 0.2s ease-in-out;
+}
+
+.admin-editor-content .ProseMirror img.ProseMirror-selectednode,
+.admin-editor-content .ProseMirror img:hover {
+  border-color: #d71789 !important;
+  box-shadow: 0 0 0 4px rgba(215, 23, 137, 0.25) !important;
+}
+
+/* Modal and preview container styling */
+.admin-prose h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a0f23;
+  margin: 1.25rem 0 0.65rem;
+}
+
+.admin-prose h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1a0f23;
+  margin: 1.15rem 0 0.5rem;
+}
+
+.admin-prose h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1a0f23;
+  margin: 1rem 0 0.45rem;
+}
+
+.admin-prose p {
+  margin-bottom: 0.75rem;
+}
+
+.admin-prose ul {
+  list-style-type: disc !important;
+  padding-left: 1.75rem !important;
+  margin: 0.75rem 0 !important;
+}
+
+.admin-prose ol {
+  list-style-type: decimal !important;
+  padding-left: 1.75rem !important;
+  margin: 0.75rem 0 !important;
+}
+
+.admin-prose li {
+  display: list-item !important;
+  margin-bottom: 0.35rem;
+}
+
+.admin-prose blockquote {
+  border-left: 4px solid #d71789;
+  background: #faf4fb;
+  padding: 0.75rem 1.25rem;
+  margin: 1rem 0;
+  border-radius: 0 8px 8px 0;
+  font-style: italic;
+  color: #4a3852;
+}
+
+.admin-prose img {
+  max-width: 100%;
+  max-height: 400px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin: 1rem 0;
+}
+

@@ -1,5 +1,3 @@
-import { Fragment } from 'react'
-
 const FEATURES = [
   {
     slug: 'ai-travel-brain',
@@ -204,31 +202,7 @@ const FEATURES = [
   },
 ]
 
-function FeatureVideo({
-  videoSrc,
-  imageSrc,
-}: {
-  videoSrc: string
-  imageSrc: string
-  title: string
-}) {
-  return (
-    <div className="relative h-full w-full overflow-hidden">
-      <video
-        src={videoSrc}
-        poster={imageSrc}
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="auto"
-        disablePictureInPicture
-        disableRemotePlayback
-        className="h-full w-full object-cover"
-      />
-    </div>
-  )
-}
+import { ProductVideoPlayer } from './product-video-player'
 
 export function IzhingaFeatures() {
   return (
@@ -243,9 +217,8 @@ export function IzhingaFeatures() {
                 : undefined
             }
           >
-            <FeatureVideo
-              videoSrc={feature.videoSrc}
-              imageSrc={feature.imageSrc}
+            <ProductVideoPlayer
+              src={feature.videoSrc}
               title={feature.title}
             />
           </div>

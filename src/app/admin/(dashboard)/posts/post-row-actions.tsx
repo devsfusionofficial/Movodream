@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/dialog'
 import { deletePost } from '@/actions/posts'
 import { DeleteConfirmDialog } from '@/components/admin/delete-confirm-dialog'
+import { formatAdminDate } from '@/lib/date-format'
 
 export function PostRowActions({
   id,
@@ -48,13 +49,7 @@ export function PostRowActions({
     })
   }
 
-  const formattedDate = post?.createdAt
-    ? new Date(post.createdAt).toLocaleDateString('en-US', {
-        month: 'long',
-        day: 'numeric',
-        year: 'numeric',
-      })
-    : 'Recently'
+  const formattedDate = formatAdminDate(post?.createdAt)
 
   const authorName = (post?.author as unknown as { name?: string })?.name ?? 'Editorial Team'
   const categoryList = (post?.categories as unknown as { name: string }[])?.map((c) => c.name).join(', ') || 'General'

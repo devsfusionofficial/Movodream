@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { getJobBySlug } from '@/lib/queries/jobs'
 import { ApplicationForm } from './application-form'
+import { formatDate } from '@/lib/date-format'
 
 type PageProps = { params: Promise<{ slug: string }> }
 
@@ -123,11 +124,7 @@ export default async function JobDetailPage({ params }: PageProps) {
                     <div>
                       <span className="spec-label">Application Deadline</span>
                       <span className="spec-val">
-                        {new Date(job.applicationDeadline).toLocaleDateString('en-US', {
-                          month: 'short',
-                          day: 'numeric',
-                          year: 'numeric',
-                        })}
+                        {formatDate(job.applicationDeadline)}
                       </span>
                     </div>
                   </div>

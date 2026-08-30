@@ -14,7 +14,14 @@ function serialize<T>(doc: T): T {
   return JSON.parse(JSON.stringify(doc))
 }
 
-const PUBLISHED = { status: 'published', publishedAt: { $lte: new Date() } }
+const PUBLISHED = {
+  status: 'published',
+  $or: [
+    { publishedAt: { $lte: new Date() } },
+    { publishedAt: { $exists: false } },
+    { publishedAt: null },
+  ],
+}
 
 async function fetchFeaturedPosts(limit = 3) {
   await connectDB()

@@ -6,6 +6,7 @@ import { getLatestPosts, getAllCategories, getPublishedPostsCount, searchPosts }
 import { Pagination } from '@/components/ui/Pagination'
 
 import { BlogCategoryFilter } from './category-filter'
+import { formatDate } from '@/lib/date-format'
 
 export const metadata: Metadata = {
   title: 'Blog & Journal | Movodream',
@@ -137,11 +138,7 @@ export default async function BlogIndexPage({ searchParams }: PageProps) {
                         <span className="meta-text">
                           {(post.publishedAt || post.createdAt) && (
                             <>
-                              {new Date(post.publishedAt || post.createdAt).toLocaleDateString('en-US', {
-                                day: 'numeric',
-                                month: 'short',
-                                year: 'numeric',
-                              })}{' '}
+                              {formatDate(post.publishedAt || post.createdAt)}{' '}
                               •{' '}
                             </>
                           )}

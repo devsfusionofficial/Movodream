@@ -15,6 +15,7 @@ import {
 import { removeUser, setUserRole } from '@/actions/users'
 import type { CreateUserInput } from '@/lib/validation/user'
 import { DeleteConfirmDialog } from '@/components/admin/delete-confirm-dialog'
+import { formatAdminDate } from '@/lib/date-format'
 
 export function UserRowActions({
   userId,
@@ -114,6 +115,15 @@ export function UserRowActions({
                 <span className="break-all">{email}</span>
               </span>
             </div>
+            {user?.createdAt && (
+              <div className="rounded-xl border border-[#f0edf1] bg-[#faf8fb] p-3 min-w-0 overflow-hidden">
+                <span className="text-[#857c8b] block mb-1 font-semibold uppercase tracking-wider">Member Since</span>
+                <span className="font-medium text-[#21182a] flex items-center gap-1.5 min-w-0">
+                  <Calendar className="h-3.5 w-3.5 shrink-0 text-[#d71789]" />
+                  <span>{formatAdminDate(user.createdAt)}</span>
+                </span>
+              </div>
+            )}
           </div>
 
           <div className="flex items-center justify-between gap-3 border-t border-[#f0edf1] pt-4">

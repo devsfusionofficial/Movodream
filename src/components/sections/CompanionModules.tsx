@@ -134,7 +134,6 @@ export function CompanionModules() {
 
     const enterTrigger = ScrollTrigger.create({
       trigger: '.how-it-works',
-      scroller: document.body,
       start: 'top 75%',
       onEnter: () => {
         stopSlideshowTimer()

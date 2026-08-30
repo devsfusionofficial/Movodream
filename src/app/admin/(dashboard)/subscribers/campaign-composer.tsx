@@ -66,7 +66,58 @@ export function CampaignComposer({ activeCount }: { activeCount: number }) {
 }
 
 function BlockEditor({ block, index, update, remove }: { block: CampaignBlock; index: number; update: (id: string, patch: Partial<CampaignBlock>) => void; remove: () => void }) {
-  return <div className="rounded-lg border border-[#e8dfe8] bg-white p-3"><div className="mb-2 flex items-center justify-between"><span className="text-xs font-bold uppercase tracking-[0.12em] text-[#a18f9f]">{index + 1}. {block.type}</span>{block.type !== 'text' || index > 0 ? <Button type="button" variant="ghost" size="sm" className="h-7 text-xs text-[#b42318]" onClick={remove}>Remove</Button> : null}</div>{block.type === 'text' && <Textarea rows={4} value={block.value} onChange={(event) => update(block.id, { value: event.target.value })} placeholder="Write your update..." />}{block.type === 'image' && <div className="space-y-2"><FileUpload accept="image/*" label={block.url ? 'Replace photo' : 'Upload photo'} onUploaded={({ url }) => update(block.id, { url })} />{block.url && <img src={block.url} alt="Uploaded campaign" className="max-h-36 rounded-lg object-cover" />}<Input value={block.alt} onChange={(event) => update(block.id, { alt: event.target.value })} placeholder="Accessible image description" /></div>}{block.type === 'video' && <div className="space-y-2"><div className="flex flex-wrap items-center gap-2"><FileUpload accept="video/*" label={block.url ? 'Replace video' : 'Upload video'} onUploaded={({ url }) => update(block.id, { url })} /><span className="text-xs text-[#998d9c]">or paste a hosted video URL below</span></div><Input value={block.url} onChange={(event) => update(block.id, { url: event.target.value })} placeholder="https://youtube.com/watch?v=..." /><Input value={block.title} onChange={(event) => update(block.id, { title: event.target.value })} placeholder="Video title" /></div>}{block.type === 'button' && <div className="grid gap-2 sm:grid-cols-2"><Input value={block.label} onChange={(event) => update(block.id, { label: event.target.value })} placeholder="Button label" /><Input value={block.url} onChange={(event) => update(block.id, { url: event.target.value })} placeholder="https://movodream.com/..." /></div>}{block.type === 'divider' && <div className="h-px bg-[#eadfe8]" />}</div>
+  return (
+    <div className="rounded-lg border border-[#e8dfe8] bg-white p-3">
+      <div className="mb-2 flex items-center justify-between">
+        <span className="text-xs font-bold uppercase tracking-[0.12em] text-[#a18f9f]">
+          {index + 1}. {block.type}
+        </span>
+        {block.type !== 'text' || index > 0 ? (
+          <Button type="button" variant="ghost" size="sm" className="h-7 text-xs text-[#b42318]" onClick={remove}>
+            Remove
+          </Button>
+        ) : null}
+      </div>
+      {block.type === 'text' && (
+        <Textarea rows={4} value={block.value} onChange={(event) => update(block.id, { value: event.target.value })} placeholder="Write your update..." />
+      )}
+      {block.type === 'image' && (
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <FileUpload accept="image/*" label={block.url ? 'Replace photo' : 'Upload photo'} onUploaded={({ url }) => update(block.id, { url })} />
+            {block.url && (
+              <Button type="button" variant="outline" size="sm" className="h-8 border-[#f3d5d5] text-xs text-[#b42318] hover:bg-[#fef3f2]" onClick={() => update(block.id, { url: '' })}>
+                Remove photo
+              </Button>
+            )}
+          </div>
+          {block.url && (
+            <div className="relative inline-block">
+              <img src={block.url} alt="Uploaded campaign" className="max-h-36 rounded-lg object-cover" />
+            </div>
+          )}
+          <Input value={block.alt} onChange={(event) => update(block.id, { alt: event.target.value })} placeholder="Accessible image description" />
+        </div>
+      )}
+      {block.type === 'video' && (
+        <div className="space-y-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <FileUpload accept="video/*" label={block.url ? 'Replace video' : 'Upload video'} onUploaded={({ url }) => update(block.id, { url })} />
+            <span className="text-xs text-[#998d9c]">or paste a hosted video URL below</span>
+          </div>
+          <Input value={block.url} onChange={(event) => update(block.id, { url: event.target.value })} placeholder="https://youtube.com/watch?v=..." />
+          <Input value={block.title} onChange={(event) => update(block.id, { title: event.target.value })} placeholder="Video title" />
+        </div>
+      )}
+      {block.type === 'button' && (
+        <div className="grid gap-2 sm:grid-cols-2">
+          <Input value={block.label} onChange={(event) => update(block.id, { label: event.target.value })} placeholder="Button label" />
+          <Input value={block.url} onChange={(event) => update(block.id, { url: event.target.value })} placeholder="https://movodream.com/..." />
+        </div>
+      )}
+      {block.type === 'divider' && <div className="h-px bg-[#eadfe8]" />}
+    </div>
+  )
 }
 
 function PreviewBlock({ block }: { block: CampaignBlock }) {

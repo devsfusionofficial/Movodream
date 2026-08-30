@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/dialog'
 import { deleteAuthor } from '@/actions/authors'
 import { DeleteConfirmDialog } from '@/components/admin/delete-confirm-dialog'
+import { formatAdminDate } from '@/lib/date-format'
 
 export function AuthorRowActions({
   id,
@@ -122,6 +123,16 @@ export function AuthorRowActions({
               <div className="rounded-xl border border-[#ebe6ee] bg-[#faf8fb] p-3 leading-relaxed text-[#382b40] whitespace-pre-wrap break-words [overflow-wrap:anywhere] min-w-0">
                 <span className="text-[#857c8b] block mb-1 font-semibold uppercase tracking-wider">Biography</span>
                 {author.bio}
+              </div>
+            )}
+
+            {author?.createdAt && (
+              <div className="rounded-xl border border-[#f0edf1] bg-[#faf8fb] p-3 min-w-0 overflow-hidden">
+                <span className="text-[#857c8b] block mb-1 font-semibold uppercase tracking-wider">Author Since</span>
+                <span className="font-medium text-[#21182a] flex items-center gap-1.5 min-w-0">
+                  <Calendar className="h-3.5 w-3.5 shrink-0 text-[#d71789]" />
+                  <span>{formatAdminDate(author.createdAt)}</span>
+                </span>
               </div>
             )}
           </div>

@@ -15,7 +15,7 @@ const postSchema = new Schema(
     author: { type: Schema.Types.ObjectId, ref: 'Author' },
     categories: [{ type: Schema.Types.ObjectId, ref: 'Category' }],
     tags: [{ type: Schema.Types.ObjectId, ref: 'Tag' }],
-    status: { type: String, enum: ['draft', 'scheduled', 'published'], default: 'draft', index: true },
+    status: { type: String, enum: ['draft', 'published'], default: 'draft', index: true },
     publishedAt: { type: Date },
     readingTime: { type: Number, default: 1 },
     seo: {

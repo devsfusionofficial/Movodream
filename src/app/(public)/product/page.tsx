@@ -5,10 +5,31 @@ import { IzhingaFeatures } from './izhinga-features'
 import { ProductHeroCta, ProductFinalCta } from './product-cta-row'
 
 export const metadata: Metadata = {
-  title: 'Izhinga | AI Travel Companion by Movodream',
+  title: 'iZhinga | AI Travel Companion by Movodream',
   description:
-    'Izhinga, powered by Movodream — the AI travel companion that plans, books, and guides your whole trip in one place.',
+    'iZhinga, powered by Movodream — the AI travel companion that plans, books, and guides your whole trip in one place.',
   alternates: { canonical: '/product' },
+  openGraph: {
+    title: 'iZhinga | AI Travel Companion by Movodream',
+    description: 'The AI travel companion that plans, books, and guides your whole trip in one place.',
+    url: '/product',
+    siteName: 'Movodream',
+    images: [
+      {
+        url: '/assets/product/hero-window.webp',
+        width: 1400,
+        height: 800,
+        alt: 'iZhinga AI Travel Companion',
+      },
+    ],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'iZhinga | AI Travel Companion by Movodream',
+    description: 'The AI travel companion that plans, books, and guides your whole trip in one place.',
+    images: ['/assets/product/hero-window.webp'],
+  },
 }
 
 const STEPS = [

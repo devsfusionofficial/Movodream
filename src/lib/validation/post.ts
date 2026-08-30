@@ -15,7 +15,7 @@ export const postSchema = z.object({
   authorId: z.string().optional().or(z.literal('')),
   categoryIds: z.array(z.string()),
   tagIds: z.array(z.string()),
-  status: z.enum(['draft', 'scheduled', 'published']),
+  status: z.enum(['draft', 'published']),
   publishedAt: z.string().optional().or(z.literal('')),
   seoTitle: z.string().optional(),
   seoDescription: z.string().optional(),

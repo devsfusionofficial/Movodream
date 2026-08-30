@@ -1,8 +1,11 @@
+import { Suspense } from 'react'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 import { getPublishedJobsPaginated, getJobFilterOptions } from '@/lib/queries/jobs'
 import { Pagination } from '@/components/ui/Pagination'
 import { JobFilters } from './job-filters'
+import { ApplicationSuccessToast } from './application-success-toast'
+import { formatDate } from '@/lib/date-format'
 
 export const metadata: Metadata = {
   title: 'Careers | Movodream',
@@ -23,6 +26,9 @@ export default async function CareersPage({ searchParams }: PageProps) {
 
   return (
     <div className="page-shell">
+      <Suspense fallback={null}>
+        <ApplicationSuccessToast />
+      </Suspense>
       <section className="page-crumb">
         <Link href="/">Home</Link> › <span>Careers</span>
       </section>
@@ -116,12 +122,7 @@ export default async function CareersPage({ searchParams }: PageProps) {
                     <div className="job-tile-footer">
                       {job.applicationDeadline ? (
                         <span className="deadline-badge">
-                          ⏳ Apply by{' '}
-                          {new Date(job.applicationDeadline).toLocaleDateString('en-US', {
-                            month: 'short',
-                            day: 'numeric',
-                            year: 'numeric',
-                          })}
+                          ⏳ Apply by {formatDate(job.applicationDeadline)}
                         </span>
                       ) : (
                         <span className="job-status-tag">🟢 Open Role</span>

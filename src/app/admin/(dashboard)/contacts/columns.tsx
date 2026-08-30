@@ -2,6 +2,7 @@
 
 import type { ColumnDef } from '@tanstack/react-table'
 import { ContactRowActions } from './contact-row-actions'
+import { formatAdminDate } from '@/lib/date-format'
 
 export type ContactRow = {
   _id: string
@@ -52,14 +53,11 @@ export const columns: ColumnDef<ContactRow, unknown>[] = [
   {
     accessorKey: 'createdAt',
     header: 'Received',
-    cell: ({ row }) =>
-      row.original.createdAt
-        ? new Date(row.original.createdAt).toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric',
-          })
-        : 'Recently',
+    cell: ({ row }) => (
+      <span className="text-xs text-[#524458] font-medium">
+        {formatAdminDate(row.original.createdAt)}
+      </span>
+    ),
   },
   {
     id: 'actions',

@@ -39,7 +39,6 @@ export function ClosingCta() {
       const readyTl = gsap.timeline({
         scrollTrigger: {
           trigger: '.ready-section',
-          scroller: document.body,
           start: 'top 70%',
           once: true,
           invalidateOnRefresh: true,

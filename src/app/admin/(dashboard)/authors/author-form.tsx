@@ -6,7 +6,7 @@ import Image from 'next/image'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
-import { User, FileText, Camera, Globe, Sparkles, CheckCircle2, ArrowRight, Share2, Link2, Mail } from 'lucide-react'
+import { User, FileText, Camera, Globe, Sparkles, CheckCircle2, ArrowRight, Share2, Link2, Mail, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -35,6 +35,7 @@ export function AuthorForm({ authorId, defaultValues }: AuthorFormProps) {
       email: '',
       bio: '',
       avatarUrl: '',
+      avatarKey: '',
       twitter: '',
       linkedin: '',
       website: '',
@@ -42,105 +43,98 @@ export function AuthorForm({ authorId, defaultValues }: AuthorFormProps) {
     },
   })
 
+  const avatarUrl = watch('avatarUrl')
+  const name = watch('name')
+  const bio = watch('bio')
+  const email = watch('email')
+  const twitter = watch('twitter')
+  const linkedin = watch('linkedin')
+  const website = watch('website')
+
+  const initial = name ? name.trim().charAt(0).toUpperCase() : 'A'
+
   async function onSubmit(values: AuthorInput) {
     const result = authorId ? await updateAuthor(authorId, values) : await createAuthor(values)
     if (!result.success) {
       toast.error(result.error)
       return
     }
-    toast.success(authorId ? 'Author profile updated' : 'Author profile created successfully!')
+    toast.success(authorId ? 'Author updated' : 'Author created')
     router.push('/admin/authors')
     router.refresh()
   }
 
-  const name = watch('name')
-  const email = watch('email')
-  const bio = watch('bio')
-  const avatarUrl = watch('avatarUrl')
-  const twitter = watch('twitter')
-  const linkedin = watch('linkedin')
-  const website = watch('website')
-
-  const initial = (name || 'A').slice(0, 1).toUpperCase()
-
   return (
-    <form onSubmit={handleSubmit(onSubmit)} noValidate className="w-full">
-      <div className="grid gap-8 lg:grid-cols-12 lg:items-start">
-        {/* Left Column - Inputs */}
+    <form onSubmit={handleSubmit(onSubmit)} noValidate className="w-full pb-10">
+      <div className="grid items-start gap-6 lg:grid-cols-12">
+        {/* Left Column: Form Sections */}
         <div className="space-y-6 lg:col-span-7">
           {/* Section 1: Basic Information */}
-          <div className="space-y-4">
+          <div className="rounded-2xl border border-[#ebe6ee] bg-white p-6 shadow-xs sm:p-7 space-y-4">
             <div className="flex items-center gap-2 border-b border-[#f0edf1] pb-3">
               <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#fce8f2] text-[#d71789]">
                 <User className="h-4 w-4" />
               </span>
-              <h3 className="text-sm font-bold text-[#21182a]">Author Identity</h3>
+              <h3 className="text-sm font-bold text-[#21182a]">Basic Information</h3>
             </div>
 
             <Field>
               <FieldLabel htmlFor="name" className="text-xs font-semibold text-[#21182a]">
-                Full Name <span className="text-[#d71789]">*</span>
+                Author Full Name <span className="text-[#d71789]">*</span>
               </FieldLabel>
-              <div className="relative">
-                <Input
-                  id="name"
-                  placeholder="e.g. Sophia Vance"
-                  className="h-10 rounded-xl border-[#dedede] pl-3 text-sm focus:border-[#d71789]"
-                  {...register('name')}
-                />
-              </div>
+              <Input
+                id="name"
+                placeholder="e.g. John Doe"
+                className="h-11 rounded-xl border-[#ebe6ee] bg-white text-sm focus:border-[#d71789] focus:ring-4 focus:ring-[#d71789]/10"
+                {...register('name')}
+              />
               <FieldError errors={[errors.name]} />
             </Field>
 
             <Field>
               <FieldLabel htmlFor="email" className="text-xs font-semibold text-[#21182a]">
-                Email Address
+                Email Address (Optional)
               </FieldLabel>
-              <div className="relative">
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="e.g. author@movodream.com"
-                  className="h-10 rounded-xl border-[#dedede] pl-3 text-sm focus:border-[#d71789]"
-                  {...register('email')}
-                />
-              </div>
-              <FieldDescription className="text-[11px] text-[#887f8e]">
-                Contact or administrative email address for this author.
-              </FieldDescription>
+              <Input
+                id="email"
+                type="email"
+                placeholder="e.g. author@movodream.com"
+                className="h-11 rounded-xl border-[#ebe6ee] bg-white text-sm focus:border-[#d71789] focus:ring-4 focus:ring-[#d71789]/10"
+                {...register('email')}
+              />
               <FieldError errors={[errors.email]} />
             </Field>
           </div>
 
           {/* Section 2: Biography */}
-          <div className="space-y-4 pt-2">
+          <div className="rounded-2xl border border-[#ebe6ee] bg-white p-6 shadow-xs sm:p-7 space-y-4">
             <div className="flex items-center gap-2 border-b border-[#f0edf1] pb-3">
               <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#fce8f2] text-[#d71789]">
                 <FileText className="h-4 w-4" />
               </span>
-              <h3 className="text-sm font-bold text-[#21182a]">Biography & Persona</h3>
+              <h3 className="text-sm font-bold text-[#21182a]">Author Bio</h3>
             </div>
 
             <Field>
               <FieldLabel htmlFor="bio" className="text-xs font-semibold text-[#21182a]">
-                Author Bio
+                Short Biography / Tagline
               </FieldLabel>
               <Textarea
                 id="bio"
                 rows={4}
-                placeholder="Share a short bio or editorial focus..."
-                className="rounded-xl border-[#dedede] text-sm leading-relaxed focus:border-[#d71789]"
+                placeholder="Write a brief professional background or description about this author..."
+                className="resize-y rounded-xl border-[#ebe6ee] bg-white text-sm shadow-none focus:border-[#d71789] focus:ring-4 focus:ring-[#d71789]/10"
                 {...register('bio')}
               />
               <FieldDescription className="text-[11px] text-[#887f8e]">
-                Keep bio under 250 characters for clean presentation on article footers.
+                This will appear at the bottom of published articles and author profile cards.
               </FieldDescription>
               <FieldError errors={[errors.bio]} />
             </Field>
           </div>
 
           {/* Section 3: Profile Avatar */}
-          <div className="space-y-4 pt-2">
+          <div className="rounded-2xl border border-[#ebe6ee] bg-white p-6 shadow-xs sm:p-7 space-y-4">
             <div className="flex items-center gap-2 border-b border-[#f0edf1] pb-3">
               <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#fce8f2] text-[#d71789]">
                 <Camera className="h-4 w-4" />
@@ -151,11 +145,27 @@ export function AuthorForm({ authorId, defaultValues }: AuthorFormProps) {
             <Field>
               <FieldLabel className="text-xs font-semibold text-[#21182a]">Avatar Image</FieldLabel>
               <div className="flex items-center gap-4 rounded-xl border border-[#ebe6ee] bg-[#faf8fb] p-4">
-                <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full border-2 border-[#f7d4e5] bg-[#fce8f2] shadow-sm flex items-center justify-center">
-                  {avatarUrl ? (
-                    <Image src={avatarUrl} alt="Avatar Preview" fill className="object-cover" />
-                  ) : (
-                    <span className="text-xl font-bold text-[#d71789]">{initial}</span>
+                <div className="relative group shrink-0">
+                  <div className="relative h-14 w-14 overflow-hidden rounded-full border-2 border-[#f7d4e5] bg-[#fce8f2] shadow-sm flex items-center justify-center">
+                    {avatarUrl ? (
+                      <Image src={avatarUrl} alt="Avatar Preview" fill className="object-cover" />
+                    ) : (
+                      <span className="text-xl font-bold text-[#d71789]">{initial}</span>
+                    )}
+                  </div>
+                  {avatarUrl && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setValue('avatarUrl', '', { shouldDirty: true })
+                        setValue('avatarKey', '', { shouldDirty: true })
+                      }}
+                      className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-white text-[#b42318] shadow-sm border border-[#f3d5d5] hover:bg-[#fef3f2] hover:text-[#912018] transition-transform hover:scale-110"
+                      title="Remove avatar"
+                      aria-label="Remove avatar"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </button>
                   )}
                 </div>
                 <div className="flex-1 space-y-1">
@@ -163,14 +173,29 @@ export function AuthorForm({ authorId, defaultValues }: AuthorFormProps) {
                     {avatarUrl ? 'Profile Avatar Uploaded' : 'Upload Author Photo'}
                   </p>
                   <p className="text-[11px] text-[#887f8e]">Recommended size: 400x400px (PNG, JPG, WEBP)</p>
-                  <div className="pt-1">
+                  <div className="pt-1 flex items-center gap-2">
                     <FileUpload
                       label={avatarUrl ? 'Replace Photo' : 'Upload Photo'}
                       onUploaded={({ url, key }) => {
-                        setValue('avatarUrl', url)
-                        setValue('avatarKey', key)
+                        setValue('avatarUrl', url, { shouldDirty: true })
+                        setValue('avatarKey', key, { shouldDirty: true })
                       }}
                     />
+                    {avatarUrl && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setValue('avatarUrl', '', { shouldDirty: true })
+                          setValue('avatarKey', '', { shouldDirty: true })
+                        }}
+                        className="border-[#f3d5d5] text-[#b42318] hover:bg-[#fef3f2] hover:text-[#912018]"
+                      >
+                        <Trash2 className="mr-1.5 h-3.5 w-3.5" />
+                        Remove
+                      </Button>
+                    )}
                   </div>
                 </div>
               </div>

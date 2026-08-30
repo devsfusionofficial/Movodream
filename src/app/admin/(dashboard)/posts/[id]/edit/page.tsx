@@ -42,7 +42,7 @@ export default async function EditPostPage({ params }: { params: Promise<{ id: s
           authorId: (post.author as unknown as string) ?? '',
           categoryIds: (post.categories as unknown as string[]) ?? [],
           tagIds: (post.tags as unknown as string[]) ?? [],
-          status: post.status,
+          status: (post.status === 'published' ? 'published' : 'draft') as 'draft' | 'published',
           publishedAt: post.publishedAt ? new Date(post.publishedAt).toISOString().slice(0, 16) : '',
           seoTitle: post.seo?.title,
           seoDescription: post.seo?.description,

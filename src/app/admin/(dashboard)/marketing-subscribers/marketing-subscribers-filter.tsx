@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Search, X, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { formatAdminDate } from '@/lib/date-format'
 
 export type SubscriberItem = {
   _id: string
@@ -205,19 +206,11 @@ export function MarketingSubscribersFilter({ subscribers }: { subscribers: Subsc
                 </span>
               </span>
               <span className="text-xs text-[#857c8b]">
-                {new Date(subscriber.subscribedAt ?? subscriber.createdAt).toLocaleDateString('en-US', {
-                  month: 'short',
-                  day: 'numeric',
-                  year: 'numeric',
-                })}
+                {formatAdminDate(subscriber.subscribedAt ?? subscriber.createdAt)}
               </span>
               <span className="text-xs text-[#857c8b]">
                 {subscriber.status === 'unsubscribed'
-                  ? new Date(subscriber.updatedAt ?? subscriber.createdAt).toLocaleDateString('en-US', {
-                      month: 'short',
-                      day: 'numeric',
-                      year: 'numeric',
-                    })
+                  ? formatAdminDate(subscriber.updatedAt ?? subscriber.createdAt)
                   : '—'}
               </span>
             </div>

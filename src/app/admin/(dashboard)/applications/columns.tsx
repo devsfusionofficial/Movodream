@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { Eye } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { formatAdminDate } from '@/lib/date-format'
 import type { listApplications } from '@/actions/applications'
 
 export type ApplicationRow = Awaited<ReturnType<typeof listApplications>>[number]
@@ -53,6 +54,15 @@ export const columns: ColumnDef<ApplicationRow, unknown>[] = [
     accessorKey: 'status',
     header: 'Status',
     cell: ({ row }) => <Badge variant={STATUS_VARIANT[row.original.status] ?? 'outline'}>{row.original.status}</Badge>,
+  },
+  {
+    accessorKey: 'createdAt',
+    header: 'Applied',
+    cell: ({ row }) => (
+      <span className="text-xs text-[#524458] font-medium whitespace-nowrap">
+        {formatAdminDate(row.original.appliedAt || row.original.createdAt)}
+      </span>
+    ),
   },
   {
     id: 'actions',

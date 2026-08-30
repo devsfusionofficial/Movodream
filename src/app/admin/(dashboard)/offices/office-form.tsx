@@ -6,7 +6,7 @@ import Image from 'next/image'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
-import { Building2, MapPin, Globe, Camera, ArrowRight, Layers, FileText } from 'lucide-react'
+import { Building2, MapPin, Globe, Camera, ArrowRight, Layers, FileText, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -31,8 +31,22 @@ export function OfficeForm({ officeId, defaultValues }: OfficeFormProps) {
     formState: { errors, isSubmitting },
   } = useForm<OfficeInput>({
     resolver: zodResolver(officeSchema),
-    defaultValues: { status: 'live', order: 0, city: '', slug: '', address: '', description: '', ...defaultValues },
+    defaultValues: {
+      city: '',
+      slug: '',
+      address: '',
+      gmbLink: '',
+      status: 'live',
+      description: '',
+      imageUrl: '',
+      imageKey: '',
+      order: 0,
+      ...defaultValues,
+    },
   })
+
+  const status = watch('status')
+  const imageUrl = watch('imageUrl')
 
   async function onSubmit(values: OfficeInput) {
     const result = officeId ? await updateOffice(officeId, values) : await createOffice(values)
@@ -40,35 +54,32 @@ export function OfficeForm({ officeId, defaultValues }: OfficeFormProps) {
       toast.error(result.error)
       return
     }
-    toast.success(officeId ? 'Office location updated' : 'Office location created successfully!')
+    toast.success(officeId ? 'Office hub updated' : 'Office hub created successfully!')
     router.push('/admin/offices')
     router.refresh()
   }
 
-  const imageUrl = watch('imageUrl')
-  const status = watch('status')
-
   return (
-    <form onSubmit={handleSubmit(onSubmit)} noValidate className="w-full">
-      <div className="space-y-6">
-        {/* Section 1: Office Identity (2D Grid) */}
+    <form onSubmit={handleSubmit(onSubmit)} noValidate className="w-full space-y-6">
+      <div className="rounded-2xl border border-[#ebe6ee] bg-white p-6 shadow-xs sm:p-7 space-y-6">
+        {/* Section 1: Core Details */}
         <div className="space-y-4">
           <div className="flex items-center gap-2 border-b border-[#f0edf1] pb-3">
             <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#fce8f2] text-[#d71789]">
               <Building2 className="h-4 w-4" />
             </span>
-            <h3 className="text-sm font-bold text-[#21182a]">Office Location & Identity</h3>
+            <h3 className="text-sm font-bold text-[#21182a]">City & Identity</h3>
           </div>
 
-          <div className="grid gap-5 sm:grid-cols-2">
+          <div className="grid gap-4 sm:grid-cols-2">
             <Field>
               <FieldLabel htmlFor="city" className="text-xs font-semibold text-[#21182a]">
                 City Name <span className="text-[#d71789]">*</span>
               </FieldLabel>
               <Input
                 id="city"
-                placeholder="e.g. New Delhi"
-                className="h-10 rounded-xl border-[#dedede] text-sm focus:border-[#d71789]"
+                placeholder="e.g. Gurugram, India"
+                className="h-10 rounded-xl border-[#ebe6ee] text-sm focus:border-[#d71789]"
                 {...register('city')}
               />
               <FieldError errors={[errors.city]} />
@@ -76,32 +87,39 @@ export function OfficeForm({ officeId, defaultValues }: OfficeFormProps) {
 
             <Field>
               <FieldLabel htmlFor="slug" className="text-xs font-semibold text-[#21182a]">
-                URL Slug
+                Slug Identifier <span className="text-[#d71789]">*</span>
               </FieldLabel>
               <Input
                 id="slug"
-                placeholder="e.g. new-delhi"
-                className="h-10 rounded-xl border-[#dedede] text-xs font-mono focus:border-[#d71789]"
+                placeholder="e.g. gurugram-hq"
+                className="h-10 rounded-xl border-[#ebe6ee] text-sm focus:border-[#d71789]"
                 {...register('slug')}
               />
+              <FieldDescription className="text-[11px] text-[#887f8e]">
+                Lowercase letters, numbers, and hyphens only.
+              </FieldDescription>
               <FieldError errors={[errors.slug]} />
             </Field>
           </div>
 
-          <div className="grid gap-5 sm:grid-cols-2">
+          <div className="grid gap-4 sm:grid-cols-2">
             <Field>
               <FieldLabel htmlFor="status" className="text-xs font-semibold text-[#21182a]">
-                Hub Status
+                Operational Status <span className="text-[#d71789]">*</span>
               </FieldLabel>
               <Select
                 value={status || 'live'}
-                onValueChange={(v) => v && setValue('status', v as OfficeInput['status'])}
+                onValueChange={(val) => {
+                  if (val === 'live' || val === 'comingSoon') {
+                    setValue('status', val, { shouldDirty: true })
+                  }
+                }}
               >
-                <SelectTrigger id="status" className="h-10 rounded-xl text-xs">
-                  <SelectValue />
+                <SelectTrigger className="h-10 rounded-xl border-[#ebe6ee] text-sm focus:border-[#d71789]">
+                  <SelectValue placeholder="Select status" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="live">Live Location</SelectItem>
+                  <SelectItem value="live">Live / Active HQ</SelectItem>
                   <SelectItem value="comingSoon">Coming Soon</SelectItem>
                 </SelectContent>
               </Select>
@@ -110,67 +128,71 @@ export function OfficeForm({ officeId, defaultValues }: OfficeFormProps) {
 
             <Field>
               <FieldLabel htmlFor="order" className="text-xs font-semibold text-[#21182a]">
-                Display Sorting Order
+                Display Sort Order
               </FieldLabel>
               <Input
                 id="order"
                 type="number"
                 placeholder="0"
-                className="h-10 rounded-xl border-[#dedede] text-xs focus:border-[#d71789]"
+                className="h-10 rounded-xl border-[#ebe6ee] text-sm focus:border-[#d71789]"
                 {...register('order', { valueAsNumber: true })}
               />
+              <FieldDescription className="text-[11px] text-[#887f8e]">
+                Lower numbers appear first on the About Us page.
+              </FieldDescription>
+              <FieldError errors={[errors.order]} />
             </Field>
           </div>
         </div>
 
-        {/* Section 2: Address & Google Maps Touchpoint (2D Grid) */}
+        {/* Section 2: Address & Coordinates */}
         <div className="space-y-4 pt-2">
           <div className="flex items-center gap-2 border-b border-[#f0edf1] pb-3">
             <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#fce8f2] text-[#d71789]">
               <MapPin className="h-4 w-4" />
             </span>
-            <h3 className="text-sm font-bold text-[#21182a]">Address & Touchpoints</h3>
-          </div>
-
-          <div className="grid gap-5 sm:grid-cols-2">
-            <Field>
-              <FieldLabel htmlFor="address" className="text-xs font-semibold text-[#21182a]">
-                Street Address
-              </FieldLabel>
-              <Input
-                id="address"
-                placeholder="e.g. Connaught Place, Block M, New Delhi"
-                className="h-10 rounded-xl border-[#dedede] text-sm focus:border-[#d71789]"
-                {...register('address')}
-              />
-              <FieldError errors={[errors.address]} />
-            </Field>
-
-            <Field>
-              <FieldLabel htmlFor="gmbLink" className="text-xs font-semibold text-[#21182a]">
-                Google Business Profile / Maps Link
-              </FieldLabel>
-              <Input
-                id="gmbLink"
-                placeholder="https://maps.google.com/..."
-                className="h-10 rounded-xl border-[#dedede] text-xs focus:border-[#d71789]"
-                {...register('gmbLink')}
-              />
-              <FieldError errors={[errors.gmbLink]} />
-            </Field>
+            <h3 className="text-sm font-bold text-[#21182a]">Address & Link</h3>
           </div>
 
           <Field>
-            <FieldLabel htmlFor="description" className="text-xs font-semibold text-[#21182a]">
-              Office Description & Regional Focus
+            <FieldLabel htmlFor="address" className="text-xs font-semibold text-[#21182a]">
+              Full Postal Address
             </FieldLabel>
             <Textarea
-              id="description"
+              id="address"
               rows={3}
-              placeholder="Describe this office hub location or regional focus..."
-              className="rounded-xl border-[#dedede] text-sm leading-relaxed focus:border-[#d71789]"
+              placeholder="e.g. Unit 402, DLF Cyber City, Sector 24, Gurugram, Haryana 122002"
+              className="resize-y rounded-xl border-[#ebe6ee] text-sm focus:border-[#d71789]"
+              {...register('address')}
+            />
+            <FieldError errors={[errors.address]} />
+          </Field>
+
+          <Field>
+            <FieldLabel htmlFor="gmbLink" className="text-xs font-semibold text-[#21182a]">
+              Google Maps / Business Link (Optional)
+            </FieldLabel>
+            <Input
+              id="gmbLink"
+              type="url"
+              placeholder="https://maps.google.com/?q=..."
+              className="h-10 rounded-xl border-[#ebe6ee] text-sm focus:border-[#d71789]"
+              {...register('gmbLink')}
+            />
+            <FieldError errors={[errors.gmbLink]} />
+          </Field>
+
+          <Field>
+            <FieldLabel htmlFor="description" className="text-xs font-semibold text-[#21182a]">
+              Hub Purpose / Short Description (Optional)
+            </FieldLabel>
+            <Input
+              id="description"
+              placeholder="e.g. Global Product & Engineering Center"
+              className="h-10 rounded-xl border-[#ebe6ee] text-sm focus:border-[#d71789]"
               {...register('description')}
             />
+            <FieldError errors={[errors.description]} />
           </Field>
         </div>
 
@@ -186,11 +208,27 @@ export function OfficeForm({ officeId, defaultValues }: OfficeFormProps) {
           <Field>
             <FieldLabel className="text-xs font-semibold text-[#21182a]">Hub Cover Photo</FieldLabel>
             <div className="flex flex-col gap-4 rounded-xl border border-[#ebe6ee] bg-[#faf8fb] p-4 sm:flex-row sm:items-center">
-              <div className="relative h-20 w-32 shrink-0 overflow-hidden rounded-xl border border-[#ebe6ee] bg-white flex items-center justify-center shadow-xs">
-                {imageUrl ? (
-                  <Image src={imageUrl} alt="Office Photo" fill className="object-cover" />
-                ) : (
-                  <Building2 className="h-7 w-7 text-[#d71789]" />
+              <div className="relative h-20 w-32 shrink-0 group">
+                <div className="relative h-20 w-32 overflow-hidden rounded-xl border border-[#ebe6ee] bg-white flex items-center justify-center shadow-xs">
+                  {imageUrl ? (
+                    <Image src={imageUrl} alt="Office Photo" fill className="object-cover" />
+                  ) : (
+                    <Building2 className="h-7 w-7 text-[#d71789]" />
+                  )}
+                </div>
+                {imageUrl && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setValue('imageUrl', '', { shouldDirty: true })
+                      setValue('imageKey', '', { shouldDirty: true })
+                    }}
+                    className="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-white text-[#b42318] shadow-sm border border-[#f3d5d5] hover:bg-[#fef3f2] hover:text-[#912018] transition-transform hover:scale-110"
+                    title="Remove photo"
+                    aria-label="Remove photo"
+                  >
+                    <Trash2 className="h-3 w-3" />
+                  </button>
                 )}
               </div>
               <div className="flex-1 space-y-1">
@@ -198,14 +236,29 @@ export function OfficeForm({ officeId, defaultValues }: OfficeFormProps) {
                   {imageUrl ? 'Office Cover Photo Uploaded' : 'Upload Office Photo'}
                 </p>
                 <p className="text-[11px] text-[#887f8e]">Recommended size: 1200x800px (JPG, WEBP, PNG)</p>
-                <div className="pt-1">
+                <div className="pt-1 flex items-center gap-2">
                   <FileUpload
                     label={imageUrl ? 'Replace Photo' : 'Upload Photo'}
                     onUploaded={({ url, key }) => {
-                      setValue('imageUrl', url)
-                      setValue('imageKey', key)
+                      setValue('imageUrl', url, { shouldDirty: true })
+                      setValue('imageKey', key, { shouldDirty: true })
                     }}
                   />
+                  {imageUrl && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setValue('imageUrl', '', { shouldDirty: true })
+                        setValue('imageKey', '', { shouldDirty: true })
+                      }}
+                      className="border-[#f3d5d5] text-[#b42318] hover:bg-[#fef3f2] hover:text-[#912018]"
+                    >
+                      <Trash2 className="mr-1.5 h-3.5 w-3.5" />
+                      Remove
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>

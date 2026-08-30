@@ -136,7 +136,6 @@ export function PlatformSlides() {
 
       const pinST = ScrollTrigger.create({
         trigger: '.section-4',
-        scroller: document.body,
         start: 'top top',
         end: '+=140%',
         pin: true,

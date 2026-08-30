@@ -9,7 +9,6 @@ import { columns } from './columns'
 const STATUS_TABS = [
   { value: undefined, label: 'All posts' },
   { value: 'draft', label: 'Drafts' },
-  { value: 'scheduled', label: 'Scheduled' },
   { value: 'published', label: 'Published' },
 ] as const
 
@@ -22,7 +21,6 @@ export default async function PostsPage({ searchParams }: PageProps) {
   const posts = status ? allPosts.filter((post) => post.status === status) : allPosts
   const published = allPosts.filter((post) => post.status === 'published').length
   const drafts = allPosts.filter((post) => post.status === 'draft').length
-  const scheduled = allPosts.filter((post) => post.status === 'scheduled').length
 
   return (
     <div className="mx-auto max-w-[1440px] space-y-4">
@@ -41,7 +39,7 @@ export default async function PostsPage({ searchParams }: PageProps) {
         </Button>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2">
         <Link
           href="/admin/posts?status=published"
           className="group rounded-2xl border border-[#ebe6ee] bg-white p-5 shadow-[0_5px_18px_rgba(34,20,40,0.025)] transition hover:-translate-y-0.5 hover:shadow-md"
@@ -67,19 +65,6 @@ export default async function PostsPage({ searchParams }: PageProps) {
           </div>
           <p className="mt-5 text-2xl font-semibold tracking-[-0.05em] text-[#2b2032]">{drafts}</p>
           <p className="mt-1 text-xs text-[#857c8b]">Drafts in progress</p>
-        </Link>
-        <Link
-          href="/admin/posts?status=scheduled"
-          className="group rounded-2xl border border-[#ebe6ee] bg-white p-5 shadow-[0_5px_18px_rgba(34,20,40,0.025)] transition hover:-translate-y-0.5 hover:shadow-md"
-        >
-          <div className="flex items-center justify-between">
-            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#f0eaff] text-[#6b43bb]">
-              <SlidersHorizontal className="h-[17px] w-[17px]" />
-            </span>
-            <ArrowUpRight className="h-4 w-4 text-[#c6bdc9] transition group-hover:text-[#d71789]" />
-          </div>
-          <p className="mt-5 text-2xl font-semibold tracking-[-0.05em] text-[#2b2032]">{scheduled}</p>
-          <p className="mt-1 text-xs text-[#857c8b]">Scheduled to publish</p>
         </Link>
       </div>
 

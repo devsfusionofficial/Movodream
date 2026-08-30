@@ -5,7 +5,7 @@ import { getApplication } from '@/actions/applications'
 import { requirePagePermission } from '@/lib/auth-guard'
 import { ApplicationStatusForm } from '../application-status-form'
 import { ResumeDownloadButton } from '../resume-download-button'
-import { formatAdminDate } from '@/lib/date-format'
+import { FormattedDate } from '@/components/admin/formatted-date'
 
 export default async function ApplicationDetailPage({ params }: { params: Promise<{ id: string }> }) {
   await requirePagePermission('applications', ['read'])
@@ -72,7 +72,7 @@ export default async function ApplicationDetailPage({ params }: { params: Promis
           <div className="rounded-xl border border-[#f2edf4] bg-[#fdfbfd] p-3.5 min-w-0">
             <dt className="text-xs font-medium text-[#887f8e]">Applied On</dt>
             <dd className="mt-1 font-semibold text-[#21182a]">
-              {formatAdminDate(application.appliedAt ?? application.createdAt)}
+              <FormattedDate date={application.appliedAt ?? application.createdAt} includeTime />
             </dd>
           </div>
         </dl>

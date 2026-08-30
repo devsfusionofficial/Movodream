@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
+import { formatDate } from '@/lib/date-format'
 
 type PostCardPost = {
   _id: string
@@ -29,7 +30,7 @@ export function PostCard({ post }: { post: PostCardPost }) {
         <h3>{post.title}</h3>
         {post.excerpt && <p>{post.excerpt}</p>}
         <div className="post-tile-meta">
-          {date && <>{new Date(date).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })} · </>}
+          {date && <>{formatDate(date)} · </>}
           {post.readingTime ?? 1} min read
         </div>
       </div>

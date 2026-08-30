@@ -52,8 +52,11 @@ function applyPostInput(doc: HydratedDocument<PostDoc>, input: PostInput) {
   doc.author = (input.authorId || undefined) as unknown as PostDoc['author']
   doc.categories = input.categoryIds as unknown as PostDoc['categories']
   doc.tags = input.tagIds as unknown as PostDoc['tags']
-  doc.status = input.status
-  if (input.publishedAt) doc.publishedAt = new Date(input.publishedAt)
+  if (input.publishedAt) {
+    doc.publishedAt = new Date(input.publishedAt)
+  } else if (input.status === 'published' && !doc.publishedAt) {
+    doc.publishedAt = new Date()
+  }
   doc.seo = {
     title: input.seoTitle,
     description: input.seoDescription,

@@ -1,8 +1,10 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 export function ApplicationForm({ jobId }: { jobId: string }) {
+  const router = useRouter()
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
   const [error, setError] = useState('')
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
@@ -104,6 +106,11 @@ export function ApplicationForm({ jobId }: { jobId: string }) {
       setStatus('success')
       setFileName('')
       form.reset()
+
+      // Smooth transition redirect back to Careers page
+      setTimeout(() => {
+        router.push('/careers?applied=true')
+      }, 1600)
     } catch {
       setError('Something went wrong. Please try again.')
       setStatus('error')
@@ -115,7 +122,7 @@ export function ApplicationForm({ jobId }: { jobId: string }) {
       <div className="app-success-card">
         <div className="success-icon">🎉</div>
         <h3>Application Received!</h3>
-        <p>Thank you for applying. Our talent team will review your CV and get back to you shortly.</p>
+        <p>Thank you for applying. Redirecting you to the Careers page…</p>
       </div>
     )
   }

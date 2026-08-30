@@ -109,7 +109,6 @@ export function HeroCards() {
         ease: 'none',
         scrollTrigger: {
           trigger: '.hero-section',
-          scroller: document.body,
           start: 'top top',
           end: 'bottom top',
           scrub: 2,
@@ -124,7 +123,6 @@ export function HeroCards() {
         ease: 'none',
         scrollTrigger: {
           trigger: '.hero-section',
-          scroller: document.body,
           start: 'top top',
           end: 'bottom 85%',
           scrub: 1.4,
@@ -139,7 +137,6 @@ export function HeroCards() {
         ease: 'none',
         scrollTrigger: {
           trigger: '.hero-section',
-          scroller: document.body,
           start: 'top top',
           end: 'bottom 85%',
           scrub: 2.6,

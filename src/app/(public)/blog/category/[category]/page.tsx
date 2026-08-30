@@ -6,6 +6,7 @@ import { ArrowRight } from 'lucide-react'
 import { getPostsByCategorySlug, getAllCategories } from '@/lib/queries/posts'
 
 import { BlogCategoryFilter } from '../../category-filter'
+import { formatDate } from '@/lib/date-format'
 
 type PageProps = { params: Promise<{ category: string }> }
 
@@ -125,11 +126,7 @@ export default async function BlogCategoryPage({ params }: PageProps) {
                       <span className="meta-text">
                         {(post.publishedAt || post.createdAt) && (
                           <>
-                            {new Date(post.publishedAt || post.createdAt).toLocaleDateString('en-US', {
-                              day: 'numeric',
-                              month: 'short',
-                              year: 'numeric',
-                            })}{' '}
+                            {formatDate(post.publishedAt || post.createdAt)}{' '}
                             •{' '}
                           </>
                         )}

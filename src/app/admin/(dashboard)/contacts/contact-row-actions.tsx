@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/dialog'
 import { deleteContactSubmission } from '@/actions/contacts'
 import { DeleteConfirmDialog } from '@/components/admin/delete-confirm-dialog'
+import { formatAdminDate } from '@/lib/date-format'
 
 export function ContactRowActions({
   id,
@@ -63,13 +64,7 @@ export function ContactRowActions({
     }
   }
 
-  const formattedDate = createdAt
-    ? new Date(createdAt).toLocaleDateString('en-US', {
-        month: 'long',
-        day: 'numeric',
-        year: 'numeric',
-      })
-    : 'Recently'
+  const formattedDate = formatAdminDate(createdAt, true)
 
   const initial = (name || email || 'C').slice(0, 1).toUpperCase()
   const titleName = name || email || 'Contact Enquiry'
