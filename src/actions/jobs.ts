@@ -6,6 +6,7 @@ import { requirePermission } from '@/lib/auth-guard'
 import { connectDB } from '@/lib/db'
 import { Job, type JobDoc } from '@/models/Job'
 import { jobSchema, type JobInput } from '@/lib/validation/job'
+import { slugify } from '@/lib/utils'
 
 export type ActionResult = { success: true } | { success: false; error: string }
 
@@ -21,7 +22,7 @@ export async function listJobs() {
   // — including the full article/JD HTML and editor JSON. Detail screens
   // use their own get<X>(id) and still receive everything.
   const jobs = await Job.find()
-    .select('title slug department location employmentType experience qualification skills descriptionHtml responsibilitiesHtml applicationDeadline status createdAt')
+    .select('title slug department location employmentType experience qualification skills applicationDeadline status createdAt')
     .sort({ createdAt: -1 })
     .lean()
   return serialize(jobs)
@@ -35,8 +36,8 @@ export async function getJob(id: string) {
 }
 
 function applyJobInput(doc: HydratedDocument<JobDoc>, input: JobInput) {
-  doc.title = input.title
-  if (input.slug) doc.slug = input.slug
+  doc.title = input.title.trim()
+  doc.slug = input.slug?.trim() ? slugify(input.slug) : slugify(input.title)
   doc.department = input.department
   doc.location = input.location
   doc.employmentType = input.employmentType
@@ -62,7 +63,10 @@ export async function createJob(rawInput: JobInput): Promise<ActionResult> {
     const doc = new Job()
     applyJobInput(doc, parsed.data)
     await doc.save()
-  } catch (err) {
+  } catch (err: any) {
+    if (err?.code === 11000) {
+      return { success: false, error: 'A job listing with this title or slug already exists.' }
+    }
     return { success: false, error: err instanceof Error ? err.message : 'Failed to create job' }
   }
 
@@ -85,7 +89,10 @@ export async function updateJob(id: string, rawInput: JobInput): Promise<ActionR
     applyJobInput(doc, parsed.data)
     await doc.save()
     slug = doc.slug
-  } catch (err) {
+  } catch (err: any) {
+    if (err?.code === 11000) {
+      return { success: false, error: 'A job listing with this title or slug already exists.' }
+    }
     return { success: false, error: err instanceof Error ? err.message : 'Failed to update job' }
   }
 

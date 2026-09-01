@@ -1,9 +1,10 @@
 'use client'
 
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { useForm } from 'react-hook-form'
+import { useForm, type FieldErrors } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
 import { Building2, MapPin, Globe, Camera, ArrowRight, Layers, FileText, Trash2 } from 'lucide-react'
@@ -15,6 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { FileUpload } from '@/components/admin/file-upload'
 import { createOffice, updateOffice } from '@/actions/offices'
 import { officeSchema, type OfficeInput } from '@/lib/validation/office'
+import { slugify } from '@/lib/utils'
 
 type OfficeFormProps = {
   officeId?: string
@@ -45,22 +47,51 @@ export function OfficeForm({ officeId, defaultValues }: OfficeFormProps) {
     },
   })
 
+  const [slugTouched, setSlugTouched] = useState(Boolean(defaultValues?.slug))
+
+  function handleCityChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const val = e.target.value
+    setValue('city', val, { shouldValidate: true })
+    if (!slugTouched) {
+      setValue('slug', slugify(val), { shouldValidate: true })
+    }
+  }
+
+  function handleSlugChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setSlugTouched(true)
+    setValue('slug', slugify(e.target.value), { shouldValidate: true })
+  }
+
   const status = watch('status')
   const imageUrl = watch('imageUrl')
 
   async function onSubmit(values: OfficeInput) {
-    const result = officeId ? await updateOffice(officeId, values) : await createOffice(values)
-    if (!result.success) {
-      toast.error(result.error)
-      return
+    try {
+      const cleanInput: OfficeInput = JSON.parse(JSON.stringify({
+        ...values,
+        city: values.city.trim(),
+        slug: values.slug?.trim() ? slugify(values.slug) : slugify(values.city),
+      }))
+      const result = officeId ? await updateOffice(officeId, cleanInput) : await createOffice(cleanInput)
+      if (!result.success) {
+        toast.error(result.error)
+        return
+      }
+      toast.success(officeId ? 'Office hub updated successfully' : 'Office hub created successfully!')
+      router.push('/admin/offices')
+      router.refresh()
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to save office hub')
     }
-    toast.success(officeId ? 'Office hub updated' : 'Office hub created successfully!')
-    router.push('/admin/offices')
-    router.refresh()
+  }
+
+  function onInvalid(formErrors: FieldErrors<OfficeInput>) {
+    const firstError = Object.values(formErrors)[0]?.message
+    toast.error(firstError ? String(firstError) : 'Please fix the errors in the form before submitting.')
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} noValidate className="w-full space-y-6">
+    <form onSubmit={handleSubmit(onSubmit, onInvalid)} noValidate className="w-full space-y-6">
       <div className="rounded-2xl border border-[#ebe6ee] bg-white p-6 shadow-xs sm:p-7 space-y-6">
         {/* Section 1: Core Details */}
         <div className="space-y-4">
@@ -81,22 +112,24 @@ export function OfficeForm({ officeId, defaultValues }: OfficeFormProps) {
                 placeholder="e.g. Gurugram, India"
                 className="h-10 rounded-xl border-[#ebe6ee] text-sm focus:border-[#d71789]"
                 {...register('city')}
+                onChange={handleCityChange}
               />
               <FieldError errors={[errors.city]} />
             </Field>
 
             <Field>
               <FieldLabel htmlFor="slug" className="text-xs font-semibold text-[#21182a]">
-                Slug Identifier <span className="text-[#d71789]">*</span>
+                Slug Identifier
               </FieldLabel>
               <Input
                 id="slug"
                 placeholder="e.g. gurugram-hq"
                 className="h-10 rounded-xl border-[#ebe6ee] text-sm focus:border-[#d71789]"
                 {...register('slug')}
+                onChange={handleSlugChange}
               />
               <FieldDescription className="text-[11px] text-[#887f8e]">
-                Lowercase letters, numbers, and hyphens only.
+                Auto-generated from city if left blank. Lowercase letters, numbers, and hyphens only.
               </FieldDescription>
               <FieldError errors={[errors.slug]} />
             </Field>

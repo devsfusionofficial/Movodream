@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { requirePermission } from '@/lib/auth-guard'
 import { connectDB } from '@/lib/db'
 import { Tag } from '@/models/Tag'
+import { slugify } from '@/lib/utils'
 import { tagSchema, type TagInput } from '@/lib/validation/tag'
 
 export type ActionResult = { success: true } | { success: false; error: string }
@@ -32,9 +33,13 @@ export async function createTag(input: TagInput): Promise<ActionResult> {
   if (!parsed.success) return { success: false, error: parsed.error.issues[0]?.message ?? 'Invalid input' }
 
   await connectDB()
+  const slug = parsed.data.slug?.trim() ? slugify(parsed.data.slug) : slugify(parsed.data.name)
   try {
-    await Tag.create(parsed.data)
-  } catch (err) {
+    await Tag.create({ ...parsed.data, slug })
+  } catch (err: any) {
+    if (err?.code === 11000) {
+      return { success: false, error: 'A tag with this name or slug already exists.' }
+    }
     return { success: false, error: err instanceof Error ? err.message : 'Failed to create tag' }
   }
 
@@ -49,9 +54,13 @@ export async function updateTag(id: string, input: TagInput): Promise<ActionResu
   if (!parsed.success) return { success: false, error: parsed.error.issues[0]?.message ?? 'Invalid input' }
 
   await connectDB()
+  const slug = parsed.data.slug?.trim() ? slugify(parsed.data.slug) : slugify(parsed.data.name)
   try {
-    await Tag.findByIdAndUpdate(id, parsed.data)
-  } catch (err) {
+    await Tag.findByIdAndUpdate(id, { ...parsed.data, slug })
+  } catch (err: any) {
+    if (err?.code === 11000) {
+      return { success: false, error: 'A tag with this name or slug already exists.' }
+    }
     return { success: false, error: err instanceof Error ? err.message : 'Failed to update tag' }
   }
 

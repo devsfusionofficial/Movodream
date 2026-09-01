@@ -1,6 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
+import { requirePermission } from '@/lib/auth-guard'
 import { connectDB } from '@/lib/db'
 import { Subscriber } from '@/models/Subscriber'
 import { MarketingCampaign } from '@/models/MarketingCampaign'
@@ -22,13 +23,20 @@ export type SyncEmailInput = {
   infoBoxContent?: string
 }
 
+function serialize<T>(doc: T): T {
+  return JSON.parse(JSON.stringify(doc))
+}
+
 export async function listSubscribers() {
+  await requirePermission('subscribers', ['read'])
   await connectDB()
-  return Subscriber.find().sort({ createdAt: -1 }).lean()
+  const list = await Subscriber.find().sort({ createdAt: -1 }).lean()
+  return serialize(list)
 }
 
 export async function createSubscriber(email: string) {
   try {
+    await requirePermission('subscribers', ['create'])
     await connectDB()
     const existing = await Subscriber.findOne({ email: email.toLowerCase().trim() })
     if (existing) {
@@ -51,6 +59,7 @@ export async function createSubscriber(email: string) {
 
 export async function deleteSubscriber(id: string) {
   try {
+    await requirePermission('subscribers', ['delete'])
     await connectDB()
     await Subscriber.findByIdAndDelete(id)
     revalidatePath('/admin/subscribers')
@@ -63,6 +72,7 @@ export async function deleteSubscriber(id: string) {
 
 export async function syncSubscriberEmail(input: SyncEmailInput) {
   try {
+    await requirePermission('subscribers', ['create'])
     await connectDB()
     const activeSubscribers = await Subscriber.find({ status: 'active' }).select('email').lean()
     const subscriberEmails = activeSubscribers.map((s) => s.email)
@@ -186,6 +196,7 @@ export async function syncSubscriberEmail(input: SyncEmailInput) {
 
 export async function sendSubscriberCampaign(input: { subject: string; text?: string; html?: string; blocks?: any[] }) {
   try {
+    await requirePermission('subscribers', ['create'])
     await connectDB()
     const activeSubscribers = await Subscriber.find({ status: 'active' }).select('email').lean()
     const subscriberEmails = activeSubscribers.map((s) => s.email)

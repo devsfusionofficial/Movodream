@@ -39,55 +39,104 @@ export async function getDashboardData({
 }) {
   await connectDB()
 
-  const [
-    publishedPostsCount,
-    totalPostsCount,
-    publishedJobsCount,
-    totalJobsCount,
-    totalApplicationsCount,
-    appliedApplicationsCount,
-    activeSubscribersCount,
-    totalSubscribersCount,
-    recentPosts,
-    recentApplications,
-  ] = await Promise.all([
-    canReadPosts ? Post.countDocuments({ status: 'published' }) : Promise.resolve(0),
-    canReadPosts ? Post.countDocuments() : Promise.resolve(0),
-    canReadJobs ? Job.countDocuments({ status: 'published' }) : Promise.resolve(0),
-    canReadJobs ? Job.countDocuments() : Promise.resolve(0),
-    canReadApplications ? Application.countDocuments() : Promise.resolve(0),
-    canReadApplications ? Application.countDocuments({ status: 'Applied' }) : Promise.resolve(0),
-    canReadSubscribers ? Subscriber.countDocuments({ status: 'active' }) : Promise.resolve(0),
-    canReadSubscribers ? Subscriber.countDocuments() : Promise.resolve(0),
+  const [postResult, jobResult, applicationResult, subscriberResult] = await Promise.all([
     canReadPosts
-      ? Post.find()
-          .select('title status createdAt')
-          .sort({ createdAt: -1 })
-          .limit(4)
-          .lean()
+      ? Post.aggregate([
+          {
+            $facet: {
+              total: [{ $count: 'count' }],
+              published: [{ $match: { status: 'published' } }, { $count: 'count' }],
+              recent: [
+                { $sort: { createdAt: -1 } },
+                { $limit: 4 },
+                { $project: { _id: 1, title: 1, status: 1, createdAt: 1 } },
+              ],
+            },
+          },
+        ])
       : Promise.resolve([]),
+
+    canReadJobs
+      ? Job.aggregate([
+          {
+            $facet: {
+              total: [{ $count: 'count' }],
+              published: [{ $match: { status: 'published' } }, { $count: 'count' }],
+            },
+          },
+        ])
+      : Promise.resolve([]),
+
     canReadApplications
-      ? Application.find()
-          .select('name status job createdAt')
-          .populate('job', 'title')
-          .sort({ createdAt: -1 })
-          .limit(4)
-          .lean()
+      ? Application.aggregate([
+          {
+            $facet: {
+              total: [{ $count: 'count' }],
+              applied: [{ $match: { status: 'Applied' } }, { $count: 'count' }],
+              recent: [
+                { $sort: { createdAt: -1 } },
+                { $limit: 4 },
+                {
+                  $lookup: {
+                    from: 'jobs',
+                    localField: 'job',
+                    foreignField: '_id',
+                    as: 'jobDoc',
+                  },
+                },
+                {
+                  $project: {
+                    _id: 1,
+                    name: 1,
+                    status: 1,
+                    createdAt: 1,
+                    job: { $arrayElemAt: ['$jobDoc', 0] },
+                  },
+                },
+                {
+                  $project: {
+                    _id: 1,
+                    name: 1,
+                    status: 1,
+                    createdAt: 1,
+                    'job.title': 1,
+                  },
+                },
+              ],
+            },
+          },
+        ])
+      : Promise.resolve([]),
+
+    canReadSubscribers
+      ? Subscriber.aggregate([
+          {
+            $facet: {
+              total: [{ $count: 'count' }],
+              active: [{ $match: { status: 'active' } }, { $count: 'count' }],
+            },
+          },
+        ])
       : Promise.resolve([]),
   ])
 
+  const postStats = postResult[0] ?? { total: [], published: [], recent: [] }
+  const jobStats = jobResult[0] ?? { total: [], published: [] }
+  const applicationStats = applicationResult[0] ?? { total: [], applied: [], recent: [] }
+  const subscriberStats = subscriberResult[0] ?? { total: [], active: [] }
+
   return {
     metrics: {
-      publishedPosts: publishedPostsCount,
-      totalPosts: totalPostsCount,
-      publishedJobs: publishedJobsCount,
-      totalJobs: totalJobsCount,
-      totalApplications: totalApplicationsCount,
-      appliedApplications: appliedApplicationsCount,
-      activeSubscribers: activeSubscribersCount,
-      totalSubscribers: totalSubscribersCount,
+      publishedPosts: postStats.published[0]?.count ?? 0,
+      totalPosts: postStats.total[0]?.count ?? 0,
+      publishedJobs: jobStats.published[0]?.count ?? 0,
+      totalJobs: jobStats.total[0]?.count ?? 0,
+      totalApplications: applicationStats.total[0]?.count ?? 0,
+      appliedApplications: applicationStats.applied[0]?.count ?? 0,
+      activeSubscribers: subscriberStats.active[0]?.count ?? 0,
+      totalSubscribers: subscriberStats.total[0]?.count ?? 0,
     },
-    recentPosts: serialize(recentPosts) as unknown as RecentPostItem[],
-    recentApplications: serialize(recentApplications) as unknown as RecentApplicationItem[],
+    recentPosts: serialize(postStats.recent) as unknown as RecentPostItem[],
+    recentApplications: serialize(applicationStats.recent) as unknown as RecentApplicationItem[],
   }
 }

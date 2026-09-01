@@ -15,9 +15,27 @@ export type SubscriberItem = {
   updatedAt?: string
 }
 
+const STATUS_LABELS: Record<'all' | 'active' | 'unsubscribed', string> = {
+  all: 'Status: All',
+  active: 'Status: Opted in',
+  unsubscribed: 'Status: Opted out',
+}
+
+const JOINED_LABELS: Record<'all' | '7d' | '30d' | '90d', string> = {
+  all: 'Joined: All time',
+  '7d': 'Joined: Last 7 days',
+  '30d': 'Joined: Last 30 days',
+  '90d': 'Joined: Last 90 days',
+}
+
+const EXIT_DATE_LABELS: Record<'all' | 'has_exit' | 'no_exit', string> = {
+  all: 'Exit date: All',
+  has_exit: 'Exit date: Has date',
+  no_exit: 'Exit date: Active (No exit)',
+}
+
 export function MarketingSubscribersFilter({ subscribers }: { subscribers: SubscriberItem[] }) {
   const [searchQuery, setSearchQuery] = useState('')
-  const [userFilter, setUserFilter] = useState<'all' | 'active' | 'unsubscribed'>('all')
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'unsubscribed'>('all')
   const [joinedFilter, setJoinedFilter] = useState<'all' | '7d' | '30d' | '90d'>('all')
   const [exitDateFilter, setExitDateFilter] = useState<'all' | 'has_exit' | 'no_exit'>('all')
@@ -28,9 +46,6 @@ export function MarketingSubscribersFilter({ subscribers }: { subscribers: Subsc
 
   const filteredSubscribers = subscribers.filter((sub) => {
     if (searchQuery && !sub.email.toLowerCase().includes(searchQuery.toLowerCase())) {
-      return false
-    }
-    if (userFilter !== 'all' && sub.status !== userFilter) {
       return false
     }
     if (statusFilter !== 'all' && sub.status !== statusFilter) {
@@ -60,7 +75,6 @@ export function MarketingSubscribersFilter({ subscribers }: { subscribers: Subsc
 
   const hasActiveFilters =
     searchQuery !== '' ||
-    userFilter !== 'all' ||
     statusFilter !== 'all' ||
     joinedFilter !== 'all' ||
     exitDateFilter !== 'all'
@@ -77,7 +91,6 @@ export function MarketingSubscribersFilter({ subscribers }: { subscribers: Subsc
 
   function resetFilters() {
     setSearchQuery('')
-    setUserFilter('all')
     setStatusFilter('all')
     setJoinedFilter('all')
     setExitDateFilter('all')
@@ -108,25 +121,17 @@ export function MarketingSubscribersFilter({ subscribers }: { subscribers: Subsc
         </label>
 
         <Select
-          value={userFilter}
-          onValueChange={(v) => v && handleFilterChange(setUserFilter, v as 'all' | 'active' | 'unsubscribed')}
-        >
-          <SelectTrigger className="h-9 w-auto min-w-[130px] rounded-xl border-[#dedede] bg-white text-xs text-[#333]">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All users</SelectItem>
-            <SelectItem value="active">Opted-in users</SelectItem>
-            <SelectItem value="unsubscribed">Opted-out users</SelectItem>
-          </SelectContent>
-        </Select>
-
-        <Select
           value={statusFilter}
           onValueChange={(v) => v && handleFilterChange(setStatusFilter, v as 'all' | 'active' | 'unsubscribed')}
         >
-          <SelectTrigger className="h-9 w-auto min-w-[130px] rounded-xl border-[#dedede] bg-white text-xs text-[#333]">
-            <SelectValue />
+          <SelectTrigger
+            className={`h-9 w-auto rounded-xl border bg-white px-3 text-xs gap-1.5 transition-colors ${
+              statusFilter !== 'all'
+                ? 'border-[#d71789] text-[#d71789] bg-[#fdf5f9] font-semibold'
+                : 'border-[#dedede] text-[#21182a] font-medium'
+            }`}
+          >
+            <span className="truncate text-left">{STATUS_LABELS[statusFilter]}</span>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All statuses</SelectItem>
@@ -139,8 +144,14 @@ export function MarketingSubscribersFilter({ subscribers }: { subscribers: Subsc
           value={joinedFilter}
           onValueChange={(v) => v && handleFilterChange(setJoinedFilter, v as 'all' | '7d' | '30d' | '90d')}
         >
-          <SelectTrigger className="h-9 w-auto min-w-[140px] rounded-xl border-[#dedede] bg-white text-xs text-[#333]">
-            <SelectValue />
+          <SelectTrigger
+            className={`h-9 w-auto rounded-xl border bg-white px-3 text-xs gap-1.5 transition-colors ${
+              joinedFilter !== 'all'
+                ? 'border-[#d71789] text-[#d71789] bg-[#fdf5f9] font-semibold'
+                : 'border-[#dedede] text-[#21182a] font-medium'
+            }`}
+          >
+            <span className="truncate text-left">{JOINED_LABELS[joinedFilter]}</span>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Joined (All time)</SelectItem>
@@ -154,13 +165,19 @@ export function MarketingSubscribersFilter({ subscribers }: { subscribers: Subsc
           value={exitDateFilter}
           onValueChange={(v) => v && handleFilterChange(setExitDateFilter, v as 'all' | 'has_exit' | 'no_exit')}
         >
-          <SelectTrigger className="h-9 w-auto min-w-[130px] rounded-xl border-[#dedede] bg-white text-xs text-[#333]">
-            <SelectValue />
+          <SelectTrigger
+            className={`h-9 w-auto rounded-xl border bg-white px-3 text-xs gap-1.5 transition-colors ${
+              exitDateFilter !== 'all'
+                ? 'border-[#d71789] text-[#d71789] bg-[#fdf5f9] font-semibold'
+                : 'border-[#dedede] text-[#21182a] font-medium'
+            }`}
+          >
+            <span className="truncate text-left">{EXIT_DATE_LABELS[exitDateFilter]}</span>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Exit date (All)</SelectItem>
             <SelectItem value="has_exit">Has exit date</SelectItem>
-            <SelectItem value="no_exit">No exit date</SelectItem>
+            <SelectItem value="no_exit">Active (No exit date)</SelectItem>
           </SelectContent>
         </Select>
 
@@ -242,7 +259,7 @@ export function MarketingSubscribersFilter({ subscribers }: { subscribers: Subsc
               }}
             >
               <SelectTrigger size="sm" className="h-7 w-16 rounded-lg border-[#dedede] bg-white text-xs font-semibold text-[#21182a]">
-                <SelectValue />
+                <span>{pageSize}</span>
               </SelectTrigger>
               <SelectContent>
                 {[5, 10, 20, 50, 100].map((size) => (

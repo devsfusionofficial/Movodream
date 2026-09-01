@@ -63,6 +63,10 @@ applicationSchema.post<ApplicationDocument>('save', function (doc) {
 // in-memory sort, which is slow and hard-fails past the 32MB sort limit
 // once the collection grows.
 applicationSchema.index({ createdAt: -1 })
+applicationSchema.index({ status: 1, createdAt: -1 })
+applicationSchema.index({ job: 1, createdAt: -1 })
+applicationSchema.index({ job: 1, status: 1 })
+applicationSchema.index({ email: 1 })
 
 export type ApplicationDoc = InferSchemaType<typeof applicationSchema>
 

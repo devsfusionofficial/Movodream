@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { requirePermission } from '@/lib/auth-guard'
 import { connectDB } from '@/lib/db'
 import { Category } from '@/models/Category'
+import { slugify } from '@/lib/utils'
 import { categorySchema, type CategoryInput } from '@/lib/validation/category'
 
 export type ActionResult = { success: true } | { success: false; error: string }
@@ -32,9 +33,13 @@ export async function createCategory(input: CategoryInput): Promise<ActionResult
   if (!parsed.success) return { success: false, error: parsed.error.issues[0]?.message ?? 'Invalid input' }
 
   await connectDB()
+  const slug = parsed.data.slug?.trim() ? slugify(parsed.data.slug) : slugify(parsed.data.name)
   try {
-    await Category.create(parsed.data)
-  } catch (err) {
+    await Category.create({ ...parsed.data, slug })
+  } catch (err: any) {
+    if (err?.code === 11000) {
+      return { success: false, error: 'A category with this name or slug already exists.' }
+    }
     return { success: false, error: err instanceof Error ? err.message : 'Failed to create category' }
   }
 
@@ -49,9 +54,13 @@ export async function updateCategory(id: string, input: CategoryInput): Promise<
   if (!parsed.success) return { success: false, error: parsed.error.issues[0]?.message ?? 'Invalid input' }
 
   await connectDB()
+  const slug = parsed.data.slug?.trim() ? slugify(parsed.data.slug) : slugify(parsed.data.name)
   try {
-    await Category.findByIdAndUpdate(id, parsed.data)
-  } catch (err) {
+    await Category.findByIdAndUpdate(id, { ...parsed.data, slug })
+  } catch (err: any) {
+    if (err?.code === 11000) {
+      return { success: false, error: 'A category with this name or slug already exists.' }
+    }
     return { success: false, error: err instanceof Error ? err.message : 'Failed to update category' }
   }
 

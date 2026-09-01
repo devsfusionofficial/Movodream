@@ -46,7 +46,10 @@ export async function createPartner(input: PartnerInput): Promise<ActionResult> 
   await connectDB()
   try {
     await Partner.create(toPartnerDoc(parsed.data))
-  } catch (err) {
+  } catch (err: any) {
+    if (err?.code === 11000) {
+      return { success: false, error: 'A partner with this name already exists.' }
+    }
     return { success: false, error: err instanceof Error ? err.message : 'Failed to create partner' }
   }
 
@@ -65,7 +68,10 @@ export async function updatePartner(id: string, input: PartnerInput): Promise<Ac
   await connectDB()
   try {
     await Partner.findByIdAndUpdate(id, toPartnerDoc(parsed.data))
-  } catch (err) {
+  } catch (err: any) {
+    if (err?.code === 11000) {
+      return { success: false, error: 'A partner with this name already exists.' }
+    }
     return { success: false, error: err instanceof Error ? err.message : 'Failed to update partner' }
   }
 

@@ -1,9 +1,10 @@
 'use client'
 
+import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useForm, Controller } from 'react-hook-form'
+import { useForm, Controller, type FieldErrors } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
 import { ArrowLeft, Check, Clock3, ImagePlus, LayoutTemplate, Search, Tag, UserRound, Trash2 } from 'lucide-react'
@@ -16,6 +17,7 @@ import { FileUpload } from '@/components/admin/file-upload'
 import { RichTextEditor } from '@/components/admin/rich-text-editor'
 import { createPost, updatePost } from '@/actions/posts'
 import { postSchema, type PostInput } from '@/lib/validation/post'
+import { slugify } from '@/lib/utils'
 
 type Option = { _id: string; name: string }
 type PostFormProps = { postId?: string; defaultValues?: Partial<PostInput>; authors: Option[]; categories: Option[]; tags: Option[] }
@@ -27,14 +29,51 @@ function SectionTitle({ icon: Icon, title, description }: { icon: typeof LayoutT
 
 export function PostForm({ postId, defaultValues, authors, categories, tags }: PostFormProps) {
   const router = useRouter()
-  const { register, handleSubmit, setValue, watch, control, formState: { errors, isSubmitting } } = useForm<PostInput>({ resolver: zodResolver(postSchema), defaultValues: { status: 'draft', categoryIds: [], tagIds: [], ...defaultValues } })
+  const { register, handleSubmit, setValue, watch, control, formState: { errors, isSubmitting } } = useForm<PostInput>({
+    resolver: zodResolver(postSchema),
+    defaultValues: { status: 'draft', categoryIds: [], tagIds: [], ...defaultValues },
+  })
+
+  const [slugTouched, setSlugTouched] = useState(Boolean(defaultValues?.slug))
+
+  function handleTitleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const val = e.target.value
+    setValue('title', val, { shouldValidate: true })
+    if (!slugTouched) {
+      setValue('slug', slugify(val), { shouldValidate: true })
+    }
+  }
+
+  function handleSlugChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setSlugTouched(true)
+    setValue('slug', slugify(e.target.value), { shouldValidate: true })
+  }
 
   async function onSubmit(values: PostInput) {
-    const result = postId ? await updatePost(postId, values) : await createPost(values)
-    if (!result.success) { toast.error(result.error); return }
-    toast.success(postId ? 'Post updated' : 'Post created')
-    router.push('/admin/posts')
-    router.refresh()
+    try {
+      const cleanInput: PostInput = JSON.parse(JSON.stringify({
+        ...values,
+        title: values.title.trim(),
+        slug: values.slug?.trim() ? slugify(values.slug) : slugify(values.title),
+        categoryIds: values.categoryIds?.filter(Boolean) ?? [],
+        tagIds: values.tagIds?.filter(Boolean) ?? [],
+      }))
+      const result = postId ? await updatePost(postId, cleanInput) : await createPost(cleanInput)
+      if (!result.success) {
+        toast.error(result.error)
+        return
+      }
+      toast.success(postId ? 'Post updated successfully' : 'Post created successfully')
+      router.push('/admin/posts')
+      router.refresh()
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to save post')
+    }
+  }
+
+  function onInvalid(formErrors: FieldErrors<PostInput>) {
+    const firstError = Object.values(formErrors)[0]?.message
+    toast.error(firstError ? String(firstError) : 'Please fill in all required fields.')
   }
 
   const heroImageUrl = watch('heroImageUrl')
@@ -46,14 +85,35 @@ export function PostForm({ postId, defaultValues, authors, categories, tags }: P
   function toggleId(field: 'categoryIds' | 'tagIds', id: string, current: string[]) { setValue(field, current.includes(id) ? current.filter((c) => c !== id) : [...current, id], { shouldDirty: true }) }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} noValidate className="w-full pb-10 outline-none">
+    <form onSubmit={handleSubmit(onSubmit, onInvalid)} noValidate className="w-full pb-10 outline-none">
       <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1.55fr)_minmax(330px,0.75fr)]">
         <div className="space-y-6">
           <section className="rounded-2xl border border-[#ebe5ed] bg-white p-6 shadow-[0_5px_18px_rgba(34,20,40,0.025)] sm:p-7">
             <SectionTitle icon={LayoutTemplate} title="Story details" description="Give your post a clear identity and an inviting introduction." />
             <FieldGroup className="gap-5 outline-none">
-              <Field><FieldLabel htmlFor="title" className="text-[13px] font-semibold text-[#403445]">Title <span className="text-[#d71789]">*</span></FieldLabel><Input id="title" placeholder="A title people will want to read" className={`${inputClass} h-14 px-4 text-base font-medium`} {...register('title')} /><FieldError errors={[errors.title]} /></Field>
-              <Field><FieldLabel htmlFor="slug" className="text-[13px] font-semibold text-[#403445]">URL slug</FieldLabel><Input id="slug" placeholder="e.g. exploring-hidden-gems" className={inputClass} {...register('slug')} /><FieldDescription className="text-xs text-[#998f9f]">Auto-generated from title if left blank. Use lowercase words separated by hyphens.</FieldDescription><FieldError errors={[errors.slug]} /></Field>
+              <Field>
+                <FieldLabel htmlFor="title" className="text-[13px] font-semibold text-[#403445]">Title <span className="text-[#d71789]">*</span></FieldLabel>
+                <Input
+                  id="title"
+                  placeholder="A title people will want to read"
+                  className={`${inputClass} h-14 px-4 text-base font-medium`}
+                  {...register('title')}
+                  onChange={handleTitleChange}
+                />
+                <FieldError errors={[errors.title]} />
+              </Field>
+              <Field>
+                <FieldLabel htmlFor="slug" className="text-[13px] font-semibold text-[#403445]">URL slug</FieldLabel>
+                <Input
+                  id="slug"
+                  placeholder="e.g. exploring-hidden-gems"
+                  className={inputClass}
+                  {...register('slug')}
+                  onChange={handleSlugChange}
+                />
+                <FieldDescription className="text-xs text-[#998f9f]">Auto-generated from title if left blank. Use lowercase words separated by hyphens.</FieldDescription>
+                <FieldError errors={[errors.slug]} />
+              </Field>
               <Field><FieldLabel htmlFor="excerpt" className="text-[13px] font-semibold text-[#403445]">Excerpt <span className="text-[#d71789]">*</span></FieldLabel><Textarea id="excerpt" rows={4} placeholder="Summarize the value of this story in one or two sentences…" className="resize-y rounded-xl border-[#e8e1ea] bg-white text-sm shadow-none placeholder:text-[#b2a8b5] focus:border-[#d71789] focus:ring-4 focus:ring-[#d71789]/10" {...register('excerpt')} /><FieldDescription className="text-xs text-[#998f9f]">Shown on blog cards and used as a fallback SEO description.</FieldDescription><FieldError errors={[errors.excerpt]} /></Field>
             </FieldGroup>
           </section>

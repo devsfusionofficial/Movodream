@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { useForm, Controller } from 'react-hook-form'
+import { useForm, Controller, type FieldErrors } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
 import { Briefcase, Building2, MapPin, Calendar, Wrench, FileText, CheckCircle2, ArrowRight } from 'lucide-react'
@@ -51,10 +51,15 @@ export function JobForm({ jobId, defaultValues }: JobFormProps) {
     }
   }
 
+  function onInvalid(formErrors: FieldErrors<JobInput>) {
+    const firstError = Object.values(formErrors)[0]?.message
+    toast.error(firstError ? String(firstError) : 'Please fix the errors in the form before submitting.')
+  }
+
   const skills = watch('skills') ?? []
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} noValidate className="w-full">
+    <form onSubmit={handleSubmit(onSubmit, onInvalid)} noValidate className="w-full">
       <div className="grid gap-8 lg:grid-cols-12 lg:items-start">
         {/* Left Column (Primary Content & Editors) - 7 cols */}
         <div className="space-y-6 lg:col-span-7">

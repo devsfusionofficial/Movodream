@@ -23,10 +23,13 @@ const PUBLISHED = {
   ],
 }
 
+const POST_CARD_FIELDS = 'title slug excerpt heroImage author categories tags publishedAt readingTime status createdAt'
+
 async function fetchFeaturedPosts(limit = 3) {
   try {
     await connectDB()
     const posts = await Post.find(PUBLISHED)
+      .select(POST_CARD_FIELDS)
       .sort({ publishedAt: -1 })
       .limit(limit)
       .populate('author', 'name avatar')
@@ -49,6 +52,7 @@ async function fetchLatestPosts(skip = 0, limit = 9) {
   try {
     await connectDB()
     const posts = await Post.find(PUBLISHED)
+      .select(POST_CARD_FIELDS)
       .sort({ publishedAt: -1 })
       .skip(skip)
       .limit(limit)
@@ -93,6 +97,7 @@ async function fetchPostsByCategorySlug(categorySlug: string) {
     if (!category) return { category: null, posts: [] }
 
     const posts = await Post.find({ ...PUBLISHED, categories: category._id })
+      .select(POST_CARD_FIELDS)
       .sort({ publishedAt: -1 })
       .populate('author', 'name avatar')
       .populate('categories', 'name slug')
@@ -118,6 +123,7 @@ export async function searchPosts(query: string) {
   try {
     await connectDB()
     const posts = await Post.find({ ...PUBLISHED, $text: { $search: query } })
+      .select(POST_CARD_FIELDS)
       .populate('author', 'name avatar')
       .populate('categories', 'name slug')
       .lean()
@@ -160,6 +166,7 @@ async function fetchRelatedPosts(postId: string, categoryIds: string[], limit = 
       _id: { $ne: postId },
       categories: { $in: categoryIds },
     })
+      .select('title slug excerpt heroImage categories publishedAt readingTime')
       .sort({ publishedAt: -1 })
       .limit(limit)
       .populate('categories', 'name slug')
@@ -200,14 +207,22 @@ export const getAllCategories = unstable_cache(
 async function fetchCategoriesWithCounts() {
   try {
     await connectDB()
-    const categories = await Category.find().lean()
-    const counts = await Promise.all(
-      categories.map((cat) => Post.countDocuments({ ...PUBLISHED, categories: cat._id }).catch(() => 0))
-    )
-    const list = categories.map((cat, i) => ({
+    // Run category fetch and single aggregation group count concurrently
+    const [categories, categoryCounts] = await Promise.all([
+      Category.find().sort({ name: 1 }).lean(),
+      Post.aggregate([
+        { $match: PUBLISHED },
+        { $unwind: '$categories' },
+        { $group: { _id: '$categories', count: { $sum: 1 } } },
+      ]),
+    ])
+
+    const countMap = new Map(categoryCounts.map((c) => [String(c._id), c.count]))
+    const list = categories.map((cat) => ({
       ...cat,
-      count: counts[i],
+      count: countMap.get(String(cat._id)) ?? 0,
     }))
+
     list.sort((a, b) => b.count - a.count || a.name.localeCompare(b.name))
     return serialize(list)
   } catch (error) {

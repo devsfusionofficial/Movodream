@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { Eye, Shield, Trash2, UserCheck, Calendar } from 'lucide-react'
+import { Eye, Shield, Trash2, UserCheck, Calendar, Lock } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -33,6 +33,10 @@ export function UserRowActions({
   const [viewOpen, setViewOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
 
+  const name = user?.name || 'Admin User'
+  const email = user?.email || 'N/A'
+  const isProtectedUser = email.toLowerCase() === 'harman.singh@movodream.com'
+
   function handleRoleChange(next: string | null) {
     if (!next) return
     startTransition(async () => {
@@ -43,6 +47,11 @@ export function UserRowActions({
   }
 
   function handleRemove() {
+    if (isProtectedUser) {
+      toast.error('This Super Admin account cannot be removed.')
+      setDeleteOpen(false)
+      return
+    }
     startTransition(async () => {
       const result = await removeUser(userId)
       if (!result.success) toast.error(result.error)
@@ -52,31 +61,37 @@ export function UserRowActions({
     })
   }
 
-  const name = user?.name || 'Admin User'
-  const email = user?.email || 'N/A'
-
   return (
     <>
-      <div className="flex items-center justify-end gap-2 outline-none">
+      <div className="flex items-center justify-end gap-2 outline-none h-7">
         <Button
           variant="outline"
           size="sm"
           onClick={() => setViewOpen(true)}
-          className="gap-1 border-[#e6e1e9] text-[#21182a] hover:bg-[#fce8f2] hover:text-[#d71789]"
+          className="h-7 w-[68px] gap-1 border-[#e6e1e9] text-[#21182a] hover:bg-[#fce8f2] hover:text-[#d71789] justify-center items-center text-[0.8rem] leading-none"
           title="View user details"
         >
           <Eye className="h-3.5 w-3.5" />
           View
         </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => setDeleteOpen(true)}
-          disabled={isPending}
-          className="text-[#b42318] hover:bg-[#fff1f0]"
-        >
-          Remove
-        </Button>
+        {isProtectedUser ? (
+          <span
+            className="inline-flex h-7 w-[78px] shrink-0 items-center justify-center rounded-[min(var(--radius-md),12px)] border border-[#e6e1e9] bg-[#faf8fb] text-[0.8rem] font-medium text-[#857c8b] select-none leading-none text-center"
+            title="Super Admin account is locked and cannot be removed"
+          >
+            Protected
+          </span>
+        ) : (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setDeleteOpen(true)}
+            disabled={isPending}
+            className="h-7 w-[78px] justify-center items-center text-[#b42318] hover:bg-[#fff1f0] text-[0.8rem] leading-none text-center"
+          >
+            Remove
+          </Button>
+        )}
       </div>
 
       <DeleteConfirmDialog
@@ -98,11 +113,12 @@ export function UserRowActions({
                 </DialogTitle>
                 <DialogDescription className="mt-0.5 flex items-center gap-1.5 text-xs text-[#857c8b] min-w-0 truncate">
                   <Shield className="h-3.5 w-3.5 shrink-0 text-[#d71789]" />
-                  Admin System User
+                  {isProtectedUser ? 'Super Admin System User' : 'Admin System User'}
                 </DialogDescription>
               </div>
-              <span className="rounded-full bg-[#fce8f2] px-3 py-1 text-xs font-semibold capitalize text-[#d71789] border border-[#f7d4e5] shrink-0">
-                Admin
+              <span className="rounded-full bg-[#fce8f2] px-3 py-1 text-xs font-semibold capitalize text-[#d71789] border border-[#f7d4e5] shrink-0 flex items-center gap-1">
+                {isProtectedUser && <Lock className="h-3 w-3" />}
+                {isProtectedUser ? 'Super Admin' : 'Admin'}
               </span>
             </div>
           </DialogHeader>
@@ -130,17 +146,19 @@ export function UserRowActions({
             <Button variant="outline" size="sm" onClick={() => setViewOpen(false)} className="border-[#e6e1e9]">
               Close
             </Button>
-            <Button
-              variant="destructive"
-              size="sm"
-              onClick={() => {
-                setViewOpen(false)
-                setDeleteOpen(true)
-              }}
-              disabled={isPending}
-            >
-              Remove User
-            </Button>
+            {!isProtectedUser && (
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={() => {
+                  setViewOpen(false)
+                  setDeleteOpen(true)
+                }}
+                disabled={isPending}
+              >
+                Remove User
+              </Button>
+            )}
           </div>
         </DialogContent>
       </Dialog>

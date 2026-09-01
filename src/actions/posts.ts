@@ -11,6 +11,7 @@ import '@/models/Author'
 import '@/models/Category'
 import '@/models/Tag'
 import { postSchema, type PostInput } from '@/lib/validation/post'
+import { slugify } from '@/lib/utils'
 
 export type ActionResult = { success: true } | { success: false; error: string }
 
@@ -26,7 +27,7 @@ export async function listPosts() {
   // — including the full article/JD HTML and editor JSON. Detail screens
   // use their own get<X>(id) and still receive everything.
   const posts = await Post.find()
-    .select('title slug status excerpt contentHtml heroImage author categories tags seo publishedAt createdAt')
+    .select('title slug status excerpt heroImage author categories tags seo publishedAt createdAt')
     .sort({ createdAt: -1 })
     .populate('author', 'name')
     .populate('categories', 'name')
@@ -43,15 +44,16 @@ export async function getPost(id: string) {
 }
 
 function applyPostInput(doc: HydratedDocument<PostDoc>, input: PostInput) {
-  doc.title = input.title
-  if (input.slug) doc.slug = input.slug
+  doc.title = input.title.trim()
+  doc.status = input.status ?? 'draft'
+  doc.slug = input.slug?.trim() ? slugify(input.slug) : slugify(input.title)
   doc.excerpt = input.excerpt
   doc.contentJson = input.contentJson
   doc.contentHtml = input.contentHtml ?? ''
   doc.heroImage = input.heroImageUrl ? { url: input.heroImageUrl, key: input.heroImageKey } : undefined
-  doc.author = (input.authorId || undefined) as unknown as PostDoc['author']
-  doc.categories = input.categoryIds as unknown as PostDoc['categories']
-  doc.tags = input.tagIds as unknown as PostDoc['tags']
+  doc.author = (input.authorId?.trim() || undefined) as unknown as PostDoc['author']
+  doc.categories = (input.categoryIds?.filter(Boolean) ?? []) as unknown as PostDoc['categories']
+  doc.tags = (input.tagIds?.filter(Boolean) ?? []) as unknown as PostDoc['tags']
   if (input.publishedAt) {
     doc.publishedAt = new Date(input.publishedAt)
   } else if (input.status === 'published' && !doc.publishedAt) {
@@ -76,7 +78,10 @@ export async function createPost(input: PostInput): Promise<ActionResult> {
     applyPostInput(doc, parsed.data)
     await doc.save()
     slug = doc.slug
-  } catch (err) {
+  } catch (err: any) {
+    if (err?.code === 11000) {
+      return { success: false, error: 'A post with this title or URL slug already exists. Please choose a unique title or slug.' }
+    }
     return { success: false, error: err instanceof Error ? err.message : 'Failed to create post' }
   }
 
@@ -99,7 +104,10 @@ export async function updatePost(id: string, input: PostInput): Promise<ActionRe
     applyPostInput(doc, parsed.data)
     await doc.save()
     slug = doc.slug
-  } catch (err) {
+  } catch (err: any) {
+    if (err?.code === 11000) {
+      return { success: false, error: 'A post with this title or URL slug already exists. Please choose a unique title or slug.' }
+    }
     return { success: false, error: err instanceof Error ? err.message : 'Failed to update post' }
   }
 

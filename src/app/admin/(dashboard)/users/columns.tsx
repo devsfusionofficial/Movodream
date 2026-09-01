@@ -27,12 +27,17 @@ export const columns: ColumnDef<UserRow, unknown>[] = [
   },
   {
     accessorKey: 'role',
-    header: 'Role',
-    cell: ({ row }) => (
-      <span className="inline-flex items-center rounded-full bg-[#fce8f2] px-2.5 py-0.5 text-xs font-semibold capitalize text-[#d71789]">
-        {row.original.role}
-      </span>
-    ),
+    header: () => <div className="text-center">Role</div>,
+    cell: ({ row }) => {
+      const isProtected = row.original.email?.toLowerCase() === 'harman.singh@movodream.com'
+      return (
+        <div className="flex justify-center">
+          <span className="inline-flex items-center justify-center rounded-full bg-[#fce8f2] px-2.5 py-1 text-xs font-semibold capitalize text-[#d71789] leading-none text-center">
+            {isProtected ? 'Super Admin' : row.original.role}
+          </span>
+        </div>
+      )
+    },
   },
   {
     id: 'actions',

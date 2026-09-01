@@ -8,6 +8,10 @@ import { createUserSchema, type CreateUserInput } from '@/lib/validation/user'
 
 export type ActionResult = { success: true } | { success: false; error: string }
 
+function serialize<T>(doc: T): T {
+  return JSON.parse(JSON.stringify(doc))
+}
+
 export async function listUsers() {
   await requirePermission('user', ['list'])
   const auth = await getAuth()
@@ -15,7 +19,7 @@ export async function listUsers() {
     query: { limit: 100, sortBy: 'createdAt', sortDirection: 'desc' },
     headers: await headers(),
   })
-  return result.users
+  return serialize(result.users)
 }
 
 export async function createUser(input: CreateUserInput): Promise<ActionResult> {
@@ -31,14 +35,17 @@ export async function createUser(input: CreateUserInput): Promise<ActionResult> 
   try {
     await auth.api.createUser({
       body: {
-        name: parsed.data.name,
-        email: parsed.data.email,
+        name: parsed.data.name.trim(),
+        email: parsed.data.email.toLowerCase().trim(),
         password: parsed.data.password,
         role: parsed.data.role,
       },
       headers: await headers(),
     })
-  } catch (err) {
+  } catch (err: any) {
+    if (err?.message?.includes('already exists') || err?.code === 11000) {
+      return { success: false, error: 'A user with this email address already exists.' }
+    }
     return { success: false, error: err instanceof Error ? err.message : 'Failed to create user' }
   }
 
@@ -65,6 +72,15 @@ export async function removeUser(userId: string): Promise<ActionResult> {
   const auth = await getAuth()
 
   try {
+    const usersList = await auth.api.listUsers({
+      query: { limit: 100 },
+      headers: await headers(),
+    })
+    const targetUser = usersList.users.find((u) => u.id === userId)
+    if (targetUser?.email?.toLowerCase() === 'harman.singh@movodream.com') {
+      return { success: false, error: 'This Super Admin account is protected and cannot be removed.' }
+    }
+
     await auth.api.removeUser({ body: { userId }, headers: await headers() })
   } catch (err) {
     return { success: false, error: err instanceof Error ? err.message : 'Failed to remove user' }

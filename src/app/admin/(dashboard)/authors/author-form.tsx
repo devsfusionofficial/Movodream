@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { useForm } from 'react-hook-form'
+import { useForm, type FieldErrors } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
 import { User, FileText, Camera, Globe, Sparkles, CheckCircle2, ArrowRight, Share2, Link2, Mail, Trash2 } from 'lucide-react'
@@ -54,18 +54,28 @@ export function AuthorForm({ authorId, defaultValues }: AuthorFormProps) {
   const initial = name ? name.trim().charAt(0).toUpperCase() : 'A'
 
   async function onSubmit(values: AuthorInput) {
-    const result = authorId ? await updateAuthor(authorId, values) : await createAuthor(values)
-    if (!result.success) {
-      toast.error(result.error)
-      return
+    try {
+      const cleanInput: AuthorInput = JSON.parse(JSON.stringify(values))
+      const result = authorId ? await updateAuthor(authorId, cleanInput) : await createAuthor(cleanInput)
+      if (!result.success) {
+        toast.error(result.error)
+        return
+      }
+      toast.success(authorId ? 'Author updated successfully' : 'Author created successfully')
+      router.push('/admin/authors')
+      router.refresh()
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to save author')
     }
-    toast.success(authorId ? 'Author updated' : 'Author created')
-    router.push('/admin/authors')
-    router.refresh()
+  }
+
+  function onInvalid(formErrors: FieldErrors<AuthorInput>) {
+    const firstError = Object.values(formErrors)[0]?.message
+    toast.error(firstError ? String(firstError) : 'Please fix the errors in the form before submitting.')
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} noValidate className="w-full pb-10">
+    <form onSubmit={handleSubmit(onSubmit, onInvalid)} noValidate className="w-full pb-10">
       <div className="grid items-start gap-6 lg:grid-cols-12">
         {/* Left Column: Form Sections */}
         <div className="space-y-6 lg:col-span-7">

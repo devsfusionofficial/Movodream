@@ -8,6 +8,9 @@ const categorySchema = new Schema(
   { timestamps: true }
 )
 
+categorySchema.index({ name: 1 })
+categorySchema.index({ createdAt: -1 })
+
 export type CategoryDoc = InferSchemaType<typeof categorySchema>
 
 export const Category = models.Category ?? model('Category', categorySchema)

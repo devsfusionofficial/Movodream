@@ -71,3 +71,16 @@ export async function getApplicationResumeUrl(id: string): Promise<{ url: string
   const url = await createDownloadUrl(application.resumeKey)
   return { url }
 }
+
+export async function deleteApplication(id: string): Promise<ActionResult> {
+  await requirePermission('applications', ['delete'])
+  await connectDB()
+  try {
+    await Application.findByIdAndDelete(id)
+  } catch (err) {
+    return { success: false, error: err instanceof Error ? err.message : 'Failed to delete application' }
+  }
+
+  revalidatePath('/admin/applications')
+  return { success: true }
+}

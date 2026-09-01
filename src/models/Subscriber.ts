@@ -13,6 +13,7 @@ const subscriberSchema = new Schema(
 // in-memory sort, which is slow and hard-fails past the 32MB sort limit
 // once the collection grows.
 subscriberSchema.index({ createdAt: -1 })
+subscriberSchema.index({ status: 1, createdAt: -1 })
 
 export type SubscriberDoc = InferSchemaType<typeof subscriberSchema>
 

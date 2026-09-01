@@ -21,4 +21,7 @@ const marketingCampaignSchema = new Schema(
   { timestamps: true }
 )
 
+marketingCampaignSchema.index({ createdAt: -1 })
+marketingCampaignSchema.index({ status: 1, createdAt: -1 })
+
 export const MarketingCampaign = models.MarketingCampaign ?? model('MarketingCampaign', marketingCampaignSchema)

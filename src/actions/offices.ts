@@ -5,6 +5,7 @@ import { requirePermission } from '@/lib/auth-guard'
 import { connectDB } from '@/lib/db'
 import { Office } from '@/models/Office'
 import { officeSchema, type OfficeInput } from '@/lib/validation/office'
+import { slugify } from '@/lib/utils'
 
 export type ActionResult = { success: true } | { success: false; error: string }
 
@@ -28,8 +29,8 @@ export async function getOffice(id: string) {
 
 function toOfficeDoc(input: OfficeInput) {
   return {
-    city: input.city,
-    slug: input.slug,
+    city: input.city.trim(),
+    slug: input.slug?.trim() ? slugify(input.slug) : slugify(input.city),
     address: input.address,
     gmbLink: input.gmbLink || undefined,
     status: input.status,
@@ -49,7 +50,10 @@ export async function createOffice(input: OfficeInput): Promise<ActionResult> {
   await connectDB()
   try {
     await Office.create(toOfficeDoc(parsed.data))
-  } catch (err) {
+  } catch (err: any) {
+    if (err?.code === 11000) {
+      return { success: false, error: 'An office with this city or slug already exists.' }
+    }
     return { success: false, error: err instanceof Error ? err.message : 'Failed to create office' }
   }
 
@@ -66,15 +70,19 @@ export async function updateOffice(id: string, input: OfficeInput): Promise<Acti
   }
 
   await connectDB()
+  const docData = toOfficeDoc(parsed.data)
   try {
-    await Office.findByIdAndUpdate(id, toOfficeDoc(parsed.data))
-  } catch (err) {
+    await Office.findByIdAndUpdate(id, docData)
+  } catch (err: any) {
+    if (err?.code === 11000) {
+      return { success: false, error: 'An office with this city or slug already exists.' }
+    }
     return { success: false, error: err instanceof Error ? err.message : 'Failed to update office' }
   }
 
   revalidatePath('/admin/offices')
   revalidatePath('/offices')
-  revalidatePath(`/offices/${parsed.data.slug}`)
+  revalidatePath(`/offices/${docData.slug}`)
   return { success: true }
 }
 

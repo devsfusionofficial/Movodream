@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
-import { useForm } from 'react-hook-form'
+import { useForm, type FieldErrors } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
 import { Trash2 } from 'lucide-react'
@@ -32,20 +32,30 @@ export function PartnerForm({ partnerId, defaultValues }: PartnerFormProps) {
   })
 
   async function onSubmit(values: PartnerInput) {
-    const result = partnerId ? await updatePartner(partnerId, values) : await createPartner(values)
-    if (!result.success) {
-      toast.error(result.error)
-      return
+    try {
+      const cleanInput: PartnerInput = JSON.parse(JSON.stringify(values))
+      const result = partnerId ? await updatePartner(partnerId, cleanInput) : await createPartner(cleanInput)
+      if (!result.success) {
+        toast.error(result.error)
+        return
+      }
+      toast.success(partnerId ? 'Partner updated successfully' : 'Partner created successfully')
+      router.push('/admin/partners')
+      router.refresh()
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to save partner')
     }
-    toast.success(partnerId ? 'Partner updated' : 'Partner created')
-    router.push('/admin/partners')
-    router.refresh()
+  }
+
+  function onInvalid(formErrors: FieldErrors<PartnerInput>) {
+    const firstError = Object.values(formErrors)[0]?.message
+    toast.error(firstError ? String(firstError) : 'Please fix the errors in the form before submitting.')
   }
 
   const logoUrl = watch('logoUrl')
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} noValidate className="w-full max-w-none">
+    <form onSubmit={handleSubmit(onSubmit, onInvalid)} noValidate className="w-full max-w-none">
       <FieldGroup>
         <Field>
           <FieldLabel htmlFor="name">Name</FieldLabel>

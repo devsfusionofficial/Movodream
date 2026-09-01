@@ -37,6 +37,8 @@ jobSchema.pre<JobDocument>('validate', function () {
 // in-memory sort, which is slow and hard-fails past the 32MB sort limit
 // once the collection grows.
 jobSchema.index({ createdAt: -1 })
+jobSchema.index({ status: 1, createdAt: -1 })
+jobSchema.index({ status: 1, department: 1, location: 1 })
 
 export type JobDoc = InferSchemaType<typeof jobSchema>
 

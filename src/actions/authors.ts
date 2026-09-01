@@ -48,7 +48,10 @@ export async function createAuthor(input: AuthorInput): Promise<ActionResult> {
   await connectDB()
   try {
     await Author.create(toAuthorDoc(parsed.data))
-  } catch (err) {
+  } catch (err: any) {
+    if (err?.code === 11000) {
+      return { success: false, error: 'An author with this name or email already exists.' }
+    }
     return { success: false, error: err instanceof Error ? err.message : 'Failed to create author' }
   }
 
@@ -65,7 +68,10 @@ export async function updateAuthor(id: string, input: AuthorInput): Promise<Acti
   await connectDB()
   try {
     await Author.findByIdAndUpdate(id, toAuthorDoc(parsed.data))
-  } catch (err) {
+  } catch (err: any) {
+    if (err?.code === 11000) {
+      return { success: false, error: 'An author with this name or email already exists.' }
+    }
     return { success: false, error: err instanceof Error ? err.message : 'Failed to update author' }
   }
 

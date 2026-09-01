@@ -14,6 +14,9 @@ const partnerSchema = new Schema(
   { timestamps: true }
 )
 
+partnerSchema.index({ order: 1, name: 1 })
+partnerSchema.index({ createdAt: -1 })
+
 export type PartnerDoc = InferSchemaType<typeof partnerSchema>
 
 export const Partner = models.Partner ?? model('Partner', partnerSchema)

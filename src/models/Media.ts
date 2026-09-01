@@ -13,6 +13,8 @@ const mediaSchema = new Schema(
   { timestamps: true }
 )
 
+mediaSchema.index({ createdAt: -1 })
+
 export type MediaDoc = InferSchemaType<typeof mediaSchema>
 
 export const Media = models.Media ?? model('Media', mediaSchema)

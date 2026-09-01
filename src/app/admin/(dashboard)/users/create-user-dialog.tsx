@@ -21,8 +21,15 @@ export function CreateUserDialog() {
     formState: { errors, isSubmitting },
   } = useForm<CreateUserInput>({
     resolver: zodResolver(createUserSchema),
-    defaultValues: { role: 'admin' },
+    defaultValues: { name: '', email: '', password: '', role: 'admin' },
   })
+
+  function handleOpenChange(nextOpen: boolean) {
+    setOpen(nextOpen)
+    if (nextOpen) {
+      reset({ name: '', email: '', password: '', role: 'admin' })
+    }
+  }
 
   async function onSubmit(values: CreateUserInput) {
     const result = await createUser(values)
@@ -31,34 +38,46 @@ export function CreateUserDialog() {
       return
     }
     toast.success('Admin user created')
-    reset()
+    reset({ name: '', email: '', password: '', role: 'admin' })
     setOpen(false)
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger render={<Button>New user</Button>} />
       <DialogContent className="w-full max-w-[calc(100vw-2rem)] sm:max-w-md max-h-[90vh] overflow-y-auto rounded-2xl border border-[#ebe6ee] bg-white p-5 sm:p-6 shadow-2xl min-w-0">
         <DialogHeader className="border-b border-[#f0edf1] pb-3 min-w-0">
           <DialogTitle className="text-lg font-bold text-[#21182a]">Create admin user</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit(onSubmit)} noValidate>
+        <form onSubmit={handleSubmit(onSubmit)} noValidate autoComplete="off">
           <FieldGroup>
             <Field>
               <FieldLabel htmlFor="name">Name</FieldLabel>
-              <Input id="name" placeholder="Full name" {...register('name')} />
+              <Input id="name" placeholder="Full name" autoComplete="off" {...register('name')} />
               <FieldError errors={[errors.name]} />
             </Field>
 
             <Field>
               <FieldLabel htmlFor="email">Email</FieldLabel>
-              <Input id="email" type="email" placeholder="admin@movodream.com" {...register('email')} />
+              <Input
+                id="email"
+                type="email"
+                placeholder="admin@movodream.com"
+                autoComplete="off"
+                {...register('email')}
+              />
               <FieldError errors={[errors.email]} />
             </Field>
 
             <Field>
               <FieldLabel htmlFor="password">Password</FieldLabel>
-              <Input id="password" type="password" placeholder="At least 8 characters" {...register('password')} />
+              <Input
+                id="password"
+                type="password"
+                placeholder="At least 8 characters"
+                autoComplete="new-password"
+                {...register('password')}
+              />
               <FieldError errors={[errors.password]} />
             </Field>
 

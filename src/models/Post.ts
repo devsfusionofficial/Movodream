@@ -28,6 +28,10 @@ const postSchema = new Schema(
 )
 
 postSchema.index({ status: 1, publishedAt: -1 })
+postSchema.index({ categories: 1, status: 1, publishedAt: -1 })
+postSchema.index({ tags: 1, status: 1, publishedAt: -1 })
+postSchema.index({ author: 1, status: 1, publishedAt: -1 })
+postSchema.index({ status: 1, createdAt: -1 })
 postSchema.index({ title: 'text', excerpt: 'text' })
 
 type PostDocument = HydratedDocument<InferSchemaType<typeof postSchema>>

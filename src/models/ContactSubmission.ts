@@ -15,6 +15,7 @@ const contactSubmissionSchema = new Schema(
 // in-memory sort, which is slow and hard-fails past the 32MB sort limit
 // once the collection grows.
 contactSubmissionSchema.index({ createdAt: -1 })
+contactSubmissionSchema.index({ emailSent: 1, createdAt: -1 })
 
 export type ContactSubmissionDoc = InferSchemaType<typeof contactSubmissionSchema>
 

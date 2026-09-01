@@ -17,6 +17,10 @@ const officeSchema = new Schema(
   { timestamps: true }
 )
 
+officeSchema.index({ order: 1, city: 1 })
+officeSchema.index({ status: 1, order: 1 })
+officeSchema.index({ createdAt: -1 })
+
 export type OfficeDoc = InferSchemaType<typeof officeSchema>
 
 export const Office = models.Office ?? model('Office', officeSchema)

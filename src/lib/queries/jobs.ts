@@ -34,6 +34,21 @@ export async function getPublishedJobs({ department, location }: { department?: 
   }
 }
 
+export type PublishedJobItem = {
+  _id: string
+  title: string
+  slug: string
+  department?: string
+  location?: string
+  employmentType?: string
+  experience?: string
+  qualification?: string
+  skills?: string[]
+  applicationDeadline?: string
+  status?: string
+  createdAt?: string
+}
+
 export async function getPublishedJobsPaginated({
   department,
   location,
@@ -59,15 +74,42 @@ export async function getPublishedJobsPaginated({
       query.location = { $regex: new RegExp(`^${escapeRegex(location.trim())}$`, 'i') }
     }
 
-    const [totalJobs, jobs] = await Promise.all([
-      Job.countDocuments(query),
-      Job.find(query).sort({ createdAt: -1 }).skip(skip).limit(safeLimit).lean(),
+    const [result] = await Job.aggregate([
+      { $match: query },
+      {
+        $facet: {
+          metadata: [{ $count: 'total' }],
+          jobs: [
+            { $sort: { createdAt: -1 } },
+            { $skip: skip },
+            { $limit: safeLimit },
+            {
+              $project: {
+                _id: 1,
+                title: 1,
+                slug: 1,
+                department: 1,
+                location: 1,
+                employmentType: 1,
+                experience: 1,
+                qualification: 1,
+                skills: 1,
+                applicationDeadline: 1,
+                status: 1,
+                createdAt: 1,
+              },
+            },
+          ],
+        },
+      },
     ])
 
+    const totalJobs = result?.metadata[0]?.total ?? 0
+    const jobs = result?.jobs ?? []
     const totalPages = Math.ceil(totalJobs / safeLimit)
 
     return {
-      jobs: serialize(jobs),
+      jobs: serialize(jobs) as unknown as PublishedJobItem[],
       totalJobs,
       page: safePage,
       totalPages: totalPages || 1,
@@ -76,7 +118,7 @@ export async function getPublishedJobsPaginated({
   } catch (error) {
     console.error('Failed to get published jobs paginated:', error)
     return {
-      jobs: [],
+      jobs: [] as PublishedJobItem[],
       totalJobs: 0,
       page: safePage,
       totalPages: 1,
@@ -88,13 +130,26 @@ export async function getPublishedJobsPaginated({
 async function fetchJobFilterOptions() {
   try {
     await connectDB()
-    const [departments, locations] = await Promise.all([
-      Job.distinct('department', { status: 'published' }),
-      Job.distinct('location', { status: 'published' }),
+    const [result] = await Job.aggregate([
+      { $match: { status: 'published' } },
+      {
+        $facet: {
+          departments: [
+            { $group: { _id: '$department' } },
+            { $match: { _id: { $nin: [null, ''] } } },
+            { $sort: { _id: 1 } },
+          ],
+          locations: [
+            { $group: { _id: '$location' } },
+            { $match: { _id: { $nin: [null, ''] } } },
+            { $sort: { _id: 1 } },
+          ],
+        },
+      },
     ])
     return {
-      departments: departments.filter(Boolean) as string[],
-      locations: locations.filter(Boolean) as string[],
+      departments: (result?.departments?.map((d: any) => d._id) ?? []) as string[],
+      locations: (result?.locations?.map((l: any) => l._id) ?? []) as string[],
     }
   } catch (error) {
     console.error('Failed to fetch job filter options:', error)

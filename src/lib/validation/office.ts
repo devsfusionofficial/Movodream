@@ -4,8 +4,9 @@ export const officeSchema = z.object({
   city: z.string().min(2, 'City is required'),
   slug: z
     .string()
-    .min(2, 'Slug is required')
-    .regex(/^[a-z0-9-]+$/, 'Lowercase letters, numbers, and hyphens only'),
+    .regex(/^[a-z0-9-]*$/, 'Lowercase letters, numbers, and hyphens only')
+    .optional()
+    .or(z.literal('')),
   address: z.string().optional(),
   gmbLink: z.string().url('Enter a valid URL').optional().or(z.literal('')),
   status: z.enum(['live', 'comingSoon']),

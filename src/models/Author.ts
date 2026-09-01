@@ -18,6 +18,10 @@ const authorSchema = new Schema(
   { timestamps: true }
 )
 
+authorSchema.index({ name: 1 })
+authorSchema.index({ email: 1 }, { sparse: true })
+authorSchema.index({ createdAt: -1 })
+
 export type AuthorDoc = InferSchemaType<typeof authorSchema>
 
 export const Author = models.Author ?? model('Author', authorSchema)
