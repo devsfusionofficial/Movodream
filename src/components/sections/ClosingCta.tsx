@@ -80,8 +80,7 @@ export function ClosingCta() {
           <div className="ready-subtext">
             <span className="ready-subtext-spark">✦</span>
             <span className="ready-subtext-brand">Movodream</span>
-            <span className="ready-subtext-divider">—</span>
-            <span className="ready-subtext-gradient">Travel Re-imagined</span>
+            <span className="ready-subtext-gradient">Travel Reimagined</span>
           </div>
         </div>
 

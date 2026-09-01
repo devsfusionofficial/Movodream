@@ -26,7 +26,7 @@ export function Footer() {
           <div className="footer-col">
             <p className="footer-col-title">Product</p>
             <Link href="/product#overview">Overview</Link>
-            <Link href="/product#features">Features</Link>
+            <Link href="/product">Product</Link>
             <Link href="/product#technology">Technology</Link>
           </div>
 

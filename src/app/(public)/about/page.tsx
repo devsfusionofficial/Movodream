@@ -11,16 +11,11 @@ import {
   VidhanaSoudha,
 } from '@/components/about/Monuments'
 import {
-  CompassIcon,
-  EyeIcon,
   GlobeIcon,
   HeartIcon,
-  LinkedInIcon,
   MapPinIcon,
-  NavigateIcon,
   ShieldIcon,
   SparkleIcon,
-  TargetIcon,
 } from '@/components/about/icons'
 import { LeadershipSection } from '@/components/about/LeadershipSection'
 
@@ -58,7 +53,7 @@ const FOUNDERS = [
   {
     name: 'Harpreet Singh',
     role: 'Founder, CEO',
-    image: '/assets/team/harpreet-singh.webp',
+    image: '/assets/team/harpreet.webp',
     linkedin: 'https://www.linkedin.com/in/harpreet-movodream',
   },
   {
@@ -178,33 +173,6 @@ export default async function AboutPage() {
             sizes="(max-width: 980px) 100vw, 46vw"
             priority
           />
-          <span className="about-chip about-chip--1">
-            <span className="about-chip-icon">
-              <CompassIcon />
-            </span>
-            <span className="about-chip-text">
-              <strong>AI Trip Planner</strong>
-              <span>Plans in seconds</span>
-            </span>
-          </span>
-          <span className="about-chip about-chip--2">
-            <span className="about-chip-icon">
-              <NavigateIcon />
-            </span>
-            <span className="about-chip-text">
-              <strong>Live Guidance</strong>
-              <span>During your trip</span>
-            </span>
-          </span>
-          <span className="about-chip about-chip--3">
-            <span className="about-chip-icon">
-              <MapPinIcon />
-            </span>
-            <span className="about-chip-text">
-              <strong>Local Intelligence</strong>
-              <span>From trusted experts</span>
-            </span>
-          </span>
         </div>
       </section>
 

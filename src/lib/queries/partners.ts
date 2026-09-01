@@ -8,9 +8,14 @@ function serialize<T>(doc: T): T {
 }
 
 async function fetchPartners() {
-  await connectDB()
-  const partners = await Partner.find().sort({ order: 1, name: 1 }).lean()
-  return serialize(partners)
+  try {
+    await connectDB()
+    const partners = await Partner.find().sort({ order: 1, name: 1 }).lean()
+    return serialize(partners)
+  } catch (error) {
+    console.error('Failed to fetch partners (fallback to empty list):', error)
+    return []
+  }
 }
 
 export const getPublicPartners = unstable_cache(

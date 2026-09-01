@@ -1435,11 +1435,13 @@
   align-items: center;
   gap: clamp(24px, 4.5vw, 80px);
   opacity: 0;
+  visibility: hidden;
   pointer-events: none;
 }
 .s4-slide.is-active,
 .s4-slide.slide1 {
   opacity: 1;
+  visibility: visible;
   pointer-events: auto;
 }
 .s4-slide .s4-left * {
@@ -2341,10 +2343,10 @@
 }
 .s3-heading {
   text-align: center;
-  padding: 0 4vw;
+  padding: 10px 4vw 0 !important;
   font-size: clamp(3rem, 6.2vw, 6.8rem);
   font-weight: 800;
-  line-height: 1.1;
+  line-height: 1.15;
   letter-spacing: -0.03em;
   white-space: nowrap;
   margin: 0 auto 0px !important;
@@ -2467,7 +2469,7 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  margin-top: -95px !important;
+  margin-top: -65px !important;
   padding: 0px 0 28px !important;
   margin-bottom: 24px !important;
   mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
@@ -2552,14 +2554,14 @@
 
 @media (max-width: 768px) {
   .section-3 {
-    padding: 24px 0 12px !important;
+    padding: 12px 0 12px !important;
   }
   .s3-heading {
-    font-size: clamp(2.1rem, 8.2vw, 3.3rem) !important;
+    font-size: clamp(2rem, 8vw, 3.2rem) !important;
     white-space: normal !important;
     text-align: center !important;
-    padding: 0 5% !important;
-    margin: 0 auto 12px auto !important;
+    padding: 4px 5% 0 !important;
+    margin: 0 auto 8px auto !important;
     width: 100% !important;
     max-width: 100% !important;
     box-sizing: border-box !important;
@@ -2662,7 +2664,7 @@
   }
   .s3-ticker-section {
     padding: 8px 0 20px !important;
-    margin-top: 0px !important;
+    margin-top: 6px !important;
     margin-bottom: 16px !important;
     gap: 8px;
     mask-image: none !important;
@@ -2706,9 +2708,9 @@
 
 @media (max-width: 480px) {
   .s3-heading {
-    font-size: clamp(2rem, 8.5vw, 3rem) !important;
-    padding: 0 4% !important;
-    margin-bottom: 12px !important;
+    font-size: clamp(1.9rem, 8vw, 2.8rem) !important;
+    padding: 3px 4% 0 !important;
+    margin-bottom: 8px !important;
   }
   .s3-left {
     min-height: 200px !important;
@@ -2731,9 +2733,9 @@
 
 @media (max-width: 360px) {
   .s3-heading {
-    font-size: clamp(1.8rem, 8vw, 2.4rem) !important;
-    padding: 0 8px !important;
-    margin-bottom: 10px !important;
+    font-size: clamp(1.7rem, 7.5vw, 2.2rem) !important;
+    padding: 2px 6px 0 !important;
+    margin-bottom: 6px !important;
   }
   .s3-left {
     min-height: 190px !important;
@@ -3515,7 +3517,7 @@
 }
 
 .stepper-dot.active .stepper-num {
-  color: #ff7294;
+  color: #d71789;
   font-size: 11px;
   font-weight: 800;
 }
@@ -3524,7 +3526,7 @@
   width: 22px;
   background: linear-gradient(
     to right,
-    #ff7294 var(--timer-pct, 0%),
+    #d71789 var(--timer-pct, 0%),
     rgba(255, 255, 255, 0.25) var(--timer-pct, 0%)
   );
 }
@@ -3569,7 +3571,7 @@
   display: inline-flex;
   flex-direction: column;
   align-items: flex-start;
-  color: #ff7294;
+  color: #d71789;
   font-size: 13px;
   font-weight: 800;
   letter-spacing: 2px;
@@ -5357,9 +5359,9 @@ a.office-card:hover {
 .product-step {
   position: relative;
   display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 12px;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 12px;
   border-radius: 12px;
   background: #ffffff;
   border: 1px solid rgba(90, 45, 215, 0.06);
@@ -5373,7 +5375,8 @@ a.office-card:hover {
 .product-step.has-connector::after {
   content: '';
   position: absolute;
-  top: 22px;
+  top: 50%;
+  transform: translateY(-50%);
   right: -12px;
   width: 8px;
   border-top: 2px dotted #e0a9ee;
@@ -5381,8 +5384,8 @@ a.office-card:hover {
 }
 .product-step-icon {
   flex-shrink: 0;
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -5392,17 +5395,31 @@ a.office-card:hover {
   background: linear-gradient(135deg, #f1e7fd 0%, #fdeafd 100%);
   box-shadow: 0 3px 8px rgba(90, 45, 215, 0.08);
 }
+.product-step-content {
+  flex: 1;
+  min-width: 0;
+}
 .product-step-num {
-  display: block;
-  font-size: 0.78rem;
+  display: inline;
+  font-size: 0.84rem;
   font-weight: 800;
   color: var(--pp-pink);
+  margin-right: 0;
+}
+.product-step-dash {
+  display: inline;
+  color: var(--pp-pink);
+  margin: 0 4px;
+  font-weight: 700;
 }
 .product-step h3 {
-  margin: 2px 0 3px;
+  margin: 0 0 4px;
   font-size: 0.88rem;
   font-weight: 800;
   color: var(--pp-navy);
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
 }
 .product-step p {
   margin: 0;
@@ -7127,14 +7144,14 @@ a.partner-card:hover {
 }
 @media (max-width: 768px) {
   .section-3 {
-    padding: 70px 0 28px !important;
+    padding: 12px 0 24px !important;
   }
   .s3-heading {
-    font-size: clamp(2.1rem, 8.5vw, 3.4rem) !important;
+    font-size: clamp(2rem, 8vw, 3.2rem) !important;
     white-space: normal !important;
     text-align: center !important;
-    padding: 0 4% !important;
-    margin: 0 auto 10px auto !important;
+    padding: 4px 4% 0 !important;
+    margin: 0 auto 8px auto !important;
     width: 100% !important;
     max-width: 100% !important;
     box-sizing: border-box !important;

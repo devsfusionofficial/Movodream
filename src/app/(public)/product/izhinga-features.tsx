@@ -7,8 +7,8 @@ const FEATURES = [
     benefits: [
       {
         icon: 'fa-brain',
-        title: 'Behavioral Learning',
-        text: 'Learns your unique travel pace, preferences, and interests automatically.',
+        title: 'Behavioural Learning',
+        text: 'Learns your unique preferences, persona and interests.',
       },
       {
         icon: 'fa-wand-magic-sparkles',
@@ -16,9 +16,9 @@ const FEATURES = [
         text: 'Instantly adjusts itineraries when plans, weather, or transit change.',
       },
       {
-        icon: 'fa-compass-drafting',
-        title: 'Zero Manual Planning',
-        text: 'Tailored recommendations delivered on the fly without guesswork.',
+        icon: 'fa-chart-pie',
+        title: 'Personalized AI Scoring',
+        text: 'Every choice is scored against your unique travel preferences.',
       },
     ],
     videoSrc: '/assets/product/v2.mp4',
@@ -40,8 +40,8 @@ const FEATURES = [
     benefits: [
       {
         icon: 'fa-location-arrow',
-        title: 'Dynamic Live Navigation',
-        text: 'Live route optimization, delays, and neighborhood transit alerts.',
+        title: 'Context-Aware Guidance',
+        text: 'Understands where you are, what you’re doing, and what you need next to suggest relevant actions in the moment.',
       },
       {
         icon: 'fa-shield-halved',
@@ -49,9 +49,9 @@ const FEATURES = [
         text: 'Proactive local safety tips and 24/7 assistance on the go.',
       },
       {
-        icon: 'fa-language',
-        title: 'Live Context & Translation',
-        text: 'Instant multi-language voice guides and cultural etiquette tips.',
+        icon: 'fa-route',
+        title: 'Dynamic Journey Adaptation',
+        text: 'Continuously adjusts your journey as plans change - delays, closures, missed plans, unexpected discoveries, or changing preferences.',
       },
     ],
     videoSrc: '/assets/product/v1.mp4',
@@ -80,7 +80,7 @@ const FEATURES = [
       {
         icon: 'fa-ticket',
         title: 'Multi-Modal Unified Booking',
-        text: 'Flights, stays, trains, and cabs booked together without tab switching.',
+        text: 'Flights, stays, trains, and cabs booked together without tab switching in just one click.',
       },
       {
         icon: 'fa-arrows-rotate',
@@ -105,18 +105,18 @@ const FEATURES = [
     benefits: [
       {
         icon: 'fa-user-check',
-        title: 'Verified Resident Guides',
-        text: 'Connect with authentic local insiders for verified recommendations.',
+        title: 'Human-Verified Recommendations',
+        text: 'Local insights curated and validated by people who know the destination, not just algorithms.',
       },
       {
-        icon: 'fa-utensils',
-        title: 'Hidden Culinary Gems',
-        text: 'Explore authentic street food and secret dining spots beloved by locals.',
+        icon: 'fa-gem',
+        title: 'Hidden Gems & Local Secrets',
+        text: 'Go beyond tourist hotspots with authentic places, experiences, and recommendations worth discovering.',
       },
       {
-        icon: 'fa-map-pin',
-        title: 'Curated Hidden Spots',
-        text: 'Access off-the-beaten-path locations away from tourist crowds.',
+        icon: 'fa-award',
+        title: 'Trust-Based Scoring',
+        text: 'Recommendations are evaluated for relevance, quality, authenticity, and traveler fit, so you know what’s genuinely worth your time.',
       },
     ],
     videoSrc: '/assets/product/v6.mp4',
@@ -173,18 +173,18 @@ const FEATURES = [
     benefits: [
       {
         icon: 'fa-book-bookmark',
-        title: 'Automated AI Journal',
-        text: 'Smart organization of your photos, routes, and daily milestones.',
+        title: 'Story-Driven Memories',
+        text: 'Transforms photos, videos, places, and experiences into cohesive travel stories.',
       },
       {
-        icon: 'fa-timeline',
-        title: 'Interactive Travel Timeline',
-        text: 'Relive every step of your trip on a visual, interactive timeline.',
+        icon: 'fa-clapperboard',
+        title: 'Cinematic Storytelling',
+        text: 'Turns your journey into beautifully edited reels and stories, bringing the experience to life beyond individual photos and videos.',
       },
       {
         icon: 'fa-share-nodes',
-        title: 'Shared Living Albums',
-        text: 'Easily collaborate with friends and family on shared trip stories.',
+        title: 'Instantly Shareable',
+        text: 'Ready-to-share travel memories optimized for social media and digital platforms.',
       },
     ],
     videoSrc: '/assets/product/v5.mp4',

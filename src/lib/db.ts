@@ -24,16 +24,26 @@ export async function connectDB() {
     if (!DATABASE_URI) {
       throw new Error('Missing DATABASE_URI environment variable')
     }
-    cache.promise = mongoose.connect(DATABASE_URI, {
-      bufferCommands: false,
-      maxPoolSize: 10,
-      minPoolSize: 2,
-      serverSelectionTimeoutMS: 5000,
-      socketTimeoutMS: 45000,
-    })
+    cache.promise = mongoose
+      .connect(DATABASE_URI, {
+        bufferCommands: false,
+        maxPoolSize: 10,
+        minPoolSize: 2,
+        serverSelectionTimeoutMS: 5000,
+        socketTimeoutMS: 45000,
+      })
+      .catch((err) => {
+        cache.promise = null
+        throw err
+      })
   }
 
-  cache.conn = await cache.promise
+  try {
+    cache.conn = await cache.promise
+  } catch (err) {
+    cache.promise = null
+    throw err
+  }
   return cache.conn
 }
 

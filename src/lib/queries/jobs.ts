@@ -16,17 +16,22 @@ function escapeRegex(text: string) {
 }
 
 export async function getPublishedJobs({ department, location }: { department?: string; location?: string } = {}) {
-  await connectDB()
-  const query: Record<string, unknown> = { status: 'published' }
-  if (department && department.trim()) {
-    query.department = { $regex: new RegExp(`^${escapeRegex(department.trim())}$`, 'i') }
-  }
-  if (location && location.trim()) {
-    query.location = { $regex: new RegExp(`^${escapeRegex(location.trim())}$`, 'i') }
-  }
+  try {
+    await connectDB()
+    const query: Record<string, unknown> = { status: 'published' }
+    if (department && department.trim()) {
+      query.department = { $regex: new RegExp(`^${escapeRegex(department.trim())}$`, 'i') }
+    }
+    if (location && location.trim()) {
+      query.location = { $regex: new RegExp(`^${escapeRegex(location.trim())}$`, 'i') }
+    }
 
-  const jobs = await Job.find(query).sort({ createdAt: -1 }).lean()
-  return serialize(jobs)
+    const jobs = await Job.find(query).sort({ createdAt: -1 }).lean()
+    return serialize(jobs)
+  } catch (error) {
+    console.error('Failed to get published jobs:', error)
+    return []
+  }
 }
 
 export async function getPublishedJobsPaginated({
@@ -40,44 +45,63 @@ export async function getPublishedJobsPaginated({
   page?: number
   limit?: number
 } = {}) {
-  await connectDB()
-  const query: Record<string, unknown> = { status: 'published' }
-  if (department && department.trim()) {
-    query.department = { $regex: new RegExp(`^${escapeRegex(department.trim())}$`, 'i') }
-  }
-  if (location && location.trim()) {
-    query.location = { $regex: new RegExp(`^${escapeRegex(location.trim())}$`, 'i') }
-  }
-
   const safePage = Math.max(1, page)
   const safeLimit = Math.max(1, limit)
   const skip = (safePage - 1) * safeLimit
 
-  const [totalJobs, jobs] = await Promise.all([
-    Job.countDocuments(query),
-    Job.find(query).sort({ createdAt: -1 }).skip(skip).limit(safeLimit).lean(),
-  ])
+  try {
+    await connectDB()
+    const query: Record<string, unknown> = { status: 'published' }
+    if (department && department.trim()) {
+      query.department = { $regex: new RegExp(`^${escapeRegex(department.trim())}$`, 'i') }
+    }
+    if (location && location.trim()) {
+      query.location = { $regex: new RegExp(`^${escapeRegex(location.trim())}$`, 'i') }
+    }
 
-  const totalPages = Math.ceil(totalJobs / safeLimit)
+    const [totalJobs, jobs] = await Promise.all([
+      Job.countDocuments(query),
+      Job.find(query).sort({ createdAt: -1 }).skip(skip).limit(safeLimit).lean(),
+    ])
 
-  return {
-    jobs: serialize(jobs),
-    totalJobs,
-    page: safePage,
-    totalPages: totalPages || 1,
-    limit: safeLimit,
+    const totalPages = Math.ceil(totalJobs / safeLimit)
+
+    return {
+      jobs: serialize(jobs),
+      totalJobs,
+      page: safePage,
+      totalPages: totalPages || 1,
+      limit: safeLimit,
+    }
+  } catch (error) {
+    console.error('Failed to get published jobs paginated:', error)
+    return {
+      jobs: [],
+      totalJobs: 0,
+      page: safePage,
+      totalPages: 1,
+      limit: safeLimit,
+    }
   }
 }
 
 async function fetchJobFilterOptions() {
-  await connectDB()
-  const [departments, locations] = await Promise.all([
-    Job.distinct('department', { status: 'published' }),
-    Job.distinct('location', { status: 'published' }),
-  ])
-  return {
-    departments: departments.filter(Boolean) as string[],
-    locations: locations.filter(Boolean) as string[],
+  try {
+    await connectDB()
+    const [departments, locations] = await Promise.all([
+      Job.distinct('department', { status: 'published' }),
+      Job.distinct('location', { status: 'published' }),
+    ])
+    return {
+      departments: departments.filter(Boolean) as string[],
+      locations: locations.filter(Boolean) as string[],
+    }
+  } catch (error) {
+    console.error('Failed to fetch job filter options:', error)
+    return {
+      departments: [],
+      locations: [],
+    }
   }
 }
 
@@ -88,14 +112,19 @@ export const getJobFilterOptions = unstable_cache(
 )
 
 export async function getJobBySlug(slug: string) {
-  await connectDB()
   if (!slug) return null
-  const decoded = decodeURIComponent(slug).trim()
-  const job = await Job.findOne({
-    $or: [
-      { slug: decoded },
-      { slug: { $regex: new RegExp(`^${escapeRegex(decoded)}$`, 'i') } },
-    ],
-  }).lean()
-  return job ? serialize(job) : null
+  try {
+    await connectDB()
+    const decoded = decodeURIComponent(slug).trim()
+    const job = await Job.findOne({
+      $or: [
+        { slug: decoded },
+        { slug: { $regex: new RegExp(`^${escapeRegex(decoded)}$`, 'i') } },
+      ],
+    }).lean()
+    return job ? serialize(job) : null
+  } catch (error) {
+    console.error(`Failed to get job by slug ${slug}:`, error)
+    return null
+  }
 }

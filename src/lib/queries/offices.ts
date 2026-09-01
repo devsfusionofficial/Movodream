@@ -13,9 +13,14 @@ function serialize<T>(doc: T): T {
 }
 
 async function fetchPublicOffices() {
-  await connectDB()
-  const offices = await Office.find().sort({ order: 1, city: 1 }).lean()
-  return serialize(offices)
+  try {
+    await connectDB()
+    const offices = await Office.find().sort({ order: 1, city: 1 }).lean()
+    return serialize(offices)
+  } catch (error) {
+    console.error('Failed to fetch public offices:', error)
+    return []
+  }
 }
 
 export const getPublicOffices = unstable_cache(
@@ -25,9 +30,14 @@ export const getPublicOffices = unstable_cache(
 )
 
 async function fetchPublicOfficeBySlug(slug: string) {
-  await connectDB()
-  const office = await Office.findOne({ slug }).lean()
-  return office ? serialize(office) : null
+  try {
+    await connectDB()
+    const office = await Office.findOne({ slug }).lean()
+    return office ? serialize(office) : null
+  } catch (error) {
+    console.error(`Failed to fetch office by slug ${slug}:`, error)
+    return null
+  }
 }
 
 export function getPublicOfficeBySlug(slug: string) {

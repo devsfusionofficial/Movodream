@@ -33,10 +33,30 @@ export const metadata: Metadata = {
 }
 
 const STEPS = [
-  { num: '01', icon: 'fa-user', title: 'Understand You', desc: 'Analyses your preferences, behavior & travel history' },
-  { num: '02', icon: 'fa-brain', title: 'Learn & Predict', desc: 'Our AI learns and predicts what you need next' },
-  { num: '03', icon: 'fa-clipboard-list', title: 'Plan in Real Time', desc: 'Creates the best plan with real-time updates' },
-  { num: '04', icon: 'fa-compass', title: 'Guide & Adapt', desc: 'Adapts to changes and guides you at every step' },
+  {
+    num: '01',
+    icon: 'fa-user',
+    title: 'Understand You',
+    desc: 'Learns your preferences, interests, travel style, and journey context.',
+  },
+  {
+    num: '02',
+    icon: 'fa-brain',
+    title: 'Learn & Anticipate',
+    desc: 'Learns from your preferences and journey over time, becoming more intuitive and relevant with every experience.',
+  },
+  {
+    num: '03',
+    icon: 'fa-lightbulb',
+    title: 'Aware & Intelligent',
+    desc: 'Brings destination intelligence, experiences, timing, and real-time context together.',
+  },
+  {
+    num: '04',
+    icon: 'fa-compass',
+    title: 'Guide & Adapt',
+    desc: 'Keeps up with your journey in real time, adapting recommendations and guidance as things change.',
+  },
 ]
 
 const ECOSYSTEM_LEFT = [
@@ -61,13 +81,13 @@ const TRUST = [
 // here as a compact tile grid rather than dropped.
 const TECHNOLOGIES = [
   'AI Travel Operating System',
-  'AI Itinerary Engine',
-  'Intelligent Recommendation System',
-  'Live Travel Mode',
-  'Local Guru',
-  'Memory Curation',
-  'Integrated Booking Engine',
-  'AI-powered Personalization',
+  'AI Itinerary Intelligence',
+  'Intelligent Recommendations',
+  'Live Travel Intelligence',
+  'Local Intelligence',
+  'AI Memory Curation',
+  'Integrated Travel Commerce',
+  'AI-Powered Personalization',
 ]
 
 // Verbatim from the client's content doc ("The Future of Travel").
@@ -93,8 +113,9 @@ export default async function ProductPage() {
             The Future of Travel is <span className="product-accent">Intelligent</span>
           </h1>
           <p className="product-hero-lead">
-            iZhinga AI understands you, adapts in real time, and curates every detail of your journey so you can focus
-            on what matters — the experience.
+            iZhinga is an intelligent travel companion built to transform the way you experience a journey — from
+            discovering the right places to exploring with AI-powered guidance, trusted local insights, seamless
+            bookings, and memories worth keeping.
           </p>
           <ProductHeroCta />
 
@@ -132,9 +153,12 @@ export default async function ProductPage() {
               <span className="product-step-icon">
                 <i className={`fa-solid ${step.icon}`} />
               </span>
-              <div>
-                <span className="product-step-num">{step.num}</span>
-                <h3>{step.title}</h3>
+              <div className="product-step-content">
+                <h3>
+                  <span className="product-step-num">{step.num}</span>
+                  <span className="product-step-dash">-</span>
+                  <span className="product-step-title">{step.title}</span>
+                </h3>
                 <p>{step.desc}</p>
               </div>
             </div>

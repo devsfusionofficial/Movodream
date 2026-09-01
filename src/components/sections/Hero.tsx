@@ -115,7 +115,7 @@ export function Hero() {
         </h1>
         <div className="desc">
           <p>
-            We are an AI-first technology company, building the foundational intelligence for next-generation
+            We are an AI-first global technology company, building the foundational intelligence for next-generation
             journeys. Our platform unify fragmented data streams into seamless, context-aware travel experiences.
           </p>
           <p style={{ paddingTop: 6, paddingBottom: 6 }}>

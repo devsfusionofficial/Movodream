@@ -24,14 +24,19 @@ const PUBLISHED = {
 }
 
 async function fetchFeaturedPosts(limit = 3) {
-  await connectDB()
-  const posts = await Post.find(PUBLISHED)
-    .sort({ publishedAt: -1 })
-    .limit(limit)
-    .populate('author', 'name avatar')
-    .populate('categories', 'name slug')
-    .lean()
-  return serialize(posts)
+  try {
+    await connectDB()
+    const posts = await Post.find(PUBLISHED)
+      .sort({ publishedAt: -1 })
+      .limit(limit)
+      .populate('author', 'name avatar')
+      .populate('categories', 'name slug')
+      .lean()
+    return serialize(posts)
+  } catch (error) {
+    console.error('Failed to fetch featured posts:', error)
+    return []
+  }
 }
 
 export const getFeaturedPosts = unstable_cache(
@@ -41,15 +46,20 @@ export const getFeaturedPosts = unstable_cache(
 )
 
 async function fetchLatestPosts(skip = 0, limit = 9) {
-  await connectDB()
-  const posts = await Post.find(PUBLISHED)
-    .sort({ publishedAt: -1 })
-    .skip(skip)
-    .limit(limit)
-    .populate('author', 'name avatar')
-    .populate('categories', 'name slug')
-    .lean()
-  return serialize(posts)
+  try {
+    await connectDB()
+    const posts = await Post.find(PUBLISHED)
+      .sort({ publishedAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .populate('author', 'name avatar')
+      .populate('categories', 'name slug')
+      .lean()
+    return serialize(posts)
+  } catch (error) {
+    console.error('Failed to fetch latest posts:', error)
+    return []
+  }
 }
 
 export function getLatestPosts({ skip = 0, limit = 9 }: { skip?: number; limit?: number } = {}) {
@@ -61,8 +71,13 @@ export function getLatestPosts({ skip = 0, limit = 9 }: { skip?: number; limit?:
 }
 
 async function fetchPublishedPostsCount() {
-  await connectDB()
-  return await Post.countDocuments(PUBLISHED)
+  try {
+    await connectDB()
+    return await Post.countDocuments(PUBLISHED)
+  } catch (error) {
+    console.error('Failed to fetch published posts count:', error)
+    return 0
+  }
 }
 
 export const getPublishedPostsCount = unstable_cache(
@@ -72,17 +87,22 @@ export const getPublishedPostsCount = unstable_cache(
 )
 
 async function fetchPostsByCategorySlug(categorySlug: string) {
-  await connectDB()
-  const category = await Category.findOne({ slug: categorySlug }).lean()
-  if (!category) return { category: null, posts: [] }
+  try {
+    await connectDB()
+    const category = await Category.findOne({ slug: categorySlug }).lean()
+    if (!category) return { category: null, posts: [] }
 
-  const posts = await Post.find({ ...PUBLISHED, categories: category._id })
-    .sort({ publishedAt: -1 })
-    .populate('author', 'name avatar')
-    .populate('categories', 'name slug')
-    .lean()
+    const posts = await Post.find({ ...PUBLISHED, categories: category._id })
+      .sort({ publishedAt: -1 })
+      .populate('author', 'name avatar')
+      .populate('categories', 'name slug')
+      .lean()
 
-  return { category: serialize(category), posts: serialize(posts) }
+    return { category: serialize(category), posts: serialize(posts) }
+  } catch (error) {
+    console.error(`Failed to fetch posts by category ${categorySlug}:`, error)
+    return { category: null, posts: [] }
+  }
 }
 
 export function getPostsByCategorySlug(categorySlug: string) {
@@ -95,22 +115,32 @@ export function getPostsByCategorySlug(categorySlug: string) {
 
 export async function searchPosts(query: string) {
   if (!query.trim()) return []
-  await connectDB()
-  const posts = await Post.find({ ...PUBLISHED, $text: { $search: query } })
-    .populate('author', 'name avatar')
-    .populate('categories', 'name slug')
-    .lean()
-  return serialize(posts)
+  try {
+    await connectDB()
+    const posts = await Post.find({ ...PUBLISHED, $text: { $search: query } })
+      .populate('author', 'name avatar')
+      .populate('categories', 'name slug')
+      .lean()
+    return serialize(posts)
+  } catch (error) {
+    console.error('Failed to search posts:', error)
+    return []
+  }
 }
 
 async function fetchPostBySlug(slug: string) {
-  await connectDB()
-  const post = await Post.findOne({ slug, ...PUBLISHED })
-    .populate('author', 'name bio avatar socialLinks')
-    .populate('categories', 'name slug')
-    .populate('tags', 'name slug')
-    .lean()
-  return post ? serialize(post) : null
+  try {
+    await connectDB()
+    const post = await Post.findOne({ slug, ...PUBLISHED })
+      .populate('author', 'name bio avatar socialLinks')
+      .populate('categories', 'name slug')
+      .populate('tags', 'name slug')
+      .lean()
+    return post ? serialize(post) : null
+  } catch (error) {
+    console.error(`Failed to fetch post by slug ${slug}:`, error)
+    return null
+  }
 }
 
 export function getPostBySlug(slug: string) {
@@ -122,19 +152,23 @@ export function getPostBySlug(slug: string) {
 }
 
 async function fetchRelatedPosts(postId: string, categoryIds: string[], limit = 3) {
-  await connectDB()
   if (categoryIds.length === 0) return []
-
-  const posts = await Post.find({
-    ...PUBLISHED,
-    _id: { $ne: postId },
-    categories: { $in: categoryIds },
-  })
-    .sort({ publishedAt: -1 })
-    .limit(limit)
-    .populate('categories', 'name slug')
-    .lean()
-  return serialize(posts)
+  try {
+    await connectDB()
+    const posts = await Post.find({
+      ...PUBLISHED,
+      _id: { $ne: postId },
+      categories: { $in: categoryIds },
+    })
+      .sort({ publishedAt: -1 })
+      .limit(limit)
+      .populate('categories', 'name slug')
+      .lean()
+    return serialize(posts)
+  } catch (error) {
+    console.error('Failed to fetch related posts:', error)
+    return []
+  }
 }
 
 export function getRelatedPosts(post: { _id: string; categories: { _id: string }[] }, limit = 3) {
@@ -147,9 +181,14 @@ export function getRelatedPosts(post: { _id: string; categories: { _id: string }
 }
 
 async function fetchAllCategories() {
-  await connectDB()
-  const categories = await Category.find().sort({ name: 1 }).lean()
-  return serialize(categories)
+  try {
+    await connectDB()
+    const categories = await Category.find().sort({ name: 1 }).lean()
+    return serialize(categories)
+  } catch (error) {
+    console.error('Failed to fetch all categories:', error)
+    return []
+  }
 }
 
 export const getAllCategories = unstable_cache(
@@ -159,17 +198,22 @@ export const getAllCategories = unstable_cache(
 )
 
 async function fetchCategoriesWithCounts() {
-  await connectDB()
-  const categories = await Category.find().lean()
-  const counts = await Promise.all(
-    categories.map((cat) => Post.countDocuments({ ...PUBLISHED, categories: cat._id }))
-  )
-  const list = categories.map((cat, i) => ({
-    ...cat,
-    count: counts[i],
-  }))
-  list.sort((a, b) => b.count - a.count || a.name.localeCompare(b.name))
-  return serialize(list)
+  try {
+    await connectDB()
+    const categories = await Category.find().lean()
+    const counts = await Promise.all(
+      categories.map((cat) => Post.countDocuments({ ...PUBLISHED, categories: cat._id }).catch(() => 0))
+    )
+    const list = categories.map((cat, i) => ({
+      ...cat,
+      count: counts[i],
+    }))
+    list.sort((a, b) => b.count - a.count || a.name.localeCompare(b.name))
+    return serialize(list)
+  } catch (error) {
+    console.error('Failed to fetch categories with counts:', error)
+    return []
+  }
 }
 
 export const getCategoriesWithCounts = unstable_cache(

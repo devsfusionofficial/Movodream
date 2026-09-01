@@ -86,29 +86,57 @@ export function PlatformSlides() {
 
       function showSlide(targetIdx: number) {
         if (targetIdx === activeIndex) return
+        const prevIdx = activeIndex
         activeIndex = targetIdx
 
         s4Slides.forEach((slide, idx) => {
+          gsap.killTweensOf(slide)
+
           if (idx === targetIdx) {
             slide.classList.add('is-active')
-            gsap.killTweensOf(slide)
-            gsap.fromTo(
-              slide,
-              { opacity: 0, y: 15, pointerEvents: 'none' },
-              { opacity: 1, y: 0, pointerEvents: 'auto', duration: 0.35, ease: 'power2.out' }
-            )
+            slide.style.visibility = 'visible'
+            slide.style.pointerEvents = 'auto'
+
+            if (prevIdx === -1) {
+              gsap.set(slide, { opacity: 1, y: 0 })
+            } else {
+              const movingDown = targetIdx > prevIdx
+              gsap.fromTo(
+                slide,
+                { opacity: 0, y: movingDown ? 28 : -28 },
+                { opacity: 1, y: 0, duration: 0.45, ease: 'power2.out' }
+              )
+            }
+          } else if (idx === prevIdx && prevIdx !== -1) {
+            slide.classList.remove('is-active')
+            slide.style.pointerEvents = 'none'
+            const movingDown = targetIdx > prevIdx
+
+            gsap.to(slide, {
+              opacity: 0,
+              y: movingDown ? -24 : 24,
+              duration: 0.32,
+              ease: 'power2.in',
+              onComplete: () => {
+                if (idx !== activeIndex) {
+                  slide.style.visibility = 'hidden'
+                  gsap.set(slide, { y: 0, opacity: 0 })
+                }
+              },
+            })
           } else {
             slide.classList.remove('is-active')
-            gsap.killTweensOf(slide)
-            gsap.set(slide, { opacity: 0, pointerEvents: 'none', y: 0 })
+            slide.style.visibility = 'hidden'
+            slide.style.pointerEvents = 'none'
+            gsap.set(slide, { opacity: 0, y: 0 })
           }
         })
       }
 
       showSlide(0)
 
-      const sectionEl = document.querySelector<HTMLElement>('.section-4')
-      const wrapperEl = document.querySelector<HTMLElement>('.s4-slides-wrapper')
+      const sectionEl = document.querySelector<HTMLElement>(`.section-4`)
+      const wrapperEl = document.querySelector<HTMLElement>(`.s4-slides-wrapper`)
 
       function applySectionHeight() {
         if (!sectionEl || !wrapperEl) return
@@ -137,7 +165,7 @@ export function PlatformSlides() {
       const pinST = ScrollTrigger.create({
         trigger: '.section-4',
         start: 'top top',
-        end: '+=140%',
+        end: '+=160%',
         pin: true,
         pinSpacing: true,
         anticipatePin: 1,
@@ -148,11 +176,11 @@ export function PlatformSlides() {
 
           let targetIdx = activeIndex
           if (dir >= 0) {
-            if (activeIndex === 0 && p > 0.22) targetIdx = 1
-            else if (activeIndex === 1 && p > 0.58) targetIdx = 2
+            if (activeIndex === 0 && p > 0.25) targetIdx = 1
+            else if (activeIndex === 1 && p > 0.60) targetIdx = 2
           } else {
-            if (activeIndex === 2 && p < 0.72) targetIdx = 1
-            else if (activeIndex === 1 && p < 0.38) targetIdx = 0
+            if (activeIndex === 2 && p < 0.68) targetIdx = 1
+            else if (activeIndex === 1 && p < 0.32) targetIdx = 0
           }
 
           if (targetIdx !== activeIndex) {
@@ -163,8 +191,8 @@ export function PlatformSlides() {
           applySectionHeight()
           const p = self.progress
           let targetIdx = 0
-          if (p > 0.58) targetIdx = 2
-          else if (p > 0.22) targetIdx = 1
+          if (p > 0.60) targetIdx = 2
+          else if (p > 0.25) targetIdx = 1
           showSlide(targetIdx)
         },
         invalidateOnRefresh: true,
@@ -172,8 +200,8 @@ export function PlatformSlides() {
 
       // Immediately sync slide on mount/desktop switch based on current scroll
       const initP = pinST.progress
-      if (initP > 0.58) showSlide(2)
-      else if (initP > 0.22) showSlide(1)
+      if (initP > 0.60) showSlide(2)
+      else if (initP > 0.25) showSlide(1)
       else showSlide(0)
 
       return () => {
@@ -189,8 +217,21 @@ export function PlatformSlides() {
     mm.add('(max-width: 768px)', () => {
       s4Slides.forEach((slide) => {
         slide.classList.add('is-active')
+        slide.style.zIndex = ''
+        slide.style.visibility = ''
         gsap.killTweensOf(slide)
-        gsap.set(slide, { opacity: 1, pointerEvents: 'auto', y: 0, clearProps: 'transform' })
+        gsap.set(slide, { opacity: 1, pointerEvents: 'auto', y: 0, clearProps: 'all' })
+
+        const card = slide.querySelector<HTMLElement>('.s4-left .s4-card')
+        const right = slide.querySelector<HTMLElement>('.s4-right')
+        if (card) {
+          gsap.killTweensOf(card)
+          gsap.set(card, { clearProps: 'all' })
+        }
+        if (right) {
+          gsap.killTweensOf(right)
+          gsap.set(right, { clearProps: 'all' })
+        }
       })
 
       const s4CardEls = Array.from(document.querySelectorAll<HTMLElement>('.s4-card'))

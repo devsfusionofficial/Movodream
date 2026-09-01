@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
 import { DocBreadcrumb } from '@/components/legal/DocShell'
-import { LockIcon, MailIcon, RefundIcon, RouteIcon, TicketIcon, UserIcon } from '@/components/legal/icons'
+import { LockIcon, MailIcon, RefundIcon } from '@/components/legal/icons'
 import { ContactSupportButton } from './help-actions'
 import { HelpSearchAndFaq, type Faq } from './popular-topics'
 
@@ -14,109 +14,50 @@ export const metadata: Metadata = {
   alternates: { canonical: '/support' },
 }
 
-// Cards earn their place here — these are genuine entry points into distinct
-// topics, unlike on the policy pages where they were hiding legal text.
-// Each links to the section that actually documents it; no category landing
-// pages have been invented.
-const TOPICS = [
-  {
-    icon: <TicketIcon />,
-    title: 'Booking Support',
-    copy: 'Get help with bookings, payments & confirmations.',
-    href: '/cancellation-policy#third-party',
-  },
-  {
-    icon: <RouteIcon />,
-    title: 'Manage Trips',
-    copy: 'Modify, reschedule or cancel your trips.',
-    href: '/cancellation-policy#modifications',
-  },
-  {
-    icon: <RefundIcon />,
-    title: 'Refunds & Cancellations',
-    copy: 'Learn about refunds and cancellations.',
-    href: '/cancellation-policy#refund-processing',
-  },
-  {
-    icon: <UserIcon />,
-    title: 'Privacy & Data',
-    copy: 'Manage your data, rights & security.',
-    href: '/privacy-policy#your-rights',
-  },
-]
-
 /**
- * Every answer is a summary of, and links through to, the published
- * Cancellation & Refund Policy or Privacy Policy — no support commitments
- * (timelines, fees, guarantees) appear here that aren't already in
- * client-approved text.
+ * Official FAQs provided by management covering products, contact/inquiries,
+ * data privacy, and careers with direct redirect links.
  */
 const FAQS: Faq[] = [
   {
-    q: 'How do I cancel my booking?',
-    keywords: 'cancel cancellation stop booking trip end',
+    q: 'What products does Movodream offer?',
+    keywords: 'products izhinga offerings platform features ai travel experience',
     a: (
       <p>
-        Contact us with your booking reference and we will process the request. What you are eligible for depends on
-        the stage the service has reached — see{' '}
-        <Link href="/cancellation-policy#customer-cancellation">Customer-Initiated Cancellation</Link>. Bookings made
-        with airlines, hotels or other partners follow{' '}
-        <Link href="/cancellation-policy#third-party">that provider&apos;s own terms</Link>.
+        Movodream develops AI-powered travel products designed to make travel more intelligent, personalized, and
+        connected. <strong>iZhinga</strong> is one of its flagship travel experiences.{' '}
+        <Link href="/product">Explore our Product Suite &rarr;</Link>
       </p>
     ),
   },
   {
-    q: 'When will I receive my refund?',
-    keywords: 'refund money back payment returned timeline when',
+    q: 'How can I get in touch with Movodream?',
+    keywords: 'contact touch support partnerships investment media careers connect query form',
     a: (
       <p>
-        Approved refunds are returned through the original payment method wherever feasible. Timelines depend on your
-        bank, payment gateway and the relevant service provider, so we can&apos;t guarantee a fixed date — the full
-        detail is under <Link href="/cancellation-policy#refund-processing">Refund Processing</Link>.
+        Whether you&apos;re interested in partnerships, investment, media, careers, or simply want to connect with our
+        team, we&apos;d love to hear from you.{' '}
+        <a href="#still-need-help">Get in touch via our query form &rarr;</a>
       </p>
     ),
   },
   {
-    q: 'How can I change or reschedule my trip?',
-    keywords: 'change reschedule modify amend date edit trip itinerary',
+    q: 'How does Movodream handle user privacy and data?',
+    keywords: 'privacy data security protect store information handling safety',
     a: (
       <p>
-        Send us your change request and we will make reasonable efforts to accommodate it. Changes may be subject to
-        availability, and some bookings are non-changeable or carry amendment fees set by the provider. See{' '}
-        <Link href="/cancellation-policy#modifications">Changes and Modification Requests</Link>.
+        We take privacy and responsible data handling seriously. Details about how information is collected, used,
+        stored, and protected are available in our <Link href="/privacy-policy">Privacy Policy</Link>.
       </p>
     ),
   },
   {
-    q: 'What happens if I miss a booking or consultation?',
-    keywords: 'no-show missed miss late absent consultation',
+    q: 'Is Movodream hiring?',
+    keywords: 'hiring jobs careers work opportunities team openings join',
     a: (
       <p>
-        If a confirmed booking or scheduled consultation is missed without prior notice, refunds may not be
-        available, and any no-show charges applied by the supplier are payable by you. See{' '}
-        <Link href="/cancellation-policy#no-show">No-Show Policy</Link>.
-      </p>
-    ),
-  },
-  {
-    q: 'I was charged twice — what should I do?',
-    keywords: 'duplicate charged twice double payment overcharge billing error',
-    a: (
-      <p>
-        Contact support promptly with the transaction details. Verified duplicate or erroneous payments are reviewed
-        and refunded to the original payment method wherever applicable — see{' '}
-        <Link href="/cancellation-policy#duplicate-payments">Duplicate Payments and Technical Errors</Link>.
-      </p>
-    ),
-  },
-  {
-    q: 'How do I raise a complaint or access my data?',
-    keywords: 'complaint grievance dispute data privacy access delete rights',
-    a: (
-      <p>
-        Complaints and disputes go through <Link href="/cancellation-policy#grievance">Grievance Redressal</Link> —
-        please include booking references and any supporting records. For access, correction or deletion of your
-        personal data, see <Link href="/privacy-policy#your-rights">Your Rights</Link>.
+        We&apos;re always interested in meeting people who want to help shape the future of travel and technology.{' '}
+        <Link href="/careers">Explore current opportunities and discover where you could contribute &rarr;</Link>
       </p>
     ),
   },
@@ -163,24 +104,11 @@ export default function SupportPage() {
               How can we <span className="doc-accent">help you today?</span>
             </h1>
             <p className="support-hero-subtitle">
-              Find quick answers to common questions about bookings, trip changes, refunds and cancellations — or get in
-              touch with our support team.
+              Find quick answers to common questions about our products, partnerships, data privacy, and career
+              opportunities — or reach out directly to our team.
             </p>
           </div>
           <HelpArt />
-        </div>
-
-        <h2 className="help-block-title" style={{ marginTop: 28 }}>
-          Popular Topics
-        </h2>
-        <div className="help-topics">
-          {TOPICS.map((topic) => (
-            <Link className="help-topic-card" href={topic.href} key={topic.title}>
-              <span className="help-topic-icon">{topic.icon}</span>
-              <h3>{topic.title}</h3>
-              <p>{topic.copy}</p>
-            </Link>
-          ))}
         </div>
 
         <div className="support-faq-fullwidth">
