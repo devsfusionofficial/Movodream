@@ -1,8 +1,7 @@
 'use client'
 
 import { createContext, useCallback, useContext, useEffect, useState } from 'react'
-import Image from 'next/image'
-import { Sparkles, ArrowRight } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { useOpenContactModal } from '@/components/layout/ContactModal'
 
 const ExploreModalContext = createContext<(() => void) | null>(null)
@@ -56,42 +55,29 @@ export function ExploreAppModalProvider({ children }: { children: React.ReactNod
           </button>
 
           <div className="explore-modal-content">
-            <div className="explore-modal-header">
-              <div className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-[#ff7294]/30 bg-[#fce8f2] px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-[#d71789]">
-                <Sparkles className="h-3 w-3 text-[#d71789]" />
-                Private Preview
-              </div>
-              <h2 className="text-2xl font-bold tracking-tight text-[#21182a]">
+            <div className="explore-modal-header !mb-6">
+              <h2 className="text-2xl font-bold tracking-tight text-[#21182a] !mb-0">
                 Launching Soon
               </h2>
-              <p className="mt-2 text-xs leading-relaxed text-[#7a7180]">
-                <strong>iZhinga AI</strong> is being crafted for iOS & Android to deliver intelligent trip planning, real-time assistance, and personalized recommendations.
-              </p>
             </div>
 
             <div className="explore-modal-options">
-              <div className="explore-option ios-option cursor-default">
+              <div className="explore-option android-option cursor-default !bg-gradient-to-r !from-[#282b34] !to-[#393e4b] border border-[#4a5061]/25 text-white shadow-[0_4px_16px_rgba(40,43,52,0.18)]">
                 <div className="explore-option-icon">
-                  <i className="fa-brands fa-apple" />
+                  <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm">
+                    <svg viewBox="0 0 29 32" className="w-[22px] h-[24px] ml-0.5" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M13.54 15.28.12 29.34a3.64 3.64 0 0 0 5.33 2.16l15.1-8.6z" fill="#EA4335" />
+                      <path d="m27.11 12.89-6.53-3.74-7.35 6.45 7.38 7.28 6.48-3.7a3.55 3.55 0 0 0 0-6.29z" fill="#FBBC04" />
+                      <path d="M.12 2.66a3.46 3.46 0 0 0-.12.92v24.84a3.66 3.66 0 0 0 .12.92L14 15.64Z" fill="#4285F4" />
+                      <path d="m13.64 16 6.94-6.85L5.5.51A3.72 3.72 0 0 0 3.63 0 3.64 3.64 0 0 0 .12 2.65Z" fill="#34A853" />
+                    </svg>
+                  </div>
                 </div>
                 <div className="explore-option-text">
-                  <span className="explore-option-name">iOS</span>
-                  <span className="explore-option-sub">Apple App Store</span>
+                  <span className="explore-option-name text-white">Google Play</span>
+                  <span className="explore-option-sub text-slate-300">Android App Store</span>
                 </div>
-                <span className="rounded-full bg-white/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-[#ff9ec6]">
-                  Coming Soon
-                </span>
-              </div>
-
-              <div className="explore-option android-option cursor-default">
-                <div className="explore-option-icon">
-                  <i className="fa-brands fa-android" />
-                </div>
-                <div className="explore-option-text">
-                  <span className="explore-option-name">Android</span>
-                  <span className="explore-option-sub">Google Play Store</span>
-                </div>
-                <span className="rounded-full bg-white/20 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
+                <span className="rounded-full bg-white/15 border border-white/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
                   Coming Soon
                 </span>
               </div>
@@ -113,3 +99,4 @@ export function ExploreAppModalProvider({ children }: { children: React.ReactNod
     </ExploreModalContext.Provider>
   )
 }
+
