@@ -889,13 +889,20 @@
    tallest card's natural content across every width tested (332px, +
    headroom for the back slots peeking above it) instead of taking its
    height from flow. */
-@media (max-width: 560px) {
+@media (max-width: 768px) {
   .hero-right .cards-wrapper {
     position: relative;
     display: block;
-    width: min(100%, 340px);
-    height: 372px;
-    margin: 28px auto 0;
+    width: min(90vw, 350px);
+    height: 400px;
+    margin: 24px auto 0;
+    overflow: visible;
+  }
+
+  /* Prevent Atropos inline hover tilts from conflicting with the card fan on mobile */
+  .hero-right .cards-wrapper .atropos-rotate,
+  .hero-right .cards-wrapper .atropos-scale {
+    transform: none !important;
   }
 
   .hero-right .cards-wrapper .card1,
@@ -903,56 +910,74 @@
   .hero-right .cards-wrapper .card3 {
     position: absolute;
     left: 50%;
-    bottom: 0;
+    bottom: 28px;
     top: auto;
     margin: 0;
+    width: 82%;
+    max-height: 350px;
     cursor: pointer;
-    transform-origin: bottom right;
-    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), width 0.45s cubic-bezier(0.22, 1, 0.36, 1),
-      max-height 0.45s cubic-bezier(0.22, 1, 0.36, 1), filter 0.35s ease;
+    transform-origin: bottom center;
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+      filter 0.45s ease,
+      opacity 0.45s ease,
+      box-shadow 0.45s ease;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
   }
 
-  /* Front: full width, full content, nothing clipped. */
+  /* Front Card: centered, prominent */
   .hero-right .cards-wrapper .card-slot-front {
     z-index: 3;
-    width: 82%;
-    max-height: 340px;
     overflow: visible;
-    transform: translateX(calc(-50% + 16px)) rotate(0deg);
+    transform: translateX(-50%) translateY(0px) rotate(0deg) scale(1);
     filter: none;
+    opacity: 1;
+    box-shadow: 0 20px 44px -12px rgba(33, 24, 42, 0.22);
+    pointer-events: auto;
   }
 
-  /* Back-2: nearer the front, less rotated. */
+  /* Left Wing: fanned gently to the left, well clear of left screen edge */
+  .hero-right .cards-wrapper .card-slot-back1 {
+    z-index: 2;
+    overflow: hidden;
+    transform: translateX(calc(-50% - 22px)) translateY(-14px) rotate(-6deg) scale(0.96);
+    filter: brightness(0.96);
+    opacity: 0.94;
+    box-shadow: 0 12px 28px -8px rgba(33, 24, 42, 0.14);
+    pointer-events: auto;
+  }
+
+  /* Right Wing: fanned gently to the right, balancing the spread */
   .hero-right .cards-wrapper .card-slot-back2 {
     z-index: 2;
-    width: 72%;
-    max-height: 300px;
     overflow: hidden;
-    transform: translateX(calc(-50% + 5px)) rotate(-7deg);
-    filter: brightness(0.98);
+    transform: translateX(calc(-50% + 22px)) translateY(-14px) rotate(6deg) scale(0.96);
+    filter: brightness(0.96);
+    opacity: 0.94;
+    box-shadow: 0 12px 28px -8px rgba(33, 24, 42, 0.14);
+    pointer-events: auto;
   }
 
-  /* Back-1: furthest back, most rotated — the smallest sliver. */
-  .hero-right .cards-wrapper .card-slot-back1 {
-    z-index: 1;
-    width: 66%;
-    max-height: 260px;
-    overflow: hidden;
-    transform: translateX(calc(-50% - 3px)) rotate(-14deg);
-    filter: brightness(0.95);
+  .hero-right .cards-wrapper .card-slot-back1:hover,
+  .hero-right .cards-wrapper .card-slot-back2:hover {
+    filter: brightness(1.02);
   }
 
-  /* LIVE badge (card1). Base rule renders it as an absolutely-positioned
-     ::after pill floating over the top-right of the header row — fine at
-     the desktop card's fixed 256px, where "Live Travel Mode" has room to
-     spare, but at mobile width it sat directly on top of the title text.
-     Since `.card-header` is already `display:flex`, dropping `position:
-     absolute` turns the pill back into a normal flex item; `margin-left:
-     auto` pushes it to the row's end instead of floating over whatever's
-     there. `.text` needs `min-width: 0` so it's actually allowed to shrink
-     within the flex row (flex items default to a content-based minimum
-     width, which is what was forcing the overflow); the ellipsis on h3 is
-     a last-resort safety net if a title is ever too long even for that. */
+  /* Card internal padding tuning for mobile fan */
+  .hero-right .cards-wrapper .card1 .card {
+    padding: 16px 18px;
+  }
+  .hero-right .cards-wrapper .card2 {
+    padding: 14px 16px;
+  }
+  .hero-right .cards-wrapper .card3 {
+    padding: 16px 18px;
+  }
+
+  /* LIVE badge (card1). */
   .hero-right .cards-wrapper .card1 .card-header::after {
     position: static;
     margin-left: auto;
@@ -967,22 +992,18 @@
     white-space: nowrap;
   }
 
-  /* Expert Verified badge (card3). Base rule positions it at the header's
-     bottom edge (top: 100%) — which is also exactly where `.sub` ("Delhi →
-     Manali | 7h 20m") starts, so the badge sat directly on top of that
-     text. Giving the header a bottom margin pushes `.sub` down to create a
-     dedicated gap for the badge to sit in, rather than guessing at a
-     top/right position that only happens to clear the text at one width.
-     The base selector (`.header img`) matches BOTH images in the header —
-     the tiny 16x4 dots icon shares the badge's 32% width rule, which blows
-     it up ~4x past its real size; only invisible before because it sat
-     exactly under the badge. Split with :first-of-type/:last-of-type so
-     each gets sized for what it actually is. */
+  /* Card 3 Header & Badges */
   .hero-right .cards-wrapper .card3 .header {
-    margin-bottom: 26px;
+    margin-bottom: 22px;
+    padding-right: 36px;
+  }
+  .hero-right .cards-wrapper .card3 .header h3 {
+    font-size: 15px;
+    white-space: nowrap;
   }
   .hero-right .cards-wrapper .card3 .header img:last-of-type {
-    width: 34%;
+    width: 32%;
+    max-width: 84px;
     top: 100%;
     right: 0;
   }
@@ -992,6 +1013,56 @@
     top: 2px;
     right: 0;
   }
+  .hero-right .cards-wrapper .card3 .green-tick-stamp {
+    width: 38px !important;
+    height: 38px !important;
+    top: 8px !important;
+    right: 6px !important;
+    opacity: 0.85;
+  }
+
+  /* Mobile Navigation / Control Dots */
+  .hero-cards-dots {
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 20px;
+    z-index: 10;
+  }
+
+  .hero-card-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 9999px;
+    background: rgba(0, 0, 0, 0.2);
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    position: relative;
+  }
+
+  .hero-card-dot::before {
+    content: '';
+    position: absolute;
+    inset: -8px -6px;
+  }
+
+  .hero-card-dot.active {
+    width: 24px;
+    background: linear-gradient(90deg, #d71789, #ff7294);
+    box-shadow: 0 2px 8px rgba(215, 23, 137, 0.35);
+  }
+}
+
+/* Dots hidden on desktop */
+.hero-cards-dots {
+  display: none;
 }
 
 /* ── Section 2: "A Future Where Journeys Come Alive" (immersive booking) ── */
@@ -1227,6 +1298,7 @@
     padding-left: 0px;
     padding-right: 0px;
     padding-top: 48px !important;
+    padding-bottom: 18px !important;
   }
   .subs2-headline {
     margin-bottom: 24px;
@@ -1271,59 +1343,73 @@
     display: none;
   }
 
+  .s2-card-wrapper {
+    pointer-events: auto !important;
+  }
+
   .mobile-immersive-features {
-    display: flex;
+    --mb-card-w: min(76vw, 320px);
+    display: flex !important;
     flex-direction: column;
     width: 100vw;
     margin: 20px 0 0;
     position: relative;
+    pointer-events: auto !important;
+    overflow: hidden;
   }
   .mobile-carousel-track {
-    display: flex;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
+    display: flex !important;
+    flex-direction: row;
+    align-items: center;
     gap: 14px;
-    padding: 10px 24px 20px;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-  }
-  .mobile-carousel-track::-webkit-scrollbar {
-    display: none;
+    width: max-content;
+    height: 172px;
+    margin: 0;
+    padding: 0;
+    pointer-events: auto !important;
+    will-change: transform;
   }
   .mobile-feature-card {
-    scroll-snap-align: center;
-    /* 76vw (not 82) leaves a clearer peek of the next card's edge — a
-       carousel needs to visibly announce "there's more" at rest, not just
-       once you start dragging. */
-    flex: 0 0 76vw;
+    flex: 0 0 var(--mb-card-w, 76vw);
+    width: var(--mb-card-w, 76vw);
     max-width: 320px;
-    /* Compact, but consistent: all 3 cards stretch to the row's tallest
-       (the track's default align-items:stretch) since their copy lengths
-       differ — centering content (below) instead of top-packing it is what
-       keeps a shorter card from reading as half-empty. */
+    min-height: 155px;
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
     justify-content: center;
     gap: 8px;
     padding: 18px 20px;
     border-radius: 18px;
-    position: relative;
     background: linear-gradient(155deg, #fff 0%, #fdf6ff 55%, #fbeeff 100%);
-    /* A gradient "ring" instead of a flat border — border-image can't do
-       radius + gradient together reliably, so it's a padding-box/border-box
-       double-background trick: the inner gradient paints the card, the
-       outer (border-box) gradient shows only in the 1.5px border gap. */
     border: 1.5px solid transparent;
     background-clip: padding-box, border-box;
     background-origin: padding-box, border-box;
     background-image: linear-gradient(155deg, #fff 0%, #fdf6ff 55%, #fbeeff 100%),
       linear-gradient(135deg, rgba(215, 23, 137, 0.35), rgba(90, 45, 215, 0.3) 55%, rgba(13, 148, 136, 0.25));
-    box-shadow: 0 16px 34px rgba(90, 45, 215, 0.12), 0 3px 10px rgba(215, 23, 137, 0.07), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    box-shadow: 0 10px 24px rgba(90, 45, 215, 0.08), 0 2px 8px rgba(215, 23, 137, 0.05);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease, box-shadow 0.5s ease;
+    will-change: transform, opacity;
     overflow: hidden;
     text-align: left;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    pointer-events: auto !important;
+    opacity: 0.62;
+    transform: scale(0.95);
+  }
+
+  .mobile-feature-card:hover {
+    opacity: 0.85;
+  }
+
+  .mobile-feature-card.active {
+    opacity: 1;
+    transform: scale(1);
+    box-shadow: 0 20px 42px rgba(90, 45, 215, 0.16), 0 4px 14px rgba(215, 23, 137, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.9);
   }
   .mobile-feature-card::before {
     /* Soft glow blob in the corner — the kind of detail that reads as
@@ -1375,7 +1461,12 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
-    padding-top: 4px;
+    margin-top: 4px;
+    margin-bottom: 10px;
+    padding: 0;
+    position: relative;
+    z-index: 10;
+    pointer-events: auto !important;
   }
   .mobile-carousel-dot {
     width: 7px;
@@ -1385,6 +1476,7 @@
     padding: 0;
     background: rgba(90, 45, 215, 0.18);
     cursor: pointer;
+    pointer-events: auto !important;
     transition: width 0.25s ease, background 0.25s ease;
   }
   .mobile-carousel-dot.active {

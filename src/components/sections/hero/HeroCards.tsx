@@ -51,13 +51,30 @@ export function HeroCards() {
       gsap.set([card1, card2, card3], { clearProps: 'all' })
 
       const SLOTS = ['card-slot-back1', 'card-slot-back2', 'card-slot-front']
+      // Start with card3 in front (matches initial design)
       let stack = [card1, card2, card3]
+      const allCards = [card1, card2, card3]
+      let autoTimer: ReturnType<typeof setInterval> | null = null
+      let isPointerOver = false
+
+      const updateDots = () => {
+        const activeCard = stack[stack.length - 1]
+        const dots = document.querySelectorAll<HTMLElement>('.hero-card-dot')
+        dots.forEach((dot, idx) => {
+          if (allCards[idx] === activeCard) {
+            dot.classList.add('active')
+          } else {
+            dot.classList.remove('active')
+          }
+        })
+      }
 
       const applySlots = () => {
         stack.forEach((card, i) => {
           card.classList.remove(...SLOTS)
           card.classList.add(SLOTS[i])
         })
+        updateDots()
       }
       applySlots()
 
@@ -67,18 +84,57 @@ export function HeroCards() {
         applySlots()
       }
 
-      const cards = [card1, card2, card3]
-      const teardown = cards.map((card) => {
-        const onClick = () => activate(card)
+      const advance = () => {
+        if (isPointerOver) return
+        // Cycle sequentially: card1 -> card2 -> card3 -> card1...
+        const currentFront = stack[stack.length - 1]
+        const currentIdx = allCards.indexOf(currentFront)
+        const nextIdx = (currentIdx + 1) % allCards.length
+        activate(allCards[nextIdx])
+      }
+
+      const startAutoPlay = () => {
+        stopAutoPlay()
+        if (!isPointerOver) {
+          autoTimer = setInterval(advance, 3500)
+        }
+      }
+
+      const stopAutoPlay = () => {
+        if (autoTimer) {
+          clearInterval(autoTimer)
+          autoTimer = null
+        }
+      }
+
+      const resetAutoPlay = () => {
+        stopAutoPlay()
+        startAutoPlay()
+      }
+
+      startAutoPlay()
+
+      // Card tap and click handlers
+      const cardTeardowns = allCards.map((card) => {
+        // ONLY clicking or pressing Enter/Space specifically promotes the card to front
+        const onClick = (e: Event) => {
+          e.stopPropagation()
+          activate(card)
+          resetAutoPlay()
+        }
+
         const onKeyDown = (e: KeyboardEvent) => {
           if (e.key !== 'Enter' && e.key !== ' ') return
           e.preventDefault()
           activate(card)
+          resetAutoPlay()
         }
+
         card.setAttribute('role', 'button')
         card.setAttribute('tabindex', '0')
         card.addEventListener('click', onClick)
         card.addEventListener('keydown', onKeyDown)
+
         return () => {
           card.removeAttribute('role')
           card.removeAttribute('tabindex')
@@ -88,7 +144,68 @@ export function HeroCards() {
         }
       })
 
-      return () => teardown.forEach((fn) => fn())
+      // Pointer / hover tracking on the cards wrapper:
+      // While mouse cursor or touch is on the deck -> PAUSE movement!
+      // As soon as cursor leaves (or touch lifts) -> RESUME movement!
+      const wrapper = document.querySelector<HTMLElement>('.cards-wrapper')
+
+      const onPointerEnter = () => {
+        isPointerOver = true
+        stopAutoPlay()
+      }
+
+      const onPointerLeave = () => {
+        isPointerOver = false
+        resetAutoPlay()
+      }
+
+      const onTouchStart = () => {
+        isPointerOver = true
+        stopAutoPlay()
+      }
+
+      const onTouchEnd = () => {
+        isPointerOver = false
+        // Ensure timer resumes after finger lifts on mobile touch devices
+        setTimeout(() => {
+          if (!isPointerOver) {
+            resetAutoPlay()
+          }
+        }, 50)
+      }
+
+      if (wrapper) {
+        wrapper.addEventListener('mouseenter', onPointerEnter)
+        wrapper.addEventListener('mouseleave', onPointerLeave)
+        wrapper.addEventListener('touchstart', onTouchStart, { passive: true })
+        wrapper.addEventListener('touchend', onTouchEnd, { passive: true })
+        wrapper.addEventListener('touchcancel', onTouchEnd, { passive: true })
+      }
+
+      // Dot click handlers for manual control
+      const dots = document.querySelectorAll<HTMLElement>('.hero-card-dot')
+      const dotTeardowns = Array.from(dots).map((dot, idx) => {
+        const onDotClick = (e: MouseEvent) => {
+          e.stopPropagation()
+          activate(allCards[idx])
+          resetAutoPlay()
+        }
+        dot.addEventListener('click', onDotClick)
+        return () => dot.removeEventListener('click', onDotClick)
+      })
+
+      return () => {
+        stopAutoPlay()
+        cardTeardowns.forEach((fn) => fn())
+        dotTeardowns.forEach((fn) => fn())
+        if (wrapper) {
+          wrapper.removeEventListener('mouseenter', onPointerEnter)
+          wrapper.removeEventListener('mouseleave', onPointerLeave)
+          wrapper.removeEventListener('touchstart', onTouchStart)
+          wrapper.removeEventListener('touchend', onTouchEnd)
+          wrapper.removeEventListener('touchcancel', onTouchEnd)
+        }
+      }
     }
 
     const bindScrollTriggers = () => {
@@ -277,6 +394,13 @@ export function HeroCards() {
           </div>
         </div>
       </Atropos>
+
+      {/* Mobile Card Control Dots */}
+      <div className="hero-cards-dots" aria-label="Hero card navigation">
+        <button type="button" className="hero-card-dot" aria-label="Card 1: Live Travel Mode" />
+        <button type="button" className="hero-card-dot" aria-label="Card 2: AR/VR Interface" />
+        <button type="button" className="hero-card-dot active" aria-label="Card 3: Journey Intelligence" />
+      </div>
     </div>
   )
 }

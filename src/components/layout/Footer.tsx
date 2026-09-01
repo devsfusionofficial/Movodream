@@ -17,7 +17,7 @@ export function Footer() {
           <div className="footer-col footer-col-brand">
             <Link href="/" className="footer-logo-link">
               <Image
-                src="/assets/images/logo-white.webp"
+                src="/assets/images/logo-footer.webp"
                 alt="Movodream logo"
                 width={160}
                 height={32}

@@ -137,8 +137,8 @@
   padding: 11px 20px;
   border-radius: 999px;
   background: #fff;
-  border: 1px solid var(--ab-border);
-  box-shadow: var(--ab-shadow);
+  border: 1.5px solid rgba(236, 42, 139, 0.45);
+  box-shadow: 0 4px 18px rgba(236, 42, 139, 0.12), var(--ab-shadow);
   font-size: 0.86rem;
   font-weight: 600;
   color: var(--ab-navy);
@@ -621,6 +621,7 @@
     opacity: 0;
     transform: scale(0.96) translateY(5px);
   }
+
   to {
     opacity: 1;
     transform: scale(1) translateY(0);
@@ -1162,7 +1163,7 @@
     min-width: 44px;
   }
 
-  .about-value > div {
+  .about-value>div {
     flex: 1;
     min-width: 0;
   }

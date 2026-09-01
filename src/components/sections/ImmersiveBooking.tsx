@@ -14,25 +14,28 @@ const MOBILE_FEATURES = [
   { icon: '🧠', color: 'teal', label: 'Context-Aware Guidance', desc: 'Your AI knows where you are and what you love. Surfaces immersive views automatically.' },
 ]
 
+// 5 slides for infinite loop: [Clone 2, Card 0, Card 1, Card 2, Clone 0]
+const CAROUSEL_SLIDES = [
+  { ...MOBILE_FEATURES[2], realIndex: 2, key: 'clone-prev' },
+  { ...MOBILE_FEATURES[0], realIndex: 0, key: 'slide-0' },
+  { ...MOBILE_FEATURES[1], realIndex: 1, key: 'slide-1' },
+  { ...MOBILE_FEATURES[2], realIndex: 2, key: 'slide-2' },
+  { ...MOBILE_FEATURES[0], realIndex: 0, key: 'clone-next' },
+]
+
 const AUTOPLAY_INTERVAL_MS = 3500
 const RESUME_AFTER_MS = 4500
 
 export function ImmersiveBooking() {
-  const trackRef = useRef<HTMLDivElement>(null)
-  const [activeCard, setActiveCard] = useState(0)
+  const [currentIndex, setCurrentIndex] = useState(1) // Starts on Card 0 (index 1)
+  const [enableTransition, setEnableTransition] = useState(true)
+  const currentIndexRef = useRef(1)
+  currentIndexRef.current = currentIndex
+
   const autoplayTimer = useRef<ReturnType<typeof setInterval> | null>(null)
   const resumeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const programmaticScrollTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
-  // True only while a scroll WE triggered (autoplay tick / dot click) is in
-  // flight — lets the scroll handler tell that apart from a real user
-  // swipe/drag, which pointer enter/leave can't reliably do on touch (a
-  // drag doesn't fire pointerleave mid-gesture the way a mouse does, so the
-  // autoplay interval kept running under a user's thumb and yanked the
-  // scroll back mid-swipe — that's what made manual swiping feel broken).
-  const isProgrammaticScroll = useRef(false)
-  // Logical position, 0..MOBILE_FEATURES.length — the last value points at
-  // the cloned first card appended after the real ones (see JSX below).
-  const positionRef = useRef(0)
+  const isPointerOverRef = useRef(false)
+  const touchStartXRef = useRef<number | null>(null)
 
   useGSAP(() => {
     gsap.registerPlugin(SplitText)
@@ -40,8 +43,6 @@ export function ImmersiveBooking() {
     let cancelled = false
     let split: SplitText | null = null
 
-    // See ClarityIntel.tsx's fonts.ready comment — splitting before the
-    // real webfont loads measures against the fallback font's line breaks.
     document.fonts.ready.then(() => {
       if (cancelled) return
       split = SplitText.create('.s2-headline-fs', { type: 'lines,chars', linesClass: 'split-line' })
@@ -55,6 +56,8 @@ export function ImmersiveBooking() {
     }
   }, [])
 
+  const resetTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
   function stopAutoplay() {
     if (autoplayTimer.current) clearInterval(autoplayTimer.current)
     autoplayTimer.current = null
@@ -62,89 +65,126 @@ export function ImmersiveBooking() {
 
   function scheduleResume() {
     if (resumeTimer.current) clearTimeout(resumeTimer.current)
-    resumeTimer.current = setTimeout(startAutoplay, RESUME_AFTER_MS)
-  }
-
-  function handleTrackScroll() {
-    const track = trackRef.current
-    if (!track) return
-    const cards = Array.from(track.children) as HTMLElement[]
-    const trackCenter = track.scrollLeft + track.clientWidth / 2
-    let closest = 0
-    let closestDist = Infinity
-    cards.forEach((card, i) => {
-      const cardCenter = card.offsetLeft + card.offsetWidth / 2
-      const dist = Math.abs(cardCenter - trackCenter)
-      if (dist < closestDist) {
-        closestDist = dist
-        closest = i
+    if (isPointerOverRef.current) return
+    resumeTimer.current = setTimeout(() => {
+      if (!isPointerOverRef.current) {
+        startAutoplay()
       }
-    })
-    // The clone (index === MOBILE_FEATURES.length) is a visual stand-in for
-    // card 0 — light its dot instead of trying to render a 4th dot.
-    setActiveCard(closest % MOBILE_FEATURES.length)
-    // Keep autoplay's own position tracking in sync with wherever a manual
-    // swipe actually left the track, so resuming continues from there
-    // instead of from stale state.
-    positionRef.current = closest
+    }, RESUME_AFTER_MS)
+  }
 
-    // A scroll event we didn't trigger ourselves is a real user drag/swipe/
-    // wheel — pause immediately and only resume once they've stopped
-    // touching it for a bit (each further scroll event pushes the resume
-    // timer back out, so it only actually fires once they're done).
-    if (!isProgrammaticScroll.current) {
-      stopAutoplay()
-      scheduleResume()
+  function goToSlide(targetIndex: number) {
+    if (resetTimer.current) clearTimeout(resetTimer.current)
+
+    let nextIdx = targetIndex
+    if (currentIndexRef.current >= 4 && targetIndex > 4) {
+      nextIdx = 2
+    } else if (currentIndexRef.current <= 0 && targetIndex < 0) {
+      nextIdx = 2
+    } else {
+      nextIdx = Math.max(0, Math.min(CAROUSEL_SLIDES.length - 1, targetIndex))
     }
-  }
 
-  function scrollToPosition(index: number, behavior: ScrollBehavior) {
-    const track = trackRef.current
-    if (!track) return
-    const card = track.children[index] as HTMLElement | undefined
-    if (!card) return
-    isProgrammaticScroll.current = true
-    if (programmaticScrollTimer.current) clearTimeout(programmaticScrollTimer.current)
-    // Long enough to cover a 'smooth' scroll's animation; harmless if it's
-    // actually 'instant' and finishes sooner.
-    programmaticScrollTimer.current = setTimeout(() => {
-      isProgrammaticScroll.current = false
-    }, 700)
-    track.scrollTo({ left: card.offsetLeft - (track.clientWidth - card.offsetWidth) / 2, behavior })
-  }
+    setEnableTransition(true)
+    setCurrentIndex(nextIdx)
 
-  // Manual dot clicks only ever target a real card (0..2).
-  function scrollToCard(index: number) {
-    positionRef.current = index
-    scrollToPosition(index, 'smooth')
+    // Fallback timer in case transitionend is interrupted or tab is in background
+    if (nextIdx === 4) {
+      resetTimer.current = setTimeout(() => {
+        setEnableTransition(false)
+        setCurrentIndex(1)
+      }, 650)
+    } else if (nextIdx === 0) {
+      resetTimer.current = setTimeout(() => {
+        setEnableTransition(false)
+        setCurrentIndex(3)
+      }, 650)
+    }
   }
 
   function startAutoplay() {
     stopAutoplay()
     if (resumeTimer.current) clearTimeout(resumeTimer.current)
+    if (isPointerOverRef.current) return
     autoplayTimer.current = setInterval(() => {
-      const next = positionRef.current + 1
-      positionRef.current = next
-      // Always scrolls further right (forward) even into the clone slot —
-      // never backward through the deck to reach card 1 again. Once the
-      // smooth scroll into the clone finishes, jump (no animation) back to
-      // the real card 0 underneath it; visually identical, so the reset is
-      // invisible and the next tick continues forward normally.
-      scrollToPosition(next, 'smooth')
-      if (next === MOBILE_FEATURES.length) {
-        setTimeout(() => {
-          scrollToPosition(0, 'instant')
-          positionRef.current = 0
-        }, 500)
-      }
+      if (isPointerOverRef.current) return
+      goToSlide(currentIndexRef.current + 1)
     }, AUTOPLAY_INTERVAL_MS)
   }
 
-  // Dot clicks pause and resume after a quiet period (there's no "hover"
-  // equivalent for a discrete click).
-  function pauseAutoplayThenResume() {
+  function handleTransitionEnd() {
+    if (currentIndexRef.current === 4) {
+      if (resetTimer.current) clearTimeout(resetTimer.current)
+      setEnableTransition(false)
+      setCurrentIndex(1)
+    } else if (currentIndexRef.current === 0) {
+      if (resetTimer.current) clearTimeout(resetTimer.current)
+      setEnableTransition(false)
+      setCurrentIndex(3)
+    }
+  }
+
+  function handleCardClick(slideIndex: number) {
+    if (slideIndex === currentIndex) return // already centered
+    goToSlide(slideIndex)
     stopAutoplay()
+    if (!isPointerOverRef.current) {
+      scheduleResume()
+    }
+  }
+
+  function handleDotClick(realIndex: number) {
+    const safeIdx = Math.max(0, Math.min(CAROUSEL_SLIDES.length - 1, currentIndex))
+    const curReal = CAROUSEL_SLIDES[safeIdx]?.realIndex ?? 0
+    if (curReal === realIndex) return
+    stopAutoplay()
+    if (currentIndex === 1 && realIndex === 2) {
+      goToSlide(0)
+    } else if (currentIndex === 3 && realIndex === 0) {
+      goToSlide(4)
+    } else {
+      goToSlide(realIndex + 1)
+    }
+    if (!isPointerOverRef.current) {
+      scheduleResume()
+    }
+  }
+
+  function handlePointerEnter() {
+    isPointerOverRef.current = true
+    stopAutoplay()
+    if (resumeTimer.current) clearTimeout(resumeTimer.current)
+  }
+
+  function handlePointerLeave() {
+    isPointerOverRef.current = false
     scheduleResume()
+  }
+
+  function handleTouchStart(e: React.TouchEvent) {
+    isPointerOverRef.current = true
+    stopAutoplay()
+    touchStartXRef.current = e.touches[0].clientX
+    if (resumeTimer.current) clearTimeout(resumeTimer.current)
+  }
+
+  function handleTouchEnd(e: React.TouchEvent) {
+    isPointerOverRef.current = false
+    if (touchStartXRef.current !== null) {
+      const touchEndX = e.changedTouches[0].clientX
+      const diffX = touchEndX - touchStartXRef.current
+      if (diffX < -35) {
+        goToSlide(currentIndexRef.current + 1)
+      } else if (diffX > 35) {
+        goToSlide(currentIndexRef.current - 1)
+      }
+      touchStartXRef.current = null
+    }
+    setTimeout(() => {
+      if (!isPointerOverRef.current) {
+        scheduleResume()
+      }
+    }, 50)
   }
 
   useEffect(() => {
@@ -152,9 +192,17 @@ export function ImmersiveBooking() {
     return () => {
       stopAutoplay()
       if (resumeTimer.current) clearTimeout(resumeTimer.current)
-      if (programmaticScrollTimer.current) clearTimeout(programmaticScrollTimer.current)
+      if (resetTimer.current) clearTimeout(resetTimer.current)
     }
   }, [])
+
+  const safeIndex = Math.max(0, Math.min(CAROUSEL_SLIDES.length - 1, currentIndex))
+  const activeRealIndex = CAROUSEL_SLIDES[safeIndex]?.realIndex ?? 0
+
+  const trackStyle: React.CSSProperties = {
+    transform: `translateX(calc((100vw - var(--mb-card-w, 76vw)) / 2 - ${safeIndex} * (var(--mb-card-w, 76vw) + 14px)))`,
+    transition: enableTransition ? 'transform 0.65s cubic-bezier(0.16, 1, 0.3, 1)' : 'none',
+  }
 
   return (
     <section className="section-2">
@@ -203,19 +251,33 @@ export function ImmersiveBooking() {
         </div>
 
         {/* Mobile Premium Swipeable Glass Carousel (Visible on <= 768px) */}
-        <div className="mobile-immersive-features">
+        <div
+          className="mobile-immersive-features"
+          onMouseEnter={handlePointerEnter}
+          onMouseLeave={handlePointerLeave}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+          onTouchCancel={handleTouchEnd}
+        >
           <div
             className="mobile-carousel-track"
-            ref={trackRef}
-            onScroll={handleTrackScroll}
-            // Paused for as long as the cursor/finger is actually on a
-            // card — not a timed pause — and picks back up the moment it
-            // leaves, whether that was just a hover or a manual swipe/click.
-            onPointerEnter={stopAutoplay}
-            onPointerLeave={startAutoplay}
+            style={trackStyle}
+            onTransitionEnd={handleTransitionEnd}
           >
-            {MOBILE_FEATURES.map((f) => (
-              <div className="mobile-feature-card" key={f.label}>
+            {CAROUSEL_SLIDES.map((f, i) => (
+              <div
+                className={`mobile-feature-card${f.realIndex === activeRealIndex ? ' active' : ''}`}
+                key={`${f.key}-${i}`}
+                role="button"
+                tabIndex={0}
+                onClick={() => handleCardClick(i)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    handleCardClick(i)
+                  }
+                }}
+              >
                 <span className={`mobile-feature-badge ${f.color}`}>
                   <span className="mobile-feature-badge-icon">{f.icon}</span>
                   {f.label}
@@ -223,15 +285,6 @@ export function ImmersiveBooking() {
                 <p className="mobile-feature-desc">{f.desc}</p>
               </div>
             ))}
-            {/* Clone of card 0, appended so autoplay can always scroll
-                forward — see startAutoplay's comment. */}
-            <div className="mobile-feature-card" aria-hidden="true">
-              <span className={`mobile-feature-badge ${MOBILE_FEATURES[0].color}`}>
-                <span className="mobile-feature-badge-icon">{MOBILE_FEATURES[0].icon}</span>
-                {MOBILE_FEATURES[0].label}
-              </span>
-              <p className="mobile-feature-desc">{MOBILE_FEATURES[0].desc}</p>
-            </div>
           </div>
 
           <div className="mobile-carousel-dots">
@@ -239,12 +292,9 @@ export function ImmersiveBooking() {
               <button
                 key={f.label}
                 type="button"
-                className={`mobile-carousel-dot${i === activeCard ? ' active' : ''}`}
+                className={`mobile-carousel-dot${i === activeRealIndex ? ' active' : ''}`}
                 aria-label={`Go to feature ${i + 1}`}
-                onClick={() => {
-                  scrollToCard(i)
-                  pauseAutoplayThenResume()
-                }}
+                onClick={() => handleDotClick(i)}
               />
             ))}
           </div>
