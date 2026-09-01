@@ -1,9 +1,16 @@
 import { z } from 'zod'
 
 export const partnerSchema = z.object({
-  name: z.string().min(2, 'Name is required'),
-  url: z.string().url('Enter a valid URL').optional().or(z.literal('')),
-  category: z.string().optional(),
+  name: z.string().trim().min(2, 'Name is required (at least 2 characters)'),
+  url: z
+    .string()
+    .trim()
+    .optional()
+    .refine((val) => !val || /^https?:\/\/.+/i.test(val) || /^[\w-]+\.[\w.-]+/i.test(val), {
+      message: 'Enter a valid website URL (e.g. https://example.com)',
+    })
+    .or(z.literal('')),
+  category: z.string().trim().optional(),
   logoUrl: z.string().optional(),
   logoKey: z.string().optional(),
   order: z.number().int(),

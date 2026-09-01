@@ -65,7 +65,7 @@ export async function getApplicationResumeUrl(id: string): Promise<{ url: string
   // deletes the object but leaves this row behind. Check before signing, so
   // the recruiter gets a clear message rather than a NoSuchKey XML page.
   if (!(await objectExists(application.resumeKey))) {
-    return { error: 'This resume is no longer available — it passed the retention period and was deleted.' }
+    return { error: 'This resume file is no longer available in storage (file not found).' }
   }
 
   const url = await createDownloadUrl(application.resumeKey)

@@ -121,7 +121,7 @@ export function PartnerForm({ partnerId, defaultValues }: PartnerFormProps) {
 
         <Field>
           <FieldLabel htmlFor="order">Display order</FieldLabel>
-          <Input id="order" type="number" {...register('order', { valueAsNumber: true })} />
+          <Input id="order" type="number" min={0} {...register('order', { valueAsNumber: true })} />
         </Field>
 
         <Button type="submit" disabled={isSubmitting}>

@@ -19,6 +19,8 @@ const STATUS_VARIANT: Record<string, 'default' | 'secondary' | 'outline' | 'dest
   Rejected: 'destructive',
 }
 
+import { ApplicationRowActions } from './application-row-actions'
+
 export const columns: ColumnDef<ApplicationRow, unknown>[] = [
   {
     accessorKey: 'name',
@@ -67,16 +69,6 @@ export const columns: ColumnDef<ApplicationRow, unknown>[] = [
   {
     id: 'actions',
     header: '',
-    cell: ({ row }) => (
-      <Button
-        variant="outline"
-        size="sm"
-        render={<Link href={`/admin/applications/${row.original._id}`} />}
-        className="gap-1 border-[#e6e1e9] text-[#21182a] hover:bg-[#fce8f2] hover:text-[#d71789]"
-      >
-        <Eye className="h-3.5 w-3.5" />
-        View
-      </Button>
-    ),
+    cell: ({ row }) => <ApplicationRowActions id={row.original._id} candidateName={row.original.name} />,
   },
 ]

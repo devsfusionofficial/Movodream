@@ -22,7 +22,7 @@ export async function listJobs() {
   // — including the full article/JD HTML and editor JSON. Detail screens
   // use their own get<X>(id) and still receive everything.
   const jobs = await Job.find()
-    .select('title slug department location employmentType experience qualification skills applicationDeadline status createdAt')
+    .select('title slug department location employmentType experience qualification skills descriptionHtml responsibilitiesHtml applicationDeadline status createdAt')
     .sort({ createdAt: -1 })
     .lean()
   return serialize(jobs)

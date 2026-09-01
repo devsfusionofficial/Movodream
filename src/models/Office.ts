@@ -1,4 +1,4 @@
-import { Schema, model, models, type InferSchemaType } from 'mongoose'
+import mongoose, { Schema, type InferSchemaType } from 'mongoose'
 
 const officeSchema = new Schema(
   {
@@ -23,4 +23,4 @@ officeSchema.index({ createdAt: -1 })
 
 export type OfficeDoc = InferSchemaType<typeof officeSchema>
 
-export const Office = models.Office ?? model('Office', officeSchema)
+export const Office = mongoose.models.Office ?? mongoose.model('Office', officeSchema)

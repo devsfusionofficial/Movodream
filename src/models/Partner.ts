@@ -1,4 +1,4 @@
-import { Schema, model, models, type InferSchemaType } from 'mongoose'
+import mongoose, { Schema, type InferSchemaType } from 'mongoose'
 
 const partnerSchema = new Schema(
   {
@@ -19,4 +19,4 @@ partnerSchema.index({ createdAt: -1 })
 
 export type PartnerDoc = InferSchemaType<typeof partnerSchema>
 
-export const Partner = models.Partner ?? model('Partner', partnerSchema)
+export const Partner = mongoose.models.Partner ?? mongoose.model('Partner', partnerSchema)

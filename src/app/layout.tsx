@@ -96,6 +96,35 @@ export default function RootLayout({
           crossOrigin="anonymous"
           referrerPolicy="no-referrer"
         />
+        <script
+          id="pointer-capture-guard"
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                if (typeof Element !== 'undefined') {
+                  if (Element.prototype.releasePointerCapture) {
+                    var _rpc = Element.prototype.releasePointerCapture;
+                    Element.prototype.releasePointerCapture = function(id) {
+                      try {
+                        if (!this.hasPointerCapture || this.hasPointerCapture(id)) {
+                          _rpc.call(this, id);
+                        }
+                      } catch (e) {}
+                    };
+                  }
+                  if (Element.prototype.setPointerCapture) {
+                    var _spc = Element.prototype.setPointerCapture;
+                    Element.prototype.setPointerCapture = function(id) {
+                      try {
+                        _spc.call(this, id);
+                      } catch (e) {}
+                    };
+                  }
+                }
+              })();
+            `,
+          }}
+        />
       </head>
       <body className="min-h-full flex flex-col">
         <script

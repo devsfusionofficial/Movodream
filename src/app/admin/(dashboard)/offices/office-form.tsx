@@ -166,6 +166,7 @@ export function OfficeForm({ officeId, defaultValues }: OfficeFormProps) {
               <Input
                 id="order"
                 type="number"
+                min={0}
                 placeholder="0"
                 className="h-10 rounded-xl border-[#ebe6ee] text-sm focus:border-[#d71789]"
                 {...register('order', { valueAsNumber: true })}

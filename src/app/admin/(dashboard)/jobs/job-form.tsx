@@ -35,8 +35,17 @@ export function JobForm({ jobId, defaultValues }: JobFormProps) {
     defaultValues: { status: 'draft', employmentType: 'Full-time', skills: [], ...defaultValues },
   })
 
+  const now = new Date()
+  const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
+
   async function onSubmit(values: JobInput) {
     try {
+      if (values.applicationDeadline && values.applicationDeadline < todayStr) {
+        if (!jobId || values.applicationDeadline !== defaultValues?.applicationDeadline) {
+          toast.error('Application deadline cannot be in the past. Please select today or a future date.')
+          return
+        }
+      }
       const cleanInput: JobInput = JSON.parse(JSON.stringify(values))
       const result = jobId ? await updateJob(jobId, cleanInput) : await createJob(cleanInput)
       if (!result.success) {
@@ -52,8 +61,10 @@ export function JobForm({ jobId, defaultValues }: JobFormProps) {
   }
 
   function onInvalid(formErrors: FieldErrors<JobInput>) {
-    const firstError = Object.values(formErrors)[0]?.message
-    toast.error(firstError ? String(firstError) : 'Please fix the errors in the form before submitting.')
+    const errorValues = Object.values(formErrors)
+    const firstErr = errorValues[0]
+    const message = typeof firstErr?.message === 'string' ? firstErr.message : 'Please fill all required fields before submitting.'
+    toast.error(message)
   }
 
   const skills = watch('skills') ?? []
@@ -108,7 +119,9 @@ export function JobForm({ jobId, defaultValues }: JobFormProps) {
               <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#fce8f2] text-[#d71789]">
                 <FileText className="h-4 w-4" />
               </span>
-              <h3 className="text-sm font-bold text-[#21182a]">Job Description & Summary</h3>
+              <h3 className="text-sm font-bold text-[#21182a]">
+                Job Description & Summary <span className="text-[#d71789]">*</span>
+              </h3>
             </div>
 
             <Field>
@@ -120,11 +133,13 @@ export function JobForm({ jobId, defaultValues }: JobFormProps) {
                     initialContent={field.value}
                     onChange={({ json, html }) => {
                       field.onChange(json)
-                      setValue('descriptionHtml', html)
+                      setValue('descriptionHtml', html, { shouldValidate: true })
                     }}
                   />
                 )}
               />
+              <input type="hidden" {...register('descriptionHtml')} />
+              <FieldError errors={[errors.descriptionHtml]} />
             </Field>
           </div>
 
@@ -181,7 +196,7 @@ export function JobForm({ jobId, defaultValues }: JobFormProps) {
 
               <Field>
                 <FieldLabel htmlFor="location" className="text-xs font-semibold text-[#21182a]">
-                  Location
+                  Location <span className="text-[#d71789]">*</span>
                 </FieldLabel>
                 <Input
                   id="location"
@@ -189,17 +204,18 @@ export function JobForm({ jobId, defaultValues }: JobFormProps) {
                   className="h-10 rounded-xl border-[#dedede] bg-white text-xs focus:border-[#d71789]"
                   {...register('location')}
                 />
+                <FieldError errors={[errors.location]} />
               </Field>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
               <Field>
                 <FieldLabel htmlFor="employmentType" className="text-xs font-semibold text-[#21182a]">
-                  Employment Type
+                  Employment Type <span className="text-[#d71789]">*</span>
                 </FieldLabel>
                 <Select
-                  value={watch('employmentType') || ''}
-                  onValueChange={(v) => v && setValue('employmentType', v as JobInput['employmentType'])}
+                  value={watch('employmentType') || 'Full-time'}
+                  onValueChange={(v) => v && setValue('employmentType', v as JobInput['employmentType'], { shouldValidate: true })}
                 >
                   <SelectTrigger id="employmentType" className="h-10 w-full rounded-xl border-[#dedede] bg-white text-xs focus:border-[#d71789]">
                     <SelectValue />
@@ -212,6 +228,7 @@ export function JobForm({ jobId, defaultValues }: JobFormProps) {
                     ))}
                   </SelectContent>
                 </Select>
+                <FieldError errors={[errors.employmentType]} />
               </Field>
 
               <Field>
@@ -279,9 +296,14 @@ export function JobForm({ jobId, defaultValues }: JobFormProps) {
               <Input
                 id="applicationDeadline"
                 type="date"
+                min={todayStr}
                 className="h-10 rounded-xl border-[#dedede] bg-white text-xs focus:border-[#d71789]"
                 {...register('applicationDeadline')}
               />
+              <FieldDescription className="text-[11px] text-[#887f8e]">
+                Candidates can apply until this date. Past dates cannot be selected.
+              </FieldDescription>
+              <FieldError errors={[errors.applicationDeadline]} />
             </Field>
 
             <Field>

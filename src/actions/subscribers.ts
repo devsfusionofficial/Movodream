@@ -72,7 +72,7 @@ export async function deleteSubscriber(id: string) {
 
 export async function syncSubscriberEmail(input: SyncEmailInput) {
   try {
-    await requirePermission('subscribers', ['create'])
+    await requirePermission('subscribers', ['send'])
     await connectDB()
     const activeSubscribers = await Subscriber.find({ status: 'active' }).select('email').lean()
     const subscriberEmails = activeSubscribers.map((s) => s.email)
@@ -88,60 +88,93 @@ export async function syncSubscriberEmail(input: SyncEmailInput) {
           <meta name="viewport" content="width=device-width, initial-scale=1">
           <title>${input.subject || 'Movodream Update'}</title>
         </head>
-        <body style="margin:0; padding:0; background-color:#f8f6f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color:#21182a;">
-          <div style="max-width: 600px; margin: 20px auto; background: #ffffff; border-radius: 16px; overflow: hidden; border: 1px solid #ebe6ee; box-shadow: 0 4px 20px rgba(0,0,0,0.04);">
+        <body style="margin:0; padding:0; width:100% !important; min-width:100%; background-color:#ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color:#21182a; -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%;">
+          <div style="width:100%; min-width:100%; margin:0; padding:0; background:#ffffff;">
             
-            <!-- Header Banner -->
-            <div style="background-color: ${themeHex}14; padding: 32px 24px; text-align: center; border-bottom: 1px solid #f0edf1;">
-              <div style="display: inline-block; width: 48px; height: 48px; background-color: ${themeHex}; border-radius: 12px; line-height: 48px; text-align: center; color: #ffffff; font-size: 22px; font-weight: bold; margin-bottom: 16px;">
-                M
-              </div>
-              <h1 style="margin: 0; font-size: 24px; font-weight: 800; color: #21182a;">${input.heading || input.subject || 'Movodream Marketing Update'}</h1>
-              ${input.description ? `<p style="margin-top: 12px; font-size: 15px; line-height: 1.6; color: #554a5c; white-space: pre-line;">${input.description}</p>` : ''}
-              
-              ${input.imageUrl ? `<div style="margin-top: 20px;"><img src="${input.imageUrl}" alt="Banner" style="max-width: 100%; border-radius: 12px; max-height: 300px; object-fit: cover;" /></div>` : ''}
-              
-              ${input.ctaText && input.ctaUrl ? `
-                <div style="margin-top: 24px;">
-                  <a href="${input.ctaUrl}" target="_blank" style="display: inline-block; background-color: ${themeHex}; color: #ffffff; padding: 12px 28px; border-radius: 10px; font-weight: 700; text-decoration: none; font-size: 14px;">
-                    ${input.ctaText}
-                  </a>
+            <!-- Header Banner (Full Width) -->
+            <div style="width:100%; background-color: ${themeHex}14; padding: 52px 24px; text-align: center; border-bottom: 1px solid #f0edf1; box-sizing: border-box;">
+              <div style="max-width: 900px; margin: 0 auto;">
+                <div style="display: inline-block; width: 52px; height: 52px; background-color: ${themeHex}; border-radius: 14px; line-height: 52px; text-align: center; margin-bottom: 18px; box-shadow: 0 4px 14px ${themeHex}40; vertical-align: middle;">
+                  <img src="cid:campaign-icon" width="26" height="26" alt="${input.icon || 'mail'}" style="width: 26px; height: 26px; display: inline-block; vertical-align: middle; border: 0;" />
                 </div>
-              ` : ''}
+                <h1 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em; color: #21182a; line-height: 1.25;">${input.heading || input.subject || 'Movodream Marketing Update'}</h1>
+                ${input.description ? `<p style="margin: 16px auto 0 auto; max-width: 760px; font-size: 16px; line-height: 1.7; color: #554a5c; white-space: pre-line;">${input.description}</p>` : ''}
+                
+                ${input.imageUrl ? `<div style="margin-top: 28px;"><img src="${input.imageUrl}" alt="Banner" style="max-width: 100%; border-radius: 14px; max-height: 420px; object-fit: cover; box-shadow: 0 6px 24px rgba(0,0,0,0.08);" /></div>` : ''}
+                
+                ${input.ctaText && input.ctaUrl ? `
+                  <div style="margin-top: 32px;">
+                    <a href="${input.ctaUrl}" target="_blank" style="display: inline-block; background-color: ${themeHex}; color: #ffffff; padding: 14px 36px; border-radius: 12px; font-weight: 700; text-decoration: none; font-size: 15px; box-shadow: 0 4px 16px ${themeHex}50;">
+                      ${input.ctaText}
+                    </a>
+                  </div>
+                ` : ''}
+              </div>
             </div>
 
             ${input.infoBoxTitle ? `
-              <div style="margin: 20px 24px; padding: 16px; background-color: ${themeHex}0A; border-left: 4px solid ${themeHex}; border-radius: 8px;">
-                <strong style="display: block; font-size: 14px; color: #21182a;">${input.infoBoxTitle}</strong>
-                <span style="font-size: 13px; color: #687075; margin-top: 4px; display: block; line-height: 1.5;">${input.infoBoxContent || ''}</span>
+              <div style="max-width: 900px; margin: 32px auto; padding: 20px 28px; background-color: ${themeHex}0A; border-left: 4px solid ${themeHex}; border-radius: 10px; box-sizing: border-box;">
+                <strong style="display: block; font-size: 15px; color: #21182a;">${input.infoBoxTitle}</strong>
+                <span style="font-size: 14px; color: #687075; margin-top: 6px; display: block; line-height: 1.6;">${input.infoBoxContent || ''}</span>
               </div>
             ` : ''}
 
-            <!-- Professional Company Footer -->
-            <div style="background-color: #21182a; padding: 32px 24px; color: #ffffff; text-align: center;">
-              <h2 style="margin: 0; font-size: 18px; font-weight: 800; letter-spacing: 1px; color: #ffffff;">MOVODREAM</h2>
-              <p style="margin: 4px 0 20px 0; font-size: 12px; color: #b8afc2;">AI Travel Companion for Modern Explorers</p>
+            <!-- Professional Company Footer (Full Width) -->
+            <div style="width: 100%; background-color: #21182a; padding: 48px 24px; color: #ffffff; text-align: center; box-sizing: border-box;">
+              <div style="max-width: 900px; margin: 0 auto;">
+                <h2 style="margin: 0; font-size: 20px; font-weight: 800; letter-spacing: 1.5px; color: #ffffff;">MOVODREAM</h2>
+                <p style="margin: 6px 0 24px 0; font-size: 13px; color: #b8afc2;">AI Travel Companion for Modern Explorers</p>
 
-              <!-- Navigation Links -->
-              <div style="margin-bottom: 20px; font-size: 13px;">
-                <a href="${baseUrl}/about" target="_blank" style="color: #ff7294; text-decoration: none; margin: 0 10px; font-weight: 600;">About Us</a> |
-                <a href="${baseUrl}/support" target="_blank" style="color: #ff7294; text-decoration: none; margin: 0 10px; font-weight: 600;">Support</a> |
-                <a href="${baseUrl}/privacy-policy" target="_blank" style="color: #ff7294; text-decoration: none; margin: 0 10px; font-weight: 600;">Privacy Policy</a> |
-                <a href="${baseUrl}/terms" target="_blank" style="color: #ff7294; text-decoration: none; margin: 0 10px; font-weight: 600;">Terms</a> |
-                <a href="${baseUrl}/careers" target="_blank" style="color: #ff7294; text-decoration: none; margin: 0 10px; font-weight: 600;">Careers</a>
-              </div>
+                <!-- Navigation Links -->
+                <div style="margin-bottom: 24px; font-size: 14px;">
+                  <a href="${baseUrl}/about" target="_blank" style="color: #ff7294; text-decoration: none; margin: 0 12px; font-weight: 600;">About Us</a> |
+                  <a href="${baseUrl}/support" target="_blank" style="color: #ff7294; text-decoration: none; margin: 0 12px; font-weight: 600;">Support</a> |
+                  <a href="${baseUrl}/privacy-policy" target="_blank" style="color: #ff7294; text-decoration: none; margin: 0 12px; font-weight: 600;">Privacy Policy</a> |
+                  <a href="${baseUrl}/terms" target="_blank" style="color: #ff7294; text-decoration: none; margin: 0 12px; font-weight: 600;">Terms</a> |
+                  <a href="${baseUrl}/careers" target="_blank" style="color: #ff7294; text-decoration: none; margin: 0 12px; font-weight: 600;">Careers</a>
+                </div>
 
-              <!-- Social Links -->
-              <div style="margin-bottom: 20px;">
-                <a href="https://x.com/movodream" target="_blank" style="display: inline-block; width: 32px; height: 32px; background: rgba(255,255,255,0.1); border-radius: 50%; line-height: 32px; color: #ffffff; text-decoration: none; margin: 0 5px; font-size: 12px; font-weight: bold;">X</a>
-                <a href="https://instagram.com/movodream" target="_blank" style="display: inline-block; width: 32px; height: 32px; background: rgba(255,255,255,0.1); border-radius: 50%; line-height: 32px; color: #ffffff; text-decoration: none; margin: 0 5px; font-size: 12px; font-weight: bold;">IG</a>
-                <a href="https://linkedin.com/company/movodream" target="_blank" style="display: inline-block; width: 32px; height: 32px; background: rgba(255,255,255,0.1); border-radius: 50%; line-height: 32px; color: #ffffff; text-decoration: none; margin: 0 5px; font-size: 12px; font-weight: bold;">IN</a>
-              </div>
+                <!-- Social Links -->
+                <table cellpadding="0" cellspacing="0" border="0" align="center" style="margin: 0 auto 24px auto;">
+                  <tr>
+                    <!-- X (Twitter) -->
+                    <td style="padding: 0 6px;" align="center">
+                      <a href="https://x.com/movodream" target="_blank" style="display: inline-block; width: 36px; height: 36px; background-color: rgba(255,255,255,0.12); border-radius: 50%; text-align: center; text-decoration: none; line-height: 36px;">
+                        <img src="cid:social-x" width="16" height="16" alt="X" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle; border: 0;" />
+                      </a>
+                    </td>
+                    <!-- Instagram -->
+                    <td style="padding: 0 6px;" align="center">
+                      <a href="https://www.instagram.com/movodreamofficial/" target="_blank" style="display: inline-block; width: 36px; height: 36px; background-color: rgba(255,255,255,0.12); border-radius: 50%; text-align: center; text-decoration: none; line-height: 36px;">
+                        <img src="cid:social-instagram" width="16" height="16" alt="Instagram" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle; border: 0;" />
+                      </a>
+                    </td>
+                    <!-- LinkedIn -->
+                    <td style="padding: 0 6px;" align="center">
+                      <a href="https://www.linkedin.com/company/movodream" target="_blank" style="display: inline-block; width: 36px; height: 36px; background-color: rgba(255,255,255,0.12); border-radius: 50%; text-align: center; text-decoration: none; line-height: 36px;">
+                        <img src="cid:social-linkedin" width="16" height="16" alt="LinkedIn" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle; border: 0;" />
+                      </a>
+                    </td>
+                    <!-- Facebook -->
+                    <td style="padding: 0 6px;" align="center">
+                      <a href="https://www.facebook.com/movodreamofficial/" target="_blank" style="display: inline-block; width: 36px; height: 36px; background-color: rgba(255,255,255,0.12); border-radius: 50%; text-align: center; text-decoration: none; line-height: 36px;">
+                        <img src="cid:social-facebook" width="16" height="16" alt="Facebook" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle; border: 0;" />
+                      </a>
+                    </td>
+                    <!-- YouTube -->
+                    <td style="padding: 0 6px;" align="center">
+                      <a href="https://youtube.com/@movodream" target="_blank" style="display: inline-block; width: 36px; height: 36px; background-color: rgba(255,255,255,0.12); border-radius: 50%; text-align: center; text-decoration: none; line-height: 36px;">
+                        <img src="cid:social-youtube" width="16" height="16" alt="YouTube" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle; border: 0;" />
+                      </a>
+                    </td>
+                  </tr>
+                </table>
 
-              <div style="border-top: 1px solid rgba(255,255,255,0.12); padding-top: 16px; font-size: 11px; color: #9c91a5; line-height: 1.6;">
-                <p style="margin: 0;">Email Sent by <strong>Movodream Technologies</strong> • Support: support@movodream.com</p>
-                <p style="margin: 6px 0 0 0;">New Delhi, India • You opted into marketing updates from Movodream.</p>
-                <p style="margin: 6px 0 0 0;">© ${new Date().getFullYear()} Movodream. All rights reserved.</p>
+                <div style="border-top: 1px solid rgba(255,255,255,0.12); padding-top: 20px; font-size: 12px; color: #9c91a5; line-height: 1.7;">
+                  <p style="margin: 0;">Email Sent by <strong>Movodream Technologies</strong> • Support: support@movodream.com</p>
+                  <p style="margin: 6px 0 0 0;">New Delhi, India • You opted into marketing updates from Movodream.</p>
+                  <p style="margin: 6px 0 0 0;">© ${new Date().getFullYear()} Movodream. All rights reserved.</p>
+                </div>
               </div>
             </div>
 
@@ -175,6 +208,7 @@ export async function syncSubscriberEmail(input: SyncEmailInput) {
         text: `${input.heading || input.subject}\n\n${input.description || ''}\n\nVisit: ${baseUrl}`,
         html: htmlBody,
         subscriberEmails,
+        campaignIcon: input.icon || 'mail',
       })
       sentCount = result.count
     } catch (smtpErr) {
@@ -196,7 +230,7 @@ export async function syncSubscriberEmail(input: SyncEmailInput) {
 
 export async function sendSubscriberCampaign(input: { subject: string; text?: string; html?: string; blocks?: any[] }) {
   try {
-    await requirePermission('subscribers', ['create'])
+    await requirePermission('subscribers', ['send'])
     await connectDB()
     const activeSubscribers = await Subscriber.find({ status: 'active' }).select('email').lean()
     const subscriberEmails = activeSubscribers.map((s) => s.email)

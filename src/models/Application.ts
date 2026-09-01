@@ -30,7 +30,7 @@ applicationSchema.pre<ApplicationDocument>('save', function () {
 
 // HR notification only fires on the initial application in background
 applicationSchema.post<ApplicationDocument>('save', function (doc) {
-  if (!doc.$locals.isNewApplication) return
+  if (!doc.$locals.isNewApplication || doc.$locals.skipHookEmail) return
 
   // Fire in the background without blocking the HTTP response
   ;(async () => {
@@ -39,7 +39,7 @@ applicationSchema.post<ApplicationDocument>('save', function (doc) {
       const { Job } = await import('@/models/Job')
 
       const job = await Job.findById(doc.job).lean<{ title: string } | null>()
-      const baseUrl = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ?? ''
+      const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://movodream.com').replace(/\/+$/, '')
 
       await sendApplicationNotification({
         jobTitle: job?.title ?? 'Unknown role',

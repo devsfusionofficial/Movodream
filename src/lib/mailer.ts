@@ -1,4 +1,6 @@
 import nodemailer from 'nodemailer'
+import path from 'path'
+import fs from 'fs'
 
 let transporter: ReturnType<typeof nodemailer.createTransport> | null = null
 
@@ -105,25 +107,59 @@ export async function sendPostPublishedBroadcast(input: {
   const transport = getTransporter()
   if (!transport || input.subscriberEmails.length === 0) return false
 
-  const from = process.env.EMAIL_FROM_ADDRESS || process.env.SMTP_USER
+  const fromAddress = process.env.EMAIL_FROM_ADDRESS || process.env.SMTP_USER || 'support@movodream.com'
+  const from = `"Movodream" <${fromAddress}>`
+  const CONCURRENCY = 5
 
-  for (let i = 0; i < input.subscriberEmails.length; i += BROADCAST_BATCH_SIZE) {
-    const batch = input.subscriberEmails.slice(i, i + BROADCAST_BATCH_SIZE)
-    await transport.sendMail({
-      from,
-      to: from,
-      bcc: batch,
-      subject: `New on the Movodream blog: ${input.postTitle}`,
-      text: [
-        input.postTitle,
-        '',
-        input.postExcerpt || '',
-        '',
-        `Read more: ${input.postUrl}`,
-      ].join('\n'),
-    })
+  for (let i = 0; i < input.subscriberEmails.length; i += CONCURRENCY) {
+    const chunk = input.subscriberEmails.slice(i, i + CONCURRENCY)
+    await Promise.allSettled(
+      chunk.map(async (email) => {
+        try {
+          await transport.sendMail({
+            from,
+            to: email,
+            subject: `New on the Movodream blog: ${input.postTitle}`,
+            text: [
+              input.postTitle,
+              '',
+              input.postExcerpt || '',
+              '',
+              `Read more: ${input.postUrl}`,
+            ].join('\n'),
+          })
+        } catch (err) {
+          console.error(`Failed to send blog notification to ${email}:`, err)
+        }
+      })
+    )
   }
   return true
+}
+
+function getSocialAttachments() {
+  const dir = path.join(process.cwd(), 'public', 'assets', 'icons', 'social')
+  const icons = [
+    { filename: 'x.png', path: path.join(dir, 'x.png'), cid: 'social-x' },
+    { filename: 'instagram.png', path: path.join(dir, 'instagram.png'), cid: 'social-instagram' },
+    { filename: 'linkedin.png', path: path.join(dir, 'linkedin.png'), cid: 'social-linkedin' },
+    { filename: 'facebook.png', path: path.join(dir, 'facebook.png'), cid: 'social-facebook' },
+    { filename: 'youtube.png', path: path.join(dir, 'youtube.png'), cid: 'social-youtube' },
+  ]
+  return icons.filter((item) => fs.existsSync(item.path))
+}
+
+function getCampaignIconAttachment(iconName?: string) {
+  const safeName = (iconName || 'mail').toLowerCase()
+  const iconPath = path.join(process.cwd(), 'public', 'assets', 'icons', 'campaign', `${safeName}.png`)
+  if (fs.existsSync(iconPath)) {
+    return [{ filename: `${safeName}.png`, path: iconPath, cid: 'campaign-icon' }]
+  }
+  const defaultPath = path.join(process.cwd(), 'public', 'assets', 'icons', 'campaign', 'mail.png')
+  if (fs.existsSync(defaultPath)) {
+    return [{ filename: 'mail.png', path: defaultPath, cid: 'campaign-icon' }]
+  }
+  return []
 }
 
 export async function sendMarketingBroadcast(input: {
@@ -131,22 +167,40 @@ export async function sendMarketingBroadcast(input: {
   text: string
   html: string
   subscriberEmails: string[]
+  campaignIcon?: string
 }) {
   const transport = getTransporter()
   if (!transport) return { sent: false, count: 0 }
   if (input.subscriberEmails.length === 0) return { sent: true, count: 0 }
 
-  const from = process.env.EMAIL_FROM_ADDRESS || process.env.SMTP_USER
-  for (let i = 0; i < input.subscriberEmails.length; i += BROADCAST_BATCH_SIZE) {
-    const batch = input.subscriberEmails.slice(i, i + BROADCAST_BATCH_SIZE)
-    await transport.sendMail({
-      from,
-      to: from,
-      bcc: batch,
-      subject: input.subject,
-      text: input.text,
-      html: input.html,
-    })
+  const fromAddress = process.env.EMAIL_FROM_ADDRESS || process.env.SMTP_USER || 'support@movodream.com'
+  const from = `"Movodream" <${fromAddress}>`
+  const socialAttachments = input.html?.includes('cid:social-') ? getSocialAttachments() : []
+  const campaignAttachments = input.html?.includes('cid:campaign-icon') ? getCampaignIconAttachment(input.campaignIcon) : []
+  const attachments = [...socialAttachments, ...campaignAttachments]
+
+  let successCount = 0
+  const CONCURRENCY = 5
+
+  for (let i = 0; i < input.subscriberEmails.length; i += CONCURRENCY) {
+    const chunk = input.subscriberEmails.slice(i, i + CONCURRENCY)
+    await Promise.allSettled(
+      chunk.map(async (email) => {
+        try {
+          await transport.sendMail({
+            from,
+            to: email,
+            subject: input.subject,
+            text: input.text,
+            html: input.html,
+            attachments: attachments.length > 0 ? attachments : undefined,
+          })
+          successCount++
+        } catch (err) {
+          console.error(`Failed to send marketing broadcast to ${email}:`, err)
+        }
+      })
+    )
   }
-  return { sent: true, count: input.subscriberEmails.length }
+  return { sent: successCount > 0, count: successCount }
 }

@@ -73,13 +73,15 @@ export async function POST(request: Request, { params }: RouteParams) {
     const { key } = await uploadBuffer('resumes', resume.name, validation.mimeType, buffer)
 
     // 5. Create application record in MongoDB
-    const application = await Application.create({
+    const appDoc = new Application({
       job: job._id,
       ...parsed.data,
       resumeKey: key,
       resumeFileName: resume.name,
       status: 'Applied',
     })
+    appDoc.$locals.skipHookEmail = true
+    const application = await appDoc.save()
 
     // 6. Asynchronously send email notification to HR using Next.js after()
     after(async () => {

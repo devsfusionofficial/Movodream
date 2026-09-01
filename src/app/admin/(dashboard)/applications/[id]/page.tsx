@@ -7,6 +7,8 @@ import { ApplicationStatusForm } from '../application-status-form'
 import { ResumeDownloadButton } from '../resume-download-button'
 import { FormattedDate } from '@/components/admin/formatted-date'
 
+import { DeleteApplicationButton } from '../delete-application-button'
+
 export default async function ApplicationDetailPage({ params }: { params: Promise<{ id: string }> }) {
   await requirePagePermission('applications', ['read'])
   const { id } = await params
@@ -36,9 +38,12 @@ export default async function ApplicationDetailPage({ params }: { params: Promis
             <p className="mt-1 text-xs text-[#887f8e] truncate">Applied for {job?.title ?? 'Unknown role'}</p>
           </div>
         </div>
-        <span className="w-fit rounded-full border border-[#eadfe8] bg-white px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-[#887f8e] shrink-0">
-          Secure candidate file
-        </span>
+        <div className="flex items-center gap-2.5 shrink-0">
+          <DeleteApplicationButton applicationId={id} candidateName={application.name} />
+          <span className="w-fit rounded-full border border-[#eadfe8] bg-white px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-[#887f8e] shrink-0">
+            Secure candidate file
+          </span>
+        </div>
       </header>
 
       <div className="space-y-6 rounded-2xl border border-[#ebe6ee] bg-white p-5 sm:p-7 shadow-[0_5px_18px_rgba(34,20,40,0.025)] min-w-0">
