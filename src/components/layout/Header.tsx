@@ -55,12 +55,12 @@ export function Header() {
       >
         <Link href="/">
           <Image
-            src="/assets/images/logo2.webp"
+            src="/assets/images/logo-header.webp"
             alt="Movodream logo"
-            width={140}
-            height={36}
-            className="h-9 w-auto"
-            style={{ width: '140px', height: '36px' }}
+            width={160}
+            height={32}
+            className="h-8 w-auto object-contain"
+            style={{ width: 'auto', height: '32px' }}
             priority
           />
         </Link>
@@ -115,12 +115,12 @@ export function Header() {
             <div className="mobile-menu-header">
               <Link href="/" onClick={() => setMobileOpen(false)}>
                 <Image
-                  src="/assets/images/logo2.webp"
+                  src="/assets/images/logo-header.webp"
                   alt="Movodream logo"
-                  width={130}
-                  height={34}
-                  className="h-8 w-auto"
-                  style={{ width: '130px', height: '34px' }}
+                  width={140}
+                  height={28}
+                  className="h-7 w-auto object-contain"
+                  style={{ width: 'auto', height: '28px' }}
                   priority
                 />
               </Link>

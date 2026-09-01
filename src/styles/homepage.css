@@ -212,7 +212,7 @@
   box-shadow: 0 14px 28px -6px rgba(236, 42, 139, 0.5) !important;
 }
 
-@media (max-width: 1149px) {
+@media (max-width: 1023px) {
   .nav-menu {
     display: none;
   }
@@ -4295,10 +4295,25 @@
   padding-bottom: 48px;
 }
 
+/* Match navbar vertical alignment (px-[4.2%]) on laptop and big screens only */
+@media (min-width: 1024px) {
+  .movodream-footer {
+    padding: 72px 4.2% 48px;
+  }
+  .footer-container {
+    max-width: 100%;
+    margin: 0;
+  }
+  .footer-columns {
+    grid-template-columns: 2.2fr 1fr 1fr 1fr 2fr;
+    gap: 32px;
+  }
+}
+
 .footer-col {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
 }
 
 .footer-col a,
@@ -4320,30 +4335,41 @@
 }
 
 .footer-col-title {
-  font-size: 0.78rem;
+  display: flex;
+  align-items: center;
+  height: 32px;
+  min-height: 32px;
+  font-size: 0.8rem;
   font-weight: 800;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--md-brand-pink, #d71789);
-  margin: 0 0 4px;
+  margin: 0;
+  line-height: 1;
 }
 
 .footer-col-brand {
-  margin-top: -6px;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .footer-logo-link {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  height: 32px;
   width: fit-content;
-  margin-top: -2px;
+  margin: 0;
 }
 
 .footer-tagline {
-  max-width: 380px;
+  max-width: 300px;
   font-size: 0.88rem;
-  color: rgba(255, 255, 255, 0.62);
-  line-height: 1.5;
-  margin: 6px 0 8px;
+  color: rgba(255, 255, 255, 0.65);
+  line-height: 1.58;
+  margin: 0;
+  text-wrap: pretty;
 }
 
 /* Children rely on this gap alone for their rhythm — they must not also
@@ -5859,7 +5885,7 @@ a.office-card:hover {
 .product-vision-visual {
   position: relative;
   flex: 1 1 440px;
-  aspect-ratio: 920 / 636;
+  aspect-ratio: 1324 / 1086;
   border-radius: 18px;
   overflow: hidden;
   box-shadow: 0 12px 28px rgba(90, 45, 215, 0.1);

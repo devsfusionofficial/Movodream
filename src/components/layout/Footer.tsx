@@ -16,10 +16,17 @@ export function Footer() {
         <div className="footer-columns">
           <div className="footer-col footer-col-brand">
             <Link href="/" className="footer-logo-link">
-              <Image src="/assets/images/logo2.webp" alt="Movodream logo" width={150} height={39} style={{ width: '150px', height: '39px' }} />
+              <Image
+                src="/assets/images/logo-white.webp"
+                alt="Movodream logo"
+                width={160}
+                height={32}
+                className="h-8 w-auto object-contain"
+                style={{ width: 'auto', height: '32px' }}
+              />
             </Link>
             <p className="footer-tagline">
-              Scalable, technology-driven products at the intersection of AI, digital innovation, and human experience—creating solutions designed to solve real-world problems and shape the future of industries.
+              Scalable, technology-driven products at the intersection of AI, digital innovation, and human experience, creating solutions designed to solve real-world problems and shape the future of industries.
             </p>
           </div>
 

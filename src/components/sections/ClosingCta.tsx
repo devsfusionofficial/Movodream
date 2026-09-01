@@ -74,8 +74,8 @@ export function ClosingCta() {
         <div className="ready-text">
           <p className="ready-eyebrow">READY TO TRAVEL SMARTER?</p>
           <h2 className="ready-headline">
-            Re-imagine the journey.<br />
-            Re-discover the world.
+            Reimagine the journey.<br />
+            Rediscover the world.
           </h2>
           <div className="ready-subtext">
             <span className="ready-subtext-spark">✦</span>

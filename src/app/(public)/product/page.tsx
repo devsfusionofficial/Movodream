@@ -277,11 +277,11 @@ export default async function ProductPage() {
         </div>
         <div className="product-vision-visual">
           <Image
-            src="/assets/product/immersive-experience.webp"
+            src="/assets/product/future-travel-hero.webp"
             alt="The Future of Travel"
             fill
             sizes="(max-width: 900px) 100vw, (max-width: 1400px) 50vw, 600px"
-            quality={85}
+            quality={90}
           />
         </div>
       </section>
