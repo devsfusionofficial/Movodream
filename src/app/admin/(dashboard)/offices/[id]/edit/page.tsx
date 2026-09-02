@@ -14,6 +14,7 @@ export default async function EditOfficePage({ params }: { params: Promise<{ id:
         defaultValues={{
           city: office.city,
           slug: office.slug,
+          role: office.role,
           address: office.address,
           gmbLink: office.gmbLink,
           status: office.status,

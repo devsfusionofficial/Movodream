@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { Eye, Mail, Trash2, Calendar, CheckCircle2 } from 'lucide-react'
+import { Eye, Mail, Trash2, Calendar, CheckCircle2, ExternalLink } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import {
@@ -39,7 +39,26 @@ export function SubscriberRowActions({
     })
   }
 
-  const email = subscriber?.email || 'N/A'
+  const email = subscriber?.email || ''
+  const formattedDate = subscriber?.createdAt ? new Date(subscriber.createdAt).toLocaleDateString() : 'N/A'
+
+  function handleReplyGmail() {
+    if (!email) return
+    const subject = encodeURIComponent('Update from Movodream')
+    toast.success('Opening Gmail composer...')
+    window.open(
+      `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(email)}&su=${subject}`,
+      '_blank',
+      'noopener,noreferrer'
+    )
+  }
+
+  function handleReplyDefault() {
+    if (!email) return
+    const subject = encodeURIComponent('Update from Movodream')
+    toast.success('Opening default mail client...')
+    window.location.href = `mailto:${email}?subject=${subject}`
+  }
 
   return (
     <>
@@ -71,21 +90,27 @@ export function SubscriberRowActions({
         onOpenChange={setDeleteOpen}
         onConfirm={handleDelete}
         isPending={isPending}
-        itemName={email}
+        itemName={email || 'Subscriber'}
         itemType="Newsletter Subscriber"
       />
 
       <Dialog open={viewOpen} onOpenChange={setViewOpen}>
         <DialogContent className="w-full max-w-[calc(100vw-2rem)] sm:max-w-md max-h-[90vh] overflow-y-auto rounded-2xl border border-[#ebe6ee] bg-white p-5 sm:p-6 shadow-2xl min-w-0">
           <DialogHeader className="border-b border-[#f0edf1] pb-4 pr-10 min-w-0">
-            <div className="flex flex-wrap items-center justify-between gap-3 min-w-0">
-              <div className="min-w-0 flex-1">
-                <DialogTitle className="text-xl font-bold tracking-tight text-[#21182a] break-words [overflow-wrap:anywhere]">
-                  Subscriber Profile
-                </DialogTitle>
-                <DialogDescription className="mt-0.5 text-xs text-[#857c8b] min-w-0 truncate">
-                  Newsletter subscriber record
-                </DialogDescription>
+            <div className="flex items-center justify-between gap-3 min-w-0">
+              <div className="flex items-center gap-3 min-w-0">
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#fce8f2] text-[#d71789]">
+                  <Mail className="h-5 w-5" />
+                </span>
+                <div className="min-w-0">
+                  <DialogTitle className="text-lg font-bold tracking-tight text-[#21182a] break-words [overflow-wrap:anywhere]">
+                    Subscriber Details
+                  </DialogTitle>
+                  <DialogDescription className="text-xs text-[#857c8b] flex items-center gap-1.5 mt-0.5 min-w-0 truncate">
+                    <Calendar className="h-3.5 w-3.5 shrink-0 text-[#d71789]" />
+                    Joined {formattedDate}
+                  </DialogDescription>
+                </div>
               </div>
               <span className="rounded-full bg-[#fce8f2] px-3 py-1 text-xs font-semibold capitalize text-[#d71789] border border-[#f7d4e5] shrink-0">
                 {subscriber?.status || 'Active'}
@@ -103,18 +128,34 @@ export function SubscriberRowActions({
             </div>
           </div>
 
-          <div className="flex items-center justify-between gap-3 border-t border-[#f0edf1] pt-4">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#f0edf1] pt-4">
             <Button variant="outline" size="sm" onClick={() => setViewOpen(false)} className="border-[#e6e1e9]">
               Close
             </Button>
             {email && (
-              <Button
-                render={<a href={`mailto:${email}`} />}
-                className="gap-1.5 bg-[#d71789] text-white hover:bg-[#b40d6d]"
-              >
-                <Mail className="h-3.5 w-3.5" />
-                Email Subscriber
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleReplyDefault}
+                  className="gap-1.5 border-[#e6e1e9] text-[#21182a] hover:bg-[#f8f3f8]"
+                  title="Open in your default desktop mail app (Outlook, Apple Mail, etc.)"
+                >
+                  <ExternalLink className="h-3.5 w-3.5 text-[#857c8b]" />
+                  Mail App
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  onClick={handleReplyGmail}
+                  className="gap-1.5 bg-[#d71789] text-white hover:bg-[#b40d6d]"
+                  title="Open directly in Gmail web composer"
+                >
+                  <Mail className="h-3.5 w-3.5" />
+                  Email Subscriber
+                </Button>
+              </div>
             )}
           </div>
         </DialogContent>

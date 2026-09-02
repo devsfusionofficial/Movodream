@@ -526,6 +526,39 @@
   margin: 4px 6px;
 }
 
+.career-clear-btn {
+  height: 48px;
+  padding: 10px 18px;
+  border-radius: 16px;
+  background: #ffffff !important;
+  border: 1.5px solid rgba(236, 42, 139, 0.35);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--pg-navy) !important;
+  box-shadow: 0 4px 16px rgba(236, 42, 139, 0.08);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  outline: none;
+  white-space: nowrap;
+}
+
+.career-clear-btn:hover,
+.career-clear-btn:focus-visible {
+  border-color: #ec2a8b;
+  background: #fff5fa !important;
+  color: #d71789 !important;
+  box-shadow: 0 6px 20px rgba(236, 42, 139, 0.16);
+  transform: translateY(-1px);
+}
+
+.career-clear-btn:active {
+  transform: translateY(0);
+}
+
 /* ---------- empty state ---------- */
 
 .page-empty {
@@ -1788,18 +1821,12 @@
     z-index: 150;
   }
 
-  .page-filters > button.page-pill {
+  .page-filters > button.page-pill,
+  .page-filters > .career-clear-btn {
     width: 100%;
-    height: 44px;
-    padding: 0 16px;
-    border-radius: 99px;
-    background: linear-gradient(105.63deg, #ec2a8b 0%, #a855f7 100%);
-    color: #ffffff;
-    font-size: 0.88rem;
-    font-weight: 800;
-    border: none;
-    cursor: pointer;
-    box-shadow: 0 6px 20px rgba(236, 42, 139, 0.25);
+    height: 48px;
+    padding: 10px 16px;
+    border-radius: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -2176,16 +2203,11 @@
 
 .category-scroll-container {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 10px;
-  overflow-x: auto;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  gap: 10px 12px;
   padding: 4px 0;
-}
-
-.category-scroll-container::-webkit-scrollbar {
-  display: none;
+  width: 100%;
 }
 
 .category-tab {
@@ -2201,6 +2223,7 @@
   font-weight: 700;
   text-decoration: none;
   transition: all 0.22s ease;
+  max-width: 100%;
 }
 
 .category-tab:hover {

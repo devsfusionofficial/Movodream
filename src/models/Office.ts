@@ -4,6 +4,7 @@ const officeSchema = new Schema(
   {
     city: { type: String, required: true },
     slug: { type: String, required: true, unique: true },
+    role: { type: String }, // e.g. 'Head Office', 'Office', 'Tech Hub', 'International Hub', 'Regional Hub'
     address: { type: String },
     gmbLink: { type: String },
     status: { type: String, enum: ['live', 'comingSoon'], default: 'comingSoon' },

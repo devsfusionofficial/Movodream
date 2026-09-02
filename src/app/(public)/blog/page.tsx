@@ -120,22 +120,30 @@ export default async function BlogIndexPage({ searchParams }: PageProps) {
                     {post.excerpt && <p>{post.excerpt}</p>}
                     <div className="featured-card-footer">
                       <div className="card-meta-wrap">
-                        {post.author?.name && (
-                          <div className="author-pill">
-                            {post.author.avatar ? (
-                              <Image
-                                src={post.author.avatar}
-                                alt={post.author.name}
-                                width={18}
-                                height={18}
-                                className="author-avatar-img"
-                              />
-                            ) : (
-                              <span className="author-initial">{post.author.name.charAt(0).toUpperCase()}</span>
-                            )}
-                            <span className="author-name">By {post.author.name}</span>
-                          </div>
-                        )}
+                        {post.author?.name && (() => {
+                          const rawAvatar = post.author.avatar
+                          const authorAvatarUrl = typeof rawAvatar === 'string'
+                            ? rawAvatar.trim() || null
+                            : (rawAvatar as { url?: string } | undefined)?.url?.trim() || null
+                          const initial = post.author.name.trim().charAt(0).toUpperCase()
+
+                          return (
+                            <div className="author-pill">
+                              {authorAvatarUrl ? (
+                                <Image
+                                  src={authorAvatarUrl}
+                                  alt={post.author.name}
+                                  width={18}
+                                  height={18}
+                                  className="author-avatar-img"
+                                />
+                              ) : (
+                                <span className="author-initial">{initial}</span>
+                              )}
+                              <span className="author-name">By {post.author.name}</span>
+                            </div>
+                          )
+                        })()}
                         <span className="meta-text">
                           {(post.publishedAt || post.createdAt) && (
                             <>

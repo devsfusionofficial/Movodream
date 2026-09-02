@@ -76,6 +76,7 @@ export function CategoryForm({ categoryId, defaultValues }: CategoryFormProps) {
           <Input
             id="name"
             placeholder="e.g. Travel Destinations"
+            maxLength={50}
             {...register('name')}
             onChange={handleNameChange}
           />

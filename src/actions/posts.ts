@@ -29,7 +29,7 @@ export async function listPosts() {
   const posts = await Post.find()
     .select('title slug status excerpt heroImage author categories tags seo publishedAt createdAt')
     .sort({ createdAt: -1 })
-    .populate('author', 'name')
+    .populate('author', 'name avatar')
     .populate('categories', 'name')
     .populate('tags', 'name')
     .lean()

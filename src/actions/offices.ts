@@ -28,14 +28,19 @@ export async function getOffice(id: string) {
 }
 
 function toOfficeDoc(input: OfficeInput) {
+  let gmbLink = input.gmbLink?.trim()
+  if (gmbLink && !/^https?:\/\//i.test(gmbLink)) {
+    gmbLink = `https://${gmbLink}`
+  }
   return {
     city: input.city.trim(),
     slug: input.slug?.trim() ? slugify(input.slug) : slugify(input.city),
-    address: input.address,
-    gmbLink: input.gmbLink || undefined,
+    role: input.role?.trim() || undefined,
+    address: input.address?.trim() || undefined,
+    gmbLink: gmbLink || undefined,
     status: input.status,
-    description: input.description,
-    image: input.imageUrl ? { url: input.imageUrl, key: input.imageKey } : undefined,
+    description: input.description?.trim() || undefined,
+    image: input.imageUrl ? { url: input.imageUrl, key: input.imageKey || '' } : null,
     order: Number.isFinite(input.order) ? input.order : 0,
   }
 }
@@ -108,6 +113,7 @@ export async function createOffice(input: OfficeInput): Promise<ActionResult> {
 
     revalidatePath('/admin/offices')
     revalidatePath('/offices')
+    revalidatePath('/about')
     return { success: true }
   } catch (err: any) {
     if (err?.code === 11000) {
@@ -137,6 +143,7 @@ export async function updateOffice(id: string, input: OfficeInput): Promise<Acti
 
     revalidatePath('/admin/offices')
     revalidatePath('/offices')
+    revalidatePath('/about')
     revalidatePath(`/offices/${docData.slug}`)
     return { success: true }
   } catch (err: any) {
@@ -161,6 +168,7 @@ export async function deleteOffice(id: string): Promise<ActionResult> {
 
     revalidatePath('/admin/offices')
     revalidatePath('/offices')
+    revalidatePath('/about')
     return { success: true }
   } catch (err) {
     return { success: false, error: err instanceof Error ? err.message : 'Failed to delete office' }

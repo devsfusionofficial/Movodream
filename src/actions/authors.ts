@@ -57,6 +57,7 @@ export async function createAuthor(input: AuthorInput): Promise<ActionResult> {
 
   revalidatePath('/admin/authors')
   revalidatePath('/blog')
+  revalidatePath('/blog', 'layout')
   return { success: true }
 }
 
@@ -77,6 +78,7 @@ export async function updateAuthor(id: string, input: AuthorInput): Promise<Acti
 
   revalidatePath('/admin/authors')
   revalidatePath('/blog')
+  revalidatePath('/blog', 'layout')
   return { success: true }
 }
 
@@ -91,5 +93,6 @@ export async function deleteAuthor(id: string): Promise<ActionResult> {
 
   revalidatePath('/admin/authors')
   revalidatePath('/blog')
+  revalidatePath('/blog', 'layout')
   return { success: true }
 }

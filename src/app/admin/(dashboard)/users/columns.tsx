@@ -11,8 +11,8 @@ export const columns: ColumnDef<UserRow, unknown>[] = [
     accessorKey: 'name',
     header: 'Name',
     cell: ({ row }) => (
-      <span className="max-w-[180px] truncate block font-medium text-[#21182a]" title={row.original.name}>
-        {row.original.name || '—'}
+      <span className="max-w-[180px] truncate block font-medium text-[#21182a]" title={row.original.name?.trim()}>
+        {row.original.name?.trim() || '—'}
       </span>
     ),
   },

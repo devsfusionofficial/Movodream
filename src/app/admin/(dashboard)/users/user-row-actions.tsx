@@ -46,16 +46,16 @@ export function UserRowActions({
     })
   }
 
-  function handleRemove() {
+  function handleDelete() {
     if (isProtectedUser) {
-      toast.error('This Super Admin account cannot be removed.')
+      toast.error('This Super Admin account cannot be deleted.')
       setDeleteOpen(false)
       return
     }
     startTransition(async () => {
       const result = await removeUser(userId)
       if (!result.success) toast.error(result.error)
-      else toast.success('User removed')
+      else toast.success('User deleted')
       setDeleteOpen(false)
       setViewOpen(false)
     })
@@ -77,7 +77,7 @@ export function UserRowActions({
         {isProtectedUser ? (
           <span
             className="inline-flex h-7 w-[78px] shrink-0 items-center justify-center rounded-[min(var(--radius-md),12px)] border border-[#e6e1e9] bg-[#faf8fb] text-[0.8rem] font-medium text-[#857c8b] select-none leading-none text-center"
-            title="Super Admin account is locked and cannot be removed"
+            title="Super Admin account is locked and cannot be deleted"
           >
             Protected
           </span>
@@ -89,7 +89,7 @@ export function UserRowActions({
             disabled={isPending}
             className="h-7 w-[78px] justify-center items-center text-[#b42318] hover:bg-[#fff1f0] text-[0.8rem] leading-none text-center"
           >
-            Remove
+            Delete
           </Button>
         )}
       </div>
@@ -97,7 +97,7 @@ export function UserRowActions({
       <DeleteConfirmDialog
         open={deleteOpen}
         onOpenChange={setDeleteOpen}
-        onConfirm={handleRemove}
+        onConfirm={handleDelete}
         isPending={isPending}
         itemName={email}
         itemType="User Account"
@@ -156,7 +156,7 @@ export function UserRowActions({
                 }}
                 disabled={isPending}
               >
-                Remove User
+                Delete User
               </Button>
             )}
           </div>

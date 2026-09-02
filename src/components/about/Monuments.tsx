@@ -136,3 +136,77 @@ export function SydneyOperaHouse({ className }: Props) {
     </svg>
   )
 }
+
+/** Kolkata — Victoria Memorial. */
+export function VictoriaMemorial({ className }: Props) {
+  return (
+    <svg viewBox="0 0 120 120" className={className} aria-hidden="true">
+      <g {...line}>
+        {/* Baseline & Stepped Plinth */}
+        <path d="M6 108h108" />
+        <path d="M10 108v-3h100v3" />
+
+        {/* Left Corner Tower */}
+        <path d="M12 105V66h16v39" />
+        <path d="M10 66h20" />
+        <path d="M13 66V52h14v14" />
+        <path d="M13 52c0-7 7-11 7-11s7 4 7 11" />
+        <path d="M20 41v-6" />
+        <path d="M19 74h2v14h-2z" />
+        <path d="M19 94h2v8h-2z" />
+
+        {/* Right Corner Tower */}
+        <path d="M92 105V66h16v39" />
+        <path d="M90 66h20" />
+        <path d="M93 66V52h14v14" />
+        <path d="M93 52c0-7 7-11 7-11s7 4 7 11" />
+        <path d="M100 41v-6" />
+        <path d="M99 74h2v14h-2z" />
+        <path d="M99 94h2v8h-2z" />
+
+        {/* Left Colonnade Wing */}
+        <path d="M28 105V74h18v31" />
+        <path d="M34 105V82h4v23" />
+        <path d="M42 105V82h4v23" />
+
+        {/* Right Colonnade Wing */}
+        <path d="M74 105V74h18v31" />
+        <path d="M74 105V82h4v23" />
+        <path d="M82 105V82h4v23" />
+
+        {/* Cornice */}
+        <path d="M28 74h64" />
+
+        {/* Central Block */}
+        <path d="M46 105V64h28v41" />
+        <path d="M44 64h32" />
+
+        {/* Grand Central Arch */}
+        <path d="M52 105V84a8 8 0 0116 0v21" />
+        <path d="M56 105V93a4 4 0 018 0v12" />
+
+        {/* Niches */}
+        <path d="M48 82h2v16h-2zM70 82h2v16h-2z" />
+
+        {/* Central Dome Drum Base */}
+        <path d="M42 64V58h36v6" />
+        <path d="M40 58h40" />
+        <path d="M47 58V50h26v8" />
+        <path d="M51 58V52M56 58V52M60 58V52M64 58V52M69 58V52" />
+
+        {/* Grand Central Dome */}
+        <path d="M45 50c0-16 15-24 15-24s15 8 15 24" />
+        <path d="M51 50c2-10 9-16 9-16s7 6 9 16" />
+        <path d="M60 50V26" />
+
+        {/* Cupola & Angel of Victory */}
+        <path d="M57 26h6v-4h-6z" />
+        <path d="M58 22c0-2 2-3 2-3s2 1 2 3" />
+        <path d="M60 19V9" />
+        <path d="M56 13l4-4 4 4" />
+        <path d="M57 11a3 3 0 016 0" />
+      </g>
+    </svg>
+  )
+}
+

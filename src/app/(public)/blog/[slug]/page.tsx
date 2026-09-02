@@ -36,7 +36,12 @@ export default async function BlogPostPage({ params }: PageProps) {
 
   const related = await getRelatedPosts(post)
   const postUrl = `${SITE_URL}/blog/${post.slug}`
-  const author = post.author as unknown as { name?: string; bio?: string; avatar?: { url?: string } } | null
+  const author = post.author as unknown as { name?: string; bio?: string; avatar?: { url?: string } | string } | null
+  const rawAuthorAvatar = author?.avatar
+  const authorAvatarUrl = typeof rawAuthorAvatar === 'string'
+    ? rawAuthorAvatar.trim() || null
+    : (rawAuthorAvatar as { url?: string } | undefined)?.url?.trim() || null
+  const authorInitial = (author?.name ?? 'M').trim().slice(0, 1).toUpperCase()
 
   const jsonLd = [
     {
@@ -87,10 +92,10 @@ export default async function BlogPostPage({ params }: PageProps) {
 
             <div className="article-byline">
               <span className="article-avatar">
-                {author?.avatar?.url ? (
-                  <Image src={author.avatar.url} alt="" width={36} height={36} />
+                {authorAvatarUrl ? (
+                  <Image src={authorAvatarUrl} alt="" width={36} height={36} className="rounded-full object-cover" />
                 ) : (
-                  <span aria-hidden="true">{(author?.name ?? 'M').slice(0, 1)}</span>
+                  <span aria-hidden="true">{authorInitial}</span>
                 )}
               </span>
               <strong>{author?.name ?? 'Movodream Team'}</strong>
@@ -130,10 +135,10 @@ export default async function BlogPostPage({ params }: PageProps) {
 
           <aside className="article-author">
             <span className="article-author-avatar">
-              {author?.avatar?.url ? (
-                <Image src={author.avatar.url} alt="" width={56} height={56} />
+              {authorAvatarUrl ? (
+                <Image src={authorAvatarUrl} alt="" width={56} height={56} className="rounded-full object-cover" />
               ) : (
-                <span aria-hidden="true">{(author?.name ?? 'M').slice(0, 1)}</span>
+                <span aria-hidden="true">{authorInitial}</span>
               )}
             </span>
             <div>

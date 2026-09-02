@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation'
 import { useForm, Controller, type FieldErrors } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
-import { ArrowLeft, Check, Clock3, ImagePlus, LayoutTemplate, Search, Tag, UserRound, Trash2 } from 'lucide-react'
+import { ArrowLeft, Check, Clock3, ImagePlus, LayoutTemplate, Search, Tag, UserRound, Trash2, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -82,7 +82,16 @@ export function PostForm({ postId, defaultValues, authors, categories, tags }: P
   const selectedAuthor = authors.find((author) => author._id === authorId)
   const categoryIds = watch('categoryIds') ?? []
   const tagIds = watch('tagIds') ?? []
-  function toggleId(field: 'categoryIds' | 'tagIds', id: string, current: string[]) { setValue(field, current.includes(id) ? current.filter((c) => c !== id) : [...current, id], { shouldDirty: true }) }
+  const [tagSearch, setTagSearch] = useState('')
+
+  const selectedTagsList = tags.filter((tag) => tagIds.includes(tag._id))
+  const filteredTags = tags.filter((tag) =>
+    tag.name.toLowerCase().includes(tagSearch.toLowerCase().trim())
+  )
+
+  function toggleId(field: 'categoryIds' | 'tagIds', id: string, current: string[]) {
+    setValue(field, current.includes(id) ? current.filter((c) => c !== id) : [...current, id], { shouldDirty: true })
+  }
 
   return (
     <form onSubmit={handleSubmit(onSubmit, onInvalid)} noValidate className="w-full pb-10 outline-none">
@@ -205,7 +214,198 @@ export function PostForm({ postId, defaultValues, authors, categories, tags }: P
             </FieldGroup>
           </section>
 
-          <section className="rounded-2xl border border-[#ebe5ed] bg-white p-6 shadow-[0_5px_18px_rgba(34,20,40,0.025)]"><SectionTitle icon={Tag} title="Organization" description="Help readers discover this story by topic." /><div className="space-y-5"><Field><FieldLabel className="text-[13px] font-semibold text-[#403445]">Categories</FieldLabel><div className="flex flex-wrap gap-2">{categories.map((category) => { const active = categoryIds.includes(category._id); return <button key={category._id} type="button" aria-pressed={active} onClick={() => toggleId('categoryIds', category._id, categoryIds)} className={`rounded-full border px-3 py-2 text-xs font-semibold transition ${active ? 'border-[#d71789] bg-[#fce8f2] text-[#b40d6d]' : 'border-[#e8e1ea] bg-white text-[#827687] hover:border-[#d8a7c1] hover:text-[#b40d6d]'}`}>{active && <Check className="mr-1 inline h-3 w-3" />}{category.name}</button> })}</div></Field><Field><FieldLabel className="text-[13px] font-semibold text-[#403445]">Tags</FieldLabel><div className="flex flex-wrap gap-2">{tags.map((tag) => { const active = tagIds.includes(tag._id); return <button key={tag._id} type="button" aria-pressed={active} onClick={() => toggleId('tagIds', tag._id, tagIds)} className={`rounded-full border px-3 py-2 text-xs font-semibold transition ${active ? 'border-[#6b43bb] bg-[#f0eaff] text-[#6b43bb]' : 'border-[#e8e1ea] bg-white text-[#827687] hover:border-[#b9a9db] hover:text-[#6b43bb]'}`}>{active && <Check className="mr-1 inline h-3 w-3" />}{tag.name}</button> })}</div></Field></div></section>
+          <section className="rounded-2xl border border-[#ebe5ed] bg-white p-6 shadow-[0_5px_18px_rgba(34,20,40,0.025)]">
+            <SectionTitle icon={Tag} title="Organization" description="Help readers discover this story by topic and theme." />
+            <div className="space-y-5">
+              {/* CATEGORIES */}
+              <div className="space-y-2.5">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <FieldLabel className="text-[13px] font-semibold text-[#403445]">Categories</FieldLabel>
+                    {categoryIds.length > 0 && (
+                      <span className="rounded-full bg-[#fce8f2] px-2 py-0.5 text-[10px] font-bold text-[#b40d6d] border border-[#f7d4e5]">
+                        {categoryIds.length} selected
+                      </span>
+                    )}
+                  </div>
+                  {categoryIds.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => setValue('categoryIds', [], { shouldDirty: true })}
+                      className="text-[11px] font-semibold text-[#827687] hover:text-[#d71789] hover:underline cursor-pointer"
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
+
+                {categories.length > 0 ? (
+                  <div className="flex flex-wrap gap-1.5 max-h-40 overflow-y-auto pr-1">
+                    {categories.map((category) => {
+                      const active = categoryIds.includes(category._id)
+                      return (
+                        <button
+                          key={category._id}
+                          type="button"
+                          aria-pressed={active}
+                          onClick={() => toggleId('categoryIds', category._id, categoryIds)}
+                          title={category.name}
+                          className={`group inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs font-semibold transition cursor-pointer max-w-full min-w-0 ${
+                            active
+                              ? 'border-[#d71789] bg-[#fce8f2] text-[#b40d6d] shadow-2xs'
+                              : 'border-[#e8e1ea] bg-white text-[#716478] hover:border-[#d8a7c1] hover:bg-[#fff9fc] hover:text-[#b40d6d]'
+                          }`}
+                        >
+                          {active ? (
+                            <Check className="h-3 w-3 shrink-0 text-[#b40d6d]" />
+                          ) : (
+                            <span className="h-1.5 w-1.5 rounded-full bg-[#d8a7c1] group-hover:bg-[#b40d6d] shrink-0" />
+                          )}
+                          <span className="truncate max-w-[170px] sm:max-w-[200px]">{category.name}</span>
+                        </button>
+                      )
+                    })}
+                  </div>
+                ) : (
+                  <div className="rounded-xl border border-dashed border-[#e0d6e4] bg-[#faf8fb] p-3 text-center text-xs text-[#8c7f91]">
+                    No categories found.{' '}
+                    <Link href="/admin/categories/new" className="font-semibold text-[#d71789] hover:underline">
+                      Create category
+                    </Link>
+                  </div>
+                )}
+              </div>
+
+              {/* TAGS */}
+              <div className="space-y-2.5 pt-4 border-t border-[#f3edf5]">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <FieldLabel className="text-[13px] font-semibold text-[#403445]">Tags</FieldLabel>
+                    {tagIds.length > 0 && (
+                      <span className="rounded-full bg-[#f0eaff] px-2 py-0.5 text-[10px] font-bold text-[#6b43bb] border border-[#dcd0f7]">
+                        {tagIds.length} selected
+                      </span>
+                    )}
+                  </div>
+                  {tagIds.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => setValue('tagIds', [], { shouldDirty: true })}
+                      className="text-[11px] font-semibold text-[#827687] hover:text-[#6b43bb] hover:underline cursor-pointer"
+                    >
+                      Clear all
+                    </button>
+                  )}
+                </div>
+
+                {/* Selected Active Tags Tray */}
+                {selectedTagsList.length > 0 && (
+                  <div className="rounded-xl border border-[#e4daf5] bg-[#faf8ff] p-2.5 space-y-1.5">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#82719a] flex items-center gap-1">
+                      <Check className="h-3 w-3 text-[#6b43bb]" />
+                      Selected Tags ({selectedTagsList.length})
+                    </span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {selectedTagsList.map((tag) => (
+                        <span
+                          key={tag._id}
+                          className="inline-flex items-center gap-1 rounded-lg border border-[#cfbfee] bg-white px-2 py-0.5 text-xs font-semibold text-[#6b43bb] shadow-2xs max-w-full"
+                          title={tag.name}
+                        >
+                          <span className="truncate max-w-[150px] sm:max-w-[180px]">#{tag.name}</span>
+                          <button
+                            type="button"
+                            onClick={() => toggleId('tagIds', tag._id, tagIds)}
+                            className="ml-0.5 rounded p-0.5 text-[#a79ba9] hover:bg-[#f0eaff] hover:text-[#b40d6d] cursor-pointer"
+                            title={`Remove ${tag.name}`}
+                          >
+                            <X className="h-2.5 w-2.5" />
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Search Bar for Tags */}
+                {tags.length > 5 && (
+                  <div className="relative">
+                    <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#a79ba9]" />
+                    <input
+                      type="text"
+                      value={tagSearch}
+                      onChange={(e) => setTagSearch(e.target.value)}
+                      placeholder="Filter tags..."
+                      className="h-8.5 w-full rounded-xl border border-[#e8e1ea] bg-[#faf8fb] pl-8.5 pr-7 text-xs text-[#33283a] placeholder:text-[#a79ba9] focus:border-[#6b43bb] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#6b43bb]/15 transition"
+                    />
+                    {tagSearch && (
+                      <button
+                        type="button"
+                        onClick={() => setTagSearch('')}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 flex h-4 w-4 items-center justify-center rounded-full bg-[#e8e1ea] text-[10px] text-[#6d6072] hover:bg-[#d8a7c1] hover:text-white cursor-pointer"
+                      >
+                        ×
+                      </button>
+                    )}
+                  </div>
+                )}
+
+                {/* Available Tags Cloud */}
+                <div className="max-h-48 overflow-y-auto pr-1">
+                  {filteredTags.length > 0 ? (
+                    <div className="flex flex-wrap gap-1.5">
+                      {filteredTags.map((tag) => {
+                        const active = tagIds.includes(tag._id)
+                        return (
+                          <button
+                            key={tag._id}
+                            type="button"
+                            aria-pressed={active}
+                            onClick={() => toggleId('tagIds', tag._id, tagIds)}
+                            title={tag.name}
+                            className={`group inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs font-medium transition cursor-pointer max-w-full min-w-0 ${
+                              active
+                                ? 'border-[#6b43bb] bg-[#f0eaff] text-[#6b43bb] font-semibold shadow-2xs ring-1 ring-[#6b43bb]/20'
+                                : 'border-[#e8e1ea] bg-white text-[#5f5264] hover:border-[#b9a9db] hover:bg-[#faf7ff] hover:text-[#6b43bb]'
+                            }`}
+                          >
+                            {active ? (
+                              <Check className="h-3 w-3 shrink-0 text-[#6b43bb]" />
+                            ) : (
+                              <span className="text-[#b2a5ba] group-hover:text-[#6b43bb] text-[11px] font-mono shrink-0">#</span>
+                            )}
+                            <span className="truncate max-w-[170px] sm:max-w-[200px]">{tag.name}</span>
+                          </button>
+                        )
+                      })}
+                    </div>
+                  ) : (
+                    <div className="rounded-xl border border-dashed border-[#e0d6e4] bg-[#faf8fb] p-3 text-center text-xs text-[#8c7f91]">
+                      {tagSearch ? (
+                        <>
+                          No tags match &ldquo;<span className="font-semibold text-[#33283a]">{tagSearch}</span>&rdquo;
+                          <button
+                            type="button"
+                            onClick={() => setTagSearch('')}
+                            className="block mx-auto mt-1 font-semibold text-[#6b43bb] hover:underline"
+                          >
+                            Clear search
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          No tags created yet.{' '}
+                          <Link href="/admin/tags/new" className="font-semibold text-[#6b43bb] hover:underline">
+                            Create tag
+                          </Link>
+                        </>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </section>
 
           <section className="rounded-2xl border border-[#ebe5ed] bg-white p-6 shadow-[0_5px_18px_rgba(34,20,40,0.025)]"><SectionTitle icon={Search} title="Search preview" description="Improve how this post appears in search results." /><FieldGroup className="gap-5"><Field><FieldLabel htmlFor="seoTitle" className="text-[13px] font-semibold text-[#403445]">SEO title</FieldLabel><Input id="seoTitle" placeholder="Defaults to the post title" className={inputClass} {...register('seoTitle')} /></Field><Field><FieldLabel htmlFor="seoDescription" className="text-[13px] font-semibold text-[#403445]">SEO description</FieldLabel><Textarea id="seoDescription" rows={3} placeholder="Defaults to the excerpt" className="resize-none rounded-xl border-[#e8e1ea] text-sm shadow-none placeholder:text-[#b2a8b5] focus:border-[#d71789] focus:ring-4 focus:ring-[#d71789]/10" {...register('seoDescription')} /></Field></FieldGroup></section>
         </div>

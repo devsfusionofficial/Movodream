@@ -21,6 +21,7 @@ export function CreateUserDialog() {
     formState: { errors, isSubmitting },
   } = useForm<CreateUserInput>({
     resolver: zodResolver(createUserSchema),
+    mode: 'onTouched',
     defaultValues: { name: '', email: '', password: '', role: 'admin' },
   })
 
@@ -37,7 +38,7 @@ export function CreateUserDialog() {
       toast.error(result.error)
       return
     }
-    toast.success('Admin user created')
+    toast.success('Admin user created successfully')
     reset({ name: '', email: '', password: '', role: 'admin' })
     setOpen(false)
   }
@@ -53,7 +54,13 @@ export function CreateUserDialog() {
           <FieldGroup>
             <Field>
               <FieldLabel htmlFor="name">Name</FieldLabel>
-              <Input id="name" placeholder="Full name" autoComplete="off" {...register('name')} />
+              <Input
+                id="name"
+                placeholder="Full name (e.g. John Doe)"
+                autoComplete="off"
+                aria-invalid={Boolean(errors.name)}
+                {...register('name')}
+              />
               <FieldError errors={[errors.name]} />
             </Field>
 
@@ -64,6 +71,7 @@ export function CreateUserDialog() {
                 type="email"
                 placeholder="admin@movodream.com"
                 autoComplete="off"
+                aria-invalid={Boolean(errors.email)}
                 {...register('email')}
               />
               <FieldError errors={[errors.email]} />
@@ -74,8 +82,9 @@ export function CreateUserDialog() {
               <Input
                 id="password"
                 type="password"
-                placeholder="At least 8 characters"
+                placeholder="At least 8 characters (letters and numbers)"
                 autoComplete="new-password"
+                aria-invalid={Boolean(errors.password)}
                 {...register('password')}
               />
               <FieldError errors={[errors.password]} />

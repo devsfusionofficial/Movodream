@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
-import { ChevronDown, Check, Briefcase, MapPin } from 'lucide-react'
+import { useState, useRef, useEffect, useTransition } from 'react'
+import { useRouter } from 'next/navigation'
+import { ChevronDown, Check, Briefcase, MapPin, RotateCcw } from 'lucide-react'
 
 type JobFiltersProps = {
   departments: string[]
@@ -109,6 +110,8 @@ export function JobFilters({
   initialDepartment = '',
   initialLocation = '',
 }: JobFiltersProps) {
+  const router = useRouter()
+  const [isPending, startTransition] = useTransition()
   const [selectedDept, setSelectedDept] = useState(initialDepartment)
   const [selectedLoc, setSelectedLoc] = useState(initialLocation)
 
@@ -118,37 +121,42 @@ export function JobFilters({
     setSelectedLoc(initialLocation)
   }, [initialDepartment, initialLocation])
 
-  const isFiltered = Boolean(initialDepartment || initialLocation || selectedDept || selectedLoc)
+  const isFiltered = Boolean(selectedDept || selectedLoc)
 
-  const handleApply = (e?: React.FormEvent) => {
-    if (e) e.preventDefault()
+  const applyFilterImmediately = (newDept: string, newLoc: string) => {
+    setSelectedDept(newDept)
+    setSelectedLoc(newLoc)
+
     const params = new URLSearchParams()
-    if (selectedDept.trim()) params.set('department', selectedDept.trim())
-    if (selectedLoc.trim()) params.set('location', selectedLoc.trim())
+    if (newDept.trim()) params.set('department', newDept.trim())
+    if (newLoc.trim()) params.set('location', newLoc.trim())
     params.set('page', '1')
 
     const queryStr = params.toString()
     const targetUrl = queryStr ? `/careers?${queryStr}` : '/careers'
-    
-    // Force direct browser navigation to update URL & Server Component re-render
-    window.location.href = targetUrl
+
+    startTransition(() => {
+      router.push(targetUrl, { scroll: false })
+    })
   }
 
   const handleClear = () => {
     setSelectedDept('')
     setSelectedLoc('')
-    window.location.href = '/careers'
+    startTransition(() => {
+      router.push('/careers', { scroll: false })
+    })
   }
 
   return (
-    <form onSubmit={handleApply} className="page-filters">
+    <div className={`page-filters ${isPending ? 'opacity-70 transition-opacity' : ''}`}>
       <CustomSelect
         label="Filter by department"
         value={selectedDept}
         options={departments}
         defaultLabel="All departments"
         icon={Briefcase}
-        onChange={(val) => setSelectedDept(val)}
+        onChange={(val) => applyFilterImmediately(val, selectedLoc)}
       />
 
       <CustomSelect
@@ -157,18 +165,21 @@ export function JobFilters({
         options={locations}
         defaultLabel="All locations"
         icon={MapPin}
-        onChange={(val) => setSelectedLoc(val)}
+        onChange={(val) => applyFilterImmediately(selectedDept, val)}
       />
 
-      <button type="submit" className="page-pill active">
-        Apply filters
-      </button>
-
       {isFiltered && (
-        <button type="button" onClick={handleClear} className="page-pill">
-          Clear
+        <button
+          type="button"
+          onClick={handleClear}
+          className="career-clear-btn"
+          title="Reset all filters"
+        >
+          <RotateCcw className="h-3.5 w-3.5 text-[#ec2a8b] shrink-0" />
+          <span>Clear filters</span>
         </button>
       )}
-    </form>
+    </div>
   )
 }
+

@@ -1,8 +1,7 @@
 import { listUsers } from '@/actions/users'
 import { requirePagePermission } from '@/lib/auth-guard'
-import { DataTable } from '@/components/admin/data-table'
 import { CreateUserDialog } from './create-user-dialog'
-import { columns } from './columns'
+import { UsersTable } from './users-table'
 
 export default async function UsersPage() {
   await requirePagePermission('user', ['list'])
@@ -20,19 +19,7 @@ export default async function UsersPage() {
       </div>
 
       <section className="overflow-hidden rounded-2xl border border-[#ebe6ee] bg-white p-4 sm:p-4.5 shadow-[0_5px_18px_rgba(34,20,40,0.025)]">
-        <DataTable
-          title="User directory"
-          description="Active accounts with admin workspace access."
-          searchColumnId="email"
-          searchPlaceholder="Search users..."
-          headerActions={
-            <span className="inline-flex w-fit items-center gap-1.5 rounded-full bg-[#fce8f2] px-3 py-1.5 text-[11px] font-semibold text-[#b40d6d]">
-              {users.length} accounts
-            </span>
-          }
-          columns={columns}
-          data={users}
-        />
+        <UsersTable users={users} />
       </section>
     </div>
   )

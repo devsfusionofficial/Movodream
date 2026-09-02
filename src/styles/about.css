@@ -544,14 +544,38 @@
   height: 90px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
   color: rgba(236, 42, 139, 0.35);
   pointer-events: none;
+  margin-left: auto;
 }
 
 .about-office-art svg {
   width: 90px;
   height: 90px;
+}
+
+.about-office-art.about-office-photo {
+  pointer-events: none;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  width: 90px;
+  height: 90px;
+  justify-content: flex-end;
+}
+
+.about-office-img {
+  width: 90px;
+  height: 90px;
+  max-width: 100%;
+  object-fit: contain;
+  object-position: right center;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  margin-left: auto;
 }
 
 /* ---------- leadership team ---------- */
@@ -1282,6 +1306,16 @@
   }
 
   .about-office-art svg {
+    width: 76px;
+    height: 76px;
+  }
+
+  .about-office-art.about-office-photo {
+    width: 76px;
+    height: 76px;
+  }
+
+  .about-office-art.about-office-photo .about-office-img {
     width: 76px;
     height: 76px;
   }

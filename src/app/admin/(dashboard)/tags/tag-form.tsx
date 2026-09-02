@@ -82,6 +82,7 @@ export function TagForm({ tagId, defaultValues }: TagFormProps) {
           <Input
             id="name"
             placeholder="e.g. Travel technology"
+            maxLength={50}
             {...register('name')}
             onChange={handleNameChange}
           />

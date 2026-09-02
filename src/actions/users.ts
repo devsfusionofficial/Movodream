@@ -78,14 +78,17 @@ export async function removeUser(userId: string): Promise<ActionResult> {
     })
     const targetUser = usersList.users.find((u) => u.id === userId)
     if (targetUser?.email?.toLowerCase() === 'harman.singh@movodream.com') {
-      return { success: false, error: 'This Super Admin account is protected and cannot be removed.' }
+      return { success: false, error: 'This Super Admin account is protected and cannot be deleted.' }
     }
 
     await auth.api.removeUser({ body: { userId }, headers: await headers() })
   } catch (err) {
-    return { success: false, error: err instanceof Error ? err.message : 'Failed to remove user' }
+    return { success: false, error: err instanceof Error ? err.message : 'Failed to delete user' }
   }
 
   revalidatePath('/admin/users')
   return { success: true }
 }
+
+export const deleteUser = removeUser
+

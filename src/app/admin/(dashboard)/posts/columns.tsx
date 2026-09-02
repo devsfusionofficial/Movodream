@@ -1,6 +1,7 @@
 'use client'
 
 import type { ColumnDef } from '@tanstack/react-table'
+import Image from 'next/image'
 import { Badge } from '@/components/ui/badge'
 import { PostRowActions } from './post-row-actions'
 import { formatAdminDate } from '@/lib/date-format'
@@ -27,11 +28,19 @@ export const columns: ColumnDef<PostRow, unknown>[] = [
     id: 'author',
     header: 'Author',
     cell: ({ row }) => {
-      const author = row.original.author as unknown as { name?: string } | null
+      const author = row.original.author as unknown as { name?: string; avatar?: { url?: string } | string } | null
+      const avatarUrl = typeof author?.avatar === 'string' ? author.avatar : author?.avatar?.url
       return (
-        <span className="max-w-[150px] truncate block text-xs text-[#524458]" title={author?.name}>
-          {author?.name ?? '—'}
-        </span>
+        <div className="flex items-center gap-2 min-w-0 max-w-[160px]">
+          {avatarUrl ? (
+            <div className="relative h-5 w-5 shrink-0 overflow-hidden rounded-full border border-[#ebe6ee]">
+              <Image src={avatarUrl} alt="" fill className="object-cover" sizes="20px" />
+            </div>
+          ) : null}
+          <span className="truncate text-xs text-[#524458]" title={author?.name}>
+            {author?.name ?? '—'}
+          </span>
+        </div>
       )
     },
   },

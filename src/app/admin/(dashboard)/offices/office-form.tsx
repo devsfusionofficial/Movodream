@@ -36,6 +36,7 @@ export function OfficeForm({ officeId, defaultValues }: OfficeFormProps) {
     defaultValues: {
       city: '',
       slug: '',
+      role: '',
       address: '',
       gmbLink: '',
       status: 'live',
@@ -175,6 +176,22 @@ export function OfficeForm({ officeId, defaultValues }: OfficeFormProps) {
                 Lower numbers appear first on the About Us page.
               </FieldDescription>
               <FieldError errors={[errors.order]} />
+            </Field>
+
+            <Field className="sm:col-span-2">
+              <FieldLabel htmlFor="role" className="text-xs font-semibold text-[#21182a]">
+                Hub Role / Designation (Optional)
+              </FieldLabel>
+              <Input
+                id="role"
+                placeholder="e.g. Head Office, Office, Tech Hub, International Hub"
+                className="h-10 rounded-xl border-[#ebe6ee] text-sm focus:border-[#d71789]"
+                {...register('role')}
+              />
+              <FieldDescription className="text-[11px] text-[#887f8e]">
+                Displayed on the public About Us page under the city name (e.g. Head Office, Tech Hub).
+              </FieldDescription>
+              <FieldError errors={[errors.role]} />
             </Field>
           </div>
         </div>

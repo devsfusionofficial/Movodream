@@ -204,3 +204,44 @@ export async function sendMarketingBroadcast(input: {
   }
   return { sent: successCount > 0, count: successCount }
 }
+
+export async function sendDirectEnquiryReply(input: {
+  to: string
+  subject: string
+  message: string
+  recipientName?: string
+}) {
+  const transport = getTransporter()
+  if (!transport) {
+    return { success: false as const, error: 'Email server configuration is missing.' }
+  }
+
+  const from = process.env.EMAIL_FROM_ADDRESS || 'support@movodream.com'
+
+  try {
+    await transport.sendMail({
+      from: `"Movodream Support" <${from}>`,
+      to: input.to,
+      replyTo: from,
+      subject: input.subject,
+      text: input.message,
+      html: `
+        <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; color: #21182a;">
+          <div style="margin-bottom: 20px;">
+            <span style="font-size: 20px; font-weight: 800; color: #d71789; letter-spacing: -0.5px;">MOVODREAM</span>
+          </div>
+          <div style="background: #ffffff; border-radius: 12px; border: 1px solid #ebe6ee; padding: 24px; line-height: 1.6; font-size: 15px; color: #21182a; white-space: pre-wrap;">${input.message.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>
+          <div style="margin-top: 20px; font-size: 12px; color: #857c8b; border-top: 1px solid #f0edf1; padding-top: 16px;">
+            <p style="margin: 0 0 4px 0;">This email was sent from <strong>support@movodream.com</strong>.</p>
+            <p style="margin: 0;">Movodream • Your Journey, Reimagined.</p>
+          </div>
+        </div>
+      `,
+    })
+    return { success: true as const }
+  } catch (err) {
+    console.error('Failed to send enquiry reply:', err)
+    return { success: false as const, error: err instanceof Error ? err.message : 'Failed to send email' }
+  }
+}
+

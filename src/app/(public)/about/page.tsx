@@ -8,6 +8,7 @@ import {
   GoldenTemple,
   IndiaGate,
   SydneyOperaHouse,
+  VictoriaMemorial,
   VidhanaSoudha,
 } from '@/components/about/Monuments'
 import {
@@ -95,6 +96,8 @@ const OFFICE_META: Record<string, { role: string; focus: string; art: React.Reac
   bengaluru: { role: 'Tech Hub', focus: 'AI Research, Technology & Architecture', art: <VidhanaSoudha /> },
   bangalore: { role: 'Tech Hub', focus: 'AI Research, Technology & Architecture', art: <VidhanaSoudha /> },
   dubai: { role: 'International Hub', focus: 'Global Operations & Middle East Expansion', art: <BurjKhalifa /> },
+  kolkata: { role: 'Office', focus: 'Technology & Regional Operations', art: <VictoriaMemorial /> },
+  calcutta: { role: 'Office', focus: 'Technology & Regional Operations', art: <VictoriaMemorial /> },
   australia: { role: 'Regional Hub', focus: 'APAC Expansion, Growth & Alliances', art: <SydneyOperaHouse /> },
   sydney: { role: 'Regional Hub', focus: 'APAC Expansion, Growth & Alliances', art: <SydneyOperaHouse /> },
 }
@@ -220,6 +223,7 @@ export default async function AboutPage() {
           <div className="about-office-grid">
             {offices.map((office) => {
               const meta = OFFICE_META[office.slug]
+              const role = (office as any).role || meta?.role || 'Office'
               return (
                 <article className="about-office" key={office._id}>
                   <div className="about-office-content">
@@ -229,12 +233,24 @@ export default async function AboutPage() {
                       </span>
                       <div>
                         <h3>{office.city}</h3>
-                        <p className="about-office-role">{meta?.role ?? 'Office'}</p>
+                        <p className="about-office-role">{role}</p>
                       </div>
                     </div>
                     <p className="about-office-desc">{office.description || meta?.focus}</p>
                   </div>
-                  {meta?.art && <span className="about-office-art">{meta.art}</span>}
+                  {meta?.art ? (
+                    <span className="about-office-art">{meta.art}</span>
+                  ) : office.image?.url ? (
+                    <span className="about-office-art about-office-photo">
+                      <Image
+                        src={office.image.url}
+                        alt={office.city}
+                        width={90}
+                        height={90}
+                        className="about-office-img"
+                      />
+                    </span>
+                  ) : null}
                 </article>
               )
             })}

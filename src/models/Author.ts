@@ -1,4 +1,4 @@
-import { Schema, model, models, type InferSchemaType } from 'mongoose'
+import mongoose, { Schema, type InferSchemaType } from 'mongoose'
 
 const authorSchema = new Schema(
   {
@@ -24,4 +24,4 @@ authorSchema.index({ createdAt: -1 })
 
 export type AuthorDoc = InferSchemaType<typeof authorSchema>
 
-export const Author = models.Author ?? model('Author', authorSchema)
+export const Author = mongoose.models.Author ?? mongoose.model('Author', authorSchema)

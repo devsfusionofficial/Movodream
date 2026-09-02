@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Eye, Pencil, Trash2, User, Mail, Calendar, Sparkles } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -26,6 +27,7 @@ export function AuthorRowActions({
     email?: string
     bio?: string
     createdAt?: string
+    avatar?: { url?: string; key?: string } | string
   }
 }) {
   const [isPending, startTransition] = useTransition()
@@ -44,6 +46,11 @@ export function AuthorRowActions({
 
   const name = author?.name || 'Editorial Author'
   const email = author?.email || 'N/A'
+  const rawAvatar = author?.avatar
+  const authorAvatarUrl = typeof rawAvatar === 'string'
+    ? rawAvatar.trim() || null
+    : rawAvatar?.url?.trim() || null
+  const initial = (name || 'A').trim().charAt(0).toUpperCase()
 
   return (
     <>
@@ -94,9 +101,21 @@ export function AuthorRowActions({
           <DialogHeader className="border-b border-[#f0edf1] pb-4 pr-10 min-w-0">
             <div className="flex items-center justify-between gap-3 min-w-0">
               <div className="flex items-center gap-3 min-w-0 flex-1">
-                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#fce8f2] text-lg font-bold text-[#d71789]">
-                  {name.slice(0, 1).toUpperCase()}
-                </span>
+                {authorAvatarUrl ? (
+                  <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-2xl border border-[#ebe6ee] bg-[#faf8fb] shadow-sm">
+                    <Image
+                      src={authorAvatarUrl}
+                      alt={name}
+                      fill
+                      className="object-cover"
+                      sizes="48px"
+                    />
+                  </div>
+                ) : (
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#fce8f2] text-lg font-bold text-[#d71789]">
+                    {initial}
+                  </span>
+                )}
                 <div className="min-w-0 flex-1">
                   <DialogTitle className="text-xl font-bold tracking-tight text-[#21182a] break-words [overflow-wrap:anywhere]">
                     {name}
