@@ -6,7 +6,11 @@ import { getLatestPosts, getAllCategories, getPublishedPostsCount, searchPosts }
 import { Pagination } from '@/components/ui/Pagination'
 
 import { BlogCategoryFilter } from './category-filter'
+import { BlogSearchInput } from './blog-search-input'
 import { formatDate } from '@/lib/date-format'
+
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
 export const metadata: Metadata = {
   title: 'Blog & Journal | Movodream',
@@ -46,19 +50,7 @@ export default async function BlogIndexPage({ searchParams }: PageProps) {
             Exploring how AI, technology, and human curiosity are shaping the way we plan, travel, and experience the world.
           </p>
 
-          <form action="/blog" method="get" className="blog-search-form">
-            <input
-              type="search"
-              name="q"
-              placeholder="Search articles..."
-              defaultValue={query}
-              aria-label="Search articles"
-              className="blog-search-input"
-            />
-            <button type="submit" className="blog-search-btn" aria-label="Submit search">
-              🔍
-            </button>
-          </form>
+          <BlogSearchInput initialQuery={query} />
         </div>
 
         <div className="blog-hero-visual">

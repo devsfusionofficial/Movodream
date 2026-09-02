@@ -51,15 +51,31 @@ postSchema.pre<PostDocument>('validate', function () {
 // this hook is also safe to run from scripts/seed.ts, which imports this
 // model directly outside any request context.
 postSchema.post<PostDocument>('save', async function (doc) {
-  if (!doc.$locals.justPublished) return
-
   try {
-    const { revalidatePath } = await import('next/cache')
+    const { revalidatePath, revalidateTag } = await import('next/cache')
+    revalidateTag('posts', 'max')
+    revalidateTag('categories', 'max')
     revalidatePath('/blog')
-    revalidatePath(`/blog/${doc.slug}`)
+    revalidatePath('/', 'page')
+    if (doc.slug) revalidatePath(`/blog/${doc.slug}`)
   } catch {
     // Not in a request scope (e.g. seed script) — nothing to revalidate.
   }
+})
+
+postSchema.post('findOneAndDelete', async function (doc) {
+  if (!doc) return
+  try {
+    const { revalidatePath, revalidateTag } = await import('next/cache')
+    revalidateTag('posts', 'max')
+    revalidateTag('categories', 'max')
+    revalidatePath('/blog')
+    revalidatePath('/', 'page')
+    if (doc.slug) revalidatePath(`/blog/${doc.slug}`)
+  } catch {
+    // Not in a request scope — nothing to revalidate.
+  }
+})
 
   // Subscriber broadcast email trigger commented out — all subscriber marketing
   // emails are managed and sent intentionally from the Marketing Subscribers page.
@@ -84,7 +100,6 @@ postSchema.post<PostDocument>('save', async function (doc) {
     }
   })()
   */
-})
 
 // Every admin list sorts by createdAt. Without this index MongoDB does an
 // in-memory sort, which is slow and hard-fails past the 32MB sort limit

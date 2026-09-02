@@ -1,6 +1,6 @@
 'use server'
 
-import { revalidatePath } from 'next/cache'
+import { revalidatePath, revalidateTag } from 'next/cache'
 import { requirePermission } from '@/lib/auth-guard'
 import { connectDB } from '@/lib/db'
 import { Category } from '@/models/Category'
@@ -43,6 +43,8 @@ export async function createCategory(input: CategoryInput): Promise<ActionResult
     return { success: false, error: err instanceof Error ? err.message : 'Failed to create category' }
   }
 
+  revalidateTag('categories', 'max')
+  revalidateTag('posts', 'max')
   revalidatePath('/admin/categories')
   revalidatePath('/blog')
   return { success: true }
@@ -64,6 +66,8 @@ export async function updateCategory(id: string, input: CategoryInput): Promise<
     return { success: false, error: err instanceof Error ? err.message : 'Failed to update category' }
   }
 
+  revalidateTag('categories', 'max')
+  revalidateTag('posts', 'max')
   revalidatePath('/admin/categories')
   revalidatePath('/blog')
   return { success: true }
@@ -78,6 +82,8 @@ export async function deleteCategory(id: string): Promise<ActionResult> {
     return { success: false, error: err instanceof Error ? err.message : 'Failed to delete category' }
   }
 
+  revalidateTag('categories', 'max')
+  revalidateTag('posts', 'max')
   revalidatePath('/admin/categories')
   revalidatePath('/blog')
   return { success: true }

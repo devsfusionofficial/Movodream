@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useForm, Controller, type FieldErrors } from 'react-hook-form'
@@ -35,6 +36,23 @@ export function JobForm({ jobId, defaultValues }: JobFormProps) {
     defaultValues: { status: 'draft', employmentType: 'Full-time', skills: [], ...defaultValues },
   })
 
+  // Restore draft if a deployment occurred while the user was filling out the form
+  useEffect(() => {
+    if (!jobId) {
+      try {
+        const saved = sessionStorage.getItem('movodream_job_form_draft')
+        if (saved) {
+          const parsed = JSON.parse(saved)
+          Object.entries(parsed).forEach(([k, v]) => {
+            setValue(k as any, v)
+          })
+          sessionStorage.removeItem('movodream_job_form_draft')
+          toast.info('Restored your draft job listing details.')
+        }
+      } catch {}
+    }
+  }, [jobId, setValue])
+
   const now = new Date()
   const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
 
@@ -52,10 +70,31 @@ export function JobForm({ jobId, defaultValues }: JobFormProps) {
         toast.error(result.error)
         return
       }
+      // Clear draft on successful submit
+      try {
+        sessionStorage.removeItem('movodream_job_form_draft')
+      } catch {}
       toast.success(jobId ? 'Job listing updated' : 'Job listing created successfully!')
       router.push('/admin/jobs')
       router.refresh()
     } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err)
+      if (
+        msg.includes('Server Action') ||
+        msg.includes('was not found on the server') ||
+        msg.includes('failed-to-find-server-action')
+      ) {
+        try {
+          sessionStorage.setItem('movodream_job_form_draft', JSON.stringify(values))
+        } catch {}
+        toast.error('A new application update was just deployed. Refreshing your page and keeping your draft intact...', {
+          duration: 5000,
+        })
+        setTimeout(() => {
+          window.location.reload()
+        }, 1200)
+        return
+      }
       toast.error(err instanceof Error ? err.message : 'Failed to save job listing')
     }
   }

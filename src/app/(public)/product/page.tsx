@@ -16,9 +16,9 @@ export const metadata: Metadata = {
     siteName: 'Movodream',
     images: [
       {
-        url: '/assets/product/hero-window.webp',
-        width: 1400,
-        height: 800,
+        url: '/assets/product/product-hero.webp',
+        width: 1440,
+        height: 1080,
         alt: 'iZhinga AI Travel Companion',
       },
     ],
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'iZhinga | AI Travel Companion by Movodream',
     description: 'The AI travel companion that plans, books, and guides your whole trip in one place.',
-    images: ['/assets/product/hero-window.webp'],
+    images: ['/assets/product/product-hero.webp'],
   },
 }
 
@@ -133,11 +133,11 @@ export default async function ProductPage() {
 
         <div className="product-hero-visual">
           <Image
-            src="/assets/product/hero-window.webp"
+            src="/assets/product/product-hero.webp"
             alt="iZhinga AI Travel Companion"
             fill
             sizes="(max-width: 900px) 100vw, (max-width: 1400px) 50vw, 700px"
-            quality={85}
+            quality={90}
             priority
           />
         </div>

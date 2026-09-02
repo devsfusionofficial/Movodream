@@ -1,6 +1,6 @@
 'use server'
 
-import { revalidatePath } from 'next/cache'
+import { revalidatePath, revalidateTag } from 'next/cache'
 import type { HydratedDocument } from 'mongoose'
 import { requirePermission } from '@/lib/auth-guard'
 import { connectDB } from '@/lib/db'
@@ -85,8 +85,11 @@ export async function createPost(input: PostInput): Promise<ActionResult> {
     return { success: false, error: err instanceof Error ? err.message : 'Failed to create post' }
   }
 
+  revalidateTag('posts', 'max')
+  revalidateTag('categories', 'max')
   revalidatePath('/admin/posts')
   revalidatePath('/blog')
+  revalidatePath('/', 'page')
   if (slug) revalidatePath(`/blog/${slug}`)
   return { success: true }
 }
@@ -111,8 +114,11 @@ export async function updatePost(id: string, input: PostInput): Promise<ActionRe
     return { success: false, error: err instanceof Error ? err.message : 'Failed to update post' }
   }
 
+  revalidateTag('posts', 'max')
+  revalidateTag('categories', 'max')
   revalidatePath('/admin/posts')
   revalidatePath('/blog')
+  revalidatePath('/', 'page')
   if (slug) revalidatePath(`/blog/${slug}`)
   return { success: true }
 }
@@ -126,7 +132,10 @@ export async function deletePost(id: string): Promise<ActionResult> {
     return { success: false, error: err instanceof Error ? err.message : 'Failed to delete post' }
   }
 
+  revalidateTag('posts', 'max')
+  revalidateTag('categories', 'max')
   revalidatePath('/admin/posts')
   revalidatePath('/blog')
+  revalidatePath('/', 'page')
   return { success: true }
 }

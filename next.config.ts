@@ -4,6 +4,7 @@ const nextConfig: NextConfig = {
   compress: true,
   poweredByHeader: false,
   reactStrictMode: true,
+  deploymentId: process.env.VERCEL_DEPLOYMENT_ID,
   images: {
     formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 31536000,

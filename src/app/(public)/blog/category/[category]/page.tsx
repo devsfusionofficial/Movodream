@@ -8,6 +8,9 @@ import { getPostsByCategorySlug, getAllCategories } from '@/lib/queries/posts'
 import { BlogCategoryFilter } from '../../category-filter'
 import { formatDate } from '@/lib/date-format'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 type PageProps = { params: Promise<{ category: string }> }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {

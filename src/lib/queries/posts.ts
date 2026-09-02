@@ -14,13 +14,15 @@ function serialize<T>(doc: T): T {
   return JSON.parse(JSON.stringify(doc))
 }
 
-const PUBLISHED = {
-  status: 'published',
-  $or: [
-    { publishedAt: { $lte: new Date() } },
-    { publishedAt: { $exists: false } },
-    { publishedAt: null },
-  ],
+function getPublishedFilter() {
+  return {
+    status: 'published',
+    $or: [
+      { publishedAt: { $lte: new Date() } },
+      { publishedAt: { $exists: false } },
+      { publishedAt: null },
+    ],
+  }
 }
 
 const POST_CARD_FIELDS = 'title slug excerpt heroImage author categories tags publishedAt readingTime status createdAt'
@@ -28,7 +30,7 @@ const POST_CARD_FIELDS = 'title slug excerpt heroImage author categories tags pu
 async function fetchFeaturedPosts(limit = 3) {
   try {
     await connectDB()
-    const posts = await Post.find(PUBLISHED)
+    const posts = await Post.find(getPublishedFilter())
       .select(POST_CARD_FIELDS)
       .sort({ publishedAt: -1 })
       .limit(limit)
@@ -45,13 +47,13 @@ async function fetchFeaturedPosts(limit = 3) {
 export const getFeaturedPosts = unstable_cache(
   fetchFeaturedPosts,
   ['featured-posts'],
-  { revalidate: 1800, tags: ['posts'] }
+  { revalidate: 60, tags: ['posts'] }
 )
 
 async function fetchLatestPosts(skip = 0, limit = 9) {
   try {
     await connectDB()
-    const posts = await Post.find(PUBLISHED)
+    const posts = await Post.find(getPublishedFilter())
       .select(POST_CARD_FIELDS)
       .sort({ publishedAt: -1 })
       .skip(skip)
@@ -70,14 +72,14 @@ export function getLatestPosts({ skip = 0, limit = 9 }: { skip?: number; limit?:
   return unstable_cache(
     () => fetchLatestPosts(skip, limit),
     [`latest-posts-${skip}-${limit}`],
-    { revalidate: 1800, tags: ['posts'] }
+    { revalidate: 60, tags: ['posts'] }
   )()
 }
 
 async function fetchPublishedPostsCount() {
   try {
     await connectDB()
-    return await Post.countDocuments(PUBLISHED)
+    return await Post.countDocuments(getPublishedFilter())
   } catch (error) {
     console.error('Failed to fetch published posts count:', error)
     return 0
@@ -87,7 +89,7 @@ async function fetchPublishedPostsCount() {
 export const getPublishedPostsCount = unstable_cache(
   fetchPublishedPostsCount,
   ['published-posts-count'],
-  { revalidate: 1800, tags: ['posts'] }
+  { revalidate: 60, tags: ['posts'] }
 )
 
 async function fetchPostsByCategorySlug(categorySlug: string) {
@@ -96,7 +98,7 @@ async function fetchPostsByCategorySlug(categorySlug: string) {
     const category = await Category.findOne({ slug: categorySlug }).lean()
     if (!category) return { category: null, posts: [] }
 
-    const posts = await Post.find({ ...PUBLISHED, categories: category._id })
+    const posts = await Post.find({ ...getPublishedFilter(), categories: category._id })
       .select(POST_CARD_FIELDS)
       .sort({ publishedAt: -1 })
       .populate('author', 'name avatar')
@@ -114,30 +116,57 @@ export function getPostsByCategorySlug(categorySlug: string) {
   return unstable_cache(
     () => fetchPostsByCategorySlug(categorySlug),
     [`posts-category-${categorySlug}`],
-    { revalidate: 1800, tags: ['posts', 'categories'] }
+    { revalidate: 60, tags: ['posts', 'categories'] }
   )()
 }
 
 export async function searchPosts(query: string) {
-  if (!query.trim()) return []
+  const q = query.trim()
+  if (!q) return []
   try {
     await connectDB()
-    const posts = await Post.find({ ...PUBLISHED, $text: { $search: query } })
+    const escaped = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    const regex = new RegExp(escaped, 'i')
+
+    const posts = await Post.find({
+      ...getPublishedFilter(),
+      $or: [
+        { title: { $regex: regex } },
+        { excerpt: { $regex: regex } },
+        { $text: { $search: q } },
+      ],
+    })
       .select(POST_CARD_FIELDS)
       .populate('author', 'name avatar')
       .populate('categories', 'name slug')
+      .sort({ publishedAt: -1 })
       .lean()
     return serialize(posts)
-  } catch (error) {
-    console.error('Failed to search posts:', error)
-    return []
+  } catch {
+    try {
+      const escaped = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+      const regex = new RegExp(escaped, 'i')
+      const posts = await Post.find({
+        ...getPublishedFilter(),
+        $or: [{ title: { $regex: regex } }, { excerpt: { $regex: regex } }],
+      })
+        .select(POST_CARD_FIELDS)
+        .populate('author', 'name avatar')
+        .populate('categories', 'name slug')
+        .sort({ publishedAt: -1 })
+        .lean()
+      return serialize(posts)
+    } catch (error) {
+      console.error('Failed to search posts:', error)
+      return []
+    }
   }
 }
 
 async function fetchPostBySlug(slug: string) {
   try {
     await connectDB()
-    const post = await Post.findOne({ slug, ...PUBLISHED })
+    const post = await Post.findOne({ slug, ...getPublishedFilter() })
       .populate('author', 'name bio avatar socialLinks')
       .populate('categories', 'name slug')
       .populate('tags', 'name slug')
@@ -153,7 +182,7 @@ export function getPostBySlug(slug: string) {
   return unstable_cache(
     () => fetchPostBySlug(slug),
     [`post-slug-${slug}`],
-    { revalidate: 1800, tags: ['posts'] }
+    { revalidate: 60, tags: ['posts'] }
   )()
 }
 
@@ -162,7 +191,7 @@ async function fetchRelatedPosts(postId: string, categoryIds: string[], limit = 
   try {
     await connectDB()
     const posts = await Post.find({
-      ...PUBLISHED,
+      ...getPublishedFilter(),
       _id: { $ne: postId },
       categories: { $in: categoryIds },
     })
@@ -183,7 +212,7 @@ export function getRelatedPosts(post: { _id: string; categories: { _id: string }
   return unstable_cache(
     () => fetchRelatedPosts(post._id, categoryIds, limit),
     [`related-posts-${post._id}-${limit}`],
-    { revalidate: 1800, tags: ['posts'] }
+    { revalidate: 60, tags: ['posts'] }
   )()
 }
 
@@ -211,7 +240,7 @@ async function fetchCategoriesWithCounts() {
     const [categories, categoryCounts] = await Promise.all([
       Category.find().sort({ name: 1 }).lean(),
       Post.aggregate([
-        { $match: PUBLISHED },
+        { $match: getPublishedFilter() },
         { $unwind: '$categories' },
         { $group: { _id: '$categories', count: { $sum: 1 } } },
       ]),
@@ -234,5 +263,5 @@ async function fetchCategoriesWithCounts() {
 export const getCategoriesWithCounts = unstable_cache(
   fetchCategoriesWithCounts,
   ['categories-with-counts'],
-  { revalidate: 1800, tags: ['categories', 'posts'] }
+  { revalidate: 60, tags: ['categories', 'posts'] }
 )
