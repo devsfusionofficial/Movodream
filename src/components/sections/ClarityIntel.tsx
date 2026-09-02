@@ -195,6 +195,16 @@ export function ClarityIntel() {
             <span>Be Overwhelming</span>
           </h2>
           <div className="phone-wrap">
+            {/* Instant high-performance poster (11.5 KB) rendered immediately to eliminate 2-4s delay */}
+            <img
+              src="/assets/images/phone-poster.webp"
+              alt="Movodream AI Travel Phone"
+              className="phone-poster-img"
+              loading="eager"
+              decoding="async"
+              width={400}
+              height={800}
+            />
             <PhoneScene />
           </div>
         </div>

@@ -53,32 +53,30 @@ export function PhoneScene() {
     const textureLoader = new THREE.TextureLoader()
     let phoneModelRequested = false
     let animationFrameId: number | null = null
+    let firstFrameRendered = false
     const cleanupFns: Array<() => void> = []
 
     function startPhoneModelLoad() {
       if (phoneModelRequested) return
       phoneModelRequested = true
 
-      loader.load('/assets/model/iphone16pro.glb', (gltf) => {
-        const model = gltf.scene
+      let loadedGltf: any = null
+      let loadedTexture: THREE.Texture | null = null
 
-        textureLoader.load('/assets/model/texture.jpg', (wallpaperTexture) => {
-          wallpaperTexture.flipY = false
-          wallpaperTexture.colorSpace = THREE.SRGBColorSpace
-          wallpaperTexture.wrapS = THREE.ClampToEdgeWrapping
-          wallpaperTexture.wrapT = THREE.ClampToEdgeWrapping
+      function tryAssembleModel() {
+        if (!loadedGltf || !loadedTexture) return
 
-          model.traverse((child) => {
-            if ((child as THREE.Mesh).isMesh) {
-              const mesh = child as THREE.Mesh
-              const material = mesh.material as THREE.MeshStandardMaterial
-              if (mesh.name === 'main_1' && material) {
-                material.map = wallpaperTexture
-                material.needsUpdate = true
-              }
+        const model = loadedGltf.scene
+
+        model.traverse((child: any) => {
+          if ((child as THREE.Mesh).isMesh) {
+            const mesh = child as THREE.Mesh
+            const material = mesh.material as THREE.MeshStandardMaterial
+            if (mesh.name === 'main_1' && material) {
+              material.map = loadedTexture
+              material.needsUpdate = true
             }
-          })
-          needsRender = true
+          }
         })
 
         model.scale.set(13.8, 13.8, 13.8)
@@ -160,6 +158,12 @@ export function PhoneScene() {
           if (dirty) {
             renderer.render(scene, camera)
             needsRender = false
+
+            if (!firstFrameRendered) {
+              firstFrameRendered = true
+              canvas?.classList.add('is-ready')
+              canvas?.parentElement?.classList.add('has-3d')
+            }
           }
         }
         animate()
@@ -171,7 +175,32 @@ export function PhoneScene() {
             s3Left.removeEventListener('mouseleave', handleMouseLeave)
           }
         })
-      })
+      }
+
+      // Concurrently fetch 3D model and wallpaper texture to eliminate sequential waterfall
+      loader.load(
+        '/assets/model/iphone16pro.glb',
+        (gltf) => {
+          loadedGltf = gltf
+          tryAssembleModel()
+        },
+        undefined,
+        (err) => console.error('Failed to load phone 3D model:', err)
+      )
+
+      textureLoader.load(
+        '/assets/model/texture.jpg',
+        (wallpaperTexture) => {
+          wallpaperTexture.flipY = false
+          wallpaperTexture.colorSpace = THREE.SRGBColorSpace
+          wallpaperTexture.wrapS = THREE.ClampToEdgeWrapping
+          wallpaperTexture.wrapT = THREE.ClampToEdgeWrapping
+          loadedTexture = wallpaperTexture
+          tryAssembleModel()
+        },
+        undefined,
+        (err) => console.error('Failed to load phone texture:', err)
+      )
     }
 
     let visibilityObserver: IntersectionObserver | null = null
@@ -187,11 +216,16 @@ export function PhoneScene() {
             }
           })
         },
-        { root: null, rootMargin: '250px', threshold: 0.01 }
+        { root: null, rootMargin: '800px', threshold: 0.01 }
       )
       const phoneWrap = document.querySelector('.phone-wrap')
       if (phoneWrap) visibilityObserver.observe(phoneWrap)
     }
+
+    // Proactively prefetch during browser idle time so model is ready before user scrolls to vision
+    const idleId = typeof window !== 'undefined' && 'requestIdleCallback' in window
+      ? (window as any).requestIdleCallback(() => startPhoneModelLoad(), { timeout: 2000 })
+      : setTimeout(() => startPhoneModelLoad(), 1500)
 
     resizeCanvas()
     window.addEventListener('resize', resizeCanvas)
@@ -208,6 +242,11 @@ export function PhoneScene() {
       window.removeEventListener('resize', resizeCanvas)
       resizeObserver?.disconnect()
       visibilityObserver?.disconnect()
+      if (typeof window !== 'undefined' && 'cancelIdleCallback' in window && typeof idleId === 'number') {
+        (window as any).cancelIdleCallback(idleId)
+      } else {
+        clearTimeout(idleId)
+      }
       cleanupFns.forEach((fn) => fn())
       renderer.dispose()
     }

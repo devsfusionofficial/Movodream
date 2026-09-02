@@ -4,6 +4,8 @@ import { listSubscribers } from '@/actions/subscribers'
 import { requirePagePermission } from '@/lib/auth-guard'
 import { MarketingCompose } from '../marketing-compose'
 
+export const maxDuration = 60
+
 export default async function MarketingComposePage() {
   await requirePagePermission('subscribers', ['send'])
   const subscribers = await listSubscribers()

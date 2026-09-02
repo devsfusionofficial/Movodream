@@ -108,14 +108,15 @@ export function MarketingCompose({ activeCount }: { activeCount: number }) {
       })
 
       if (!result.success) {
-        toast.error('error' in result ? (result as any).error : 'Failed to sync marketing email')
+        toast.error('error' in result && result.error ? (result as any).error : 'Failed to sync marketing email')
         return
       }
 
-      if ('warning' in result && result.warning) {
-        toast.warning(result.warning, { duration: 6000 })
+      if ('warning' in result && (result as any).warning) {
+        toast.warning(String((result as any).warning), { duration: 6000 })
       } else {
-        toast.success('Marketing email saved and broadcast dispatched!')
+        const countText = 'sentCount' in result && result.sentCount ? ` to ${result.sentCount} subscribers` : ''
+        toast.success(`Marketing email saved and broadcast dispatched${countText}!`)
       }
     })
   }

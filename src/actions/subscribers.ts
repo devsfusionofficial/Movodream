@@ -77,8 +77,9 @@ export async function syncSubscriberEmail(input: SyncEmailInput) {
     const activeSubscribers = await Subscriber.find({ status: 'active' }).select('email').lean()
     const subscriberEmails = activeSubscribers.map((s) => s.email)
 
-    const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000').replace(/\/+$/, '')
+    const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://movodream-chi.vercel.app')).replace(/\/+$/, '')
     const themeHex = input.theme === 'pink' ? '#ff7294' : input.theme === 'purple' ? '#6c4bd8' : input.theme === 'dark' ? '#2b123d' : '#d71789'
+    const iconSlug = (input.icon || 'mail').toLowerCase()
 
     const htmlBody = `
       <!DOCTYPE html>
@@ -95,7 +96,7 @@ export async function syncSubscriberEmail(input: SyncEmailInput) {
             <div style="width:100%; background-color: ${themeHex}14; padding: 52px 24px; text-align: center; border-bottom: 1px solid #f0edf1; box-sizing: border-box;">
               <div style="max-width: 900px; margin: 0 auto;">
                 <div style="display: inline-block; width: 52px; height: 52px; background-color: ${themeHex}; border-radius: 14px; line-height: 52px; text-align: center; margin-bottom: 18px; box-shadow: 0 4px 14px ${themeHex}40; vertical-align: middle;">
-                  <img src="cid:campaign-icon" width="26" height="26" alt="${input.icon || 'mail'}" style="width: 26px; height: 26px; display: inline-block; vertical-align: middle; border: 0;" />
+                  <img src="${baseUrl}/assets/icons/campaign/${iconSlug}.png" width="26" height="26" alt="${input.icon || 'mail'}" style="width: 26px; height: 26px; display: inline-block; vertical-align: middle; border: 0;" />
                 </div>
                 <h1 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em; color: #21182a; line-height: 1.25;">${input.heading || input.subject || 'Movodream Marketing Update'}</h1>
                 ${input.description ? `<p style="margin: 16px auto 0 auto; max-width: 760px; font-size: 16px; line-height: 1.7; color: #554a5c; white-space: pre-line;">${input.description}</p>` : ''}
@@ -140,31 +141,31 @@ export async function syncSubscriberEmail(input: SyncEmailInput) {
                     <!-- X (Twitter) -->
                     <td style="padding: 0 6px;" align="center">
                       <a href="https://x.com/movodream" target="_blank" style="display: inline-block; width: 36px; height: 36px; background-color: rgba(255,255,255,0.12); border-radius: 50%; text-align: center; text-decoration: none; line-height: 36px;">
-                        <img src="cid:social-x" width="16" height="16" alt="X" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle; border: 0;" />
+                        <img src="${baseUrl}/assets/icons/social/x.png" width="16" height="16" alt="X" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle; border: 0;" />
                       </a>
                     </td>
                     <!-- Instagram -->
                     <td style="padding: 0 6px;" align="center">
                       <a href="https://www.instagram.com/movodreamofficial/" target="_blank" style="display: inline-block; width: 36px; height: 36px; background-color: rgba(255,255,255,0.12); border-radius: 50%; text-align: center; text-decoration: none; line-height: 36px;">
-                        <img src="cid:social-instagram" width="16" height="16" alt="Instagram" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle; border: 0;" />
+                        <img src="${baseUrl}/assets/icons/social/instagram.png" width="16" height="16" alt="Instagram" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle; border: 0;" />
                       </a>
                     </td>
                     <!-- LinkedIn -->
                     <td style="padding: 0 6px;" align="center">
                       <a href="https://www.linkedin.com/company/movodream" target="_blank" style="display: inline-block; width: 36px; height: 36px; background-color: rgba(255,255,255,0.12); border-radius: 50%; text-align: center; text-decoration: none; line-height: 36px;">
-                        <img src="cid:social-linkedin" width="16" height="16" alt="LinkedIn" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle; border: 0;" />
+                        <img src="${baseUrl}/assets/icons/social/linkedin.png" width="16" height="16" alt="LinkedIn" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle; border: 0;" />
                       </a>
                     </td>
                     <!-- Facebook -->
                     <td style="padding: 0 6px;" align="center">
                       <a href="https://www.facebook.com/movodreamofficial/" target="_blank" style="display: inline-block; width: 36px; height: 36px; background-color: rgba(255,255,255,0.12); border-radius: 50%; text-align: center; text-decoration: none; line-height: 36px;">
-                        <img src="cid:social-facebook" width="16" height="16" alt="Facebook" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle; border: 0;" />
+                        <img src="${baseUrl}/assets/icons/social/facebook.png" width="16" height="16" alt="Facebook" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle; border: 0;" />
                       </a>
                     </td>
                     <!-- YouTube -->
                     <td style="padding: 0 6px;" align="center">
                       <a href="https://youtube.com/@movodream" target="_blank" style="display: inline-block; width: 36px; height: 36px; background-color: rgba(255,255,255,0.12); border-radius: 50%; text-align: center; text-decoration: none; line-height: 36px;">
-                        <img src="cid:social-youtube" width="16" height="16" alt="YouTube" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle; border: 0;" />
+                        <img src="${baseUrl}/assets/icons/social/youtube.png" width="16" height="16" alt="YouTube" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle; border: 0;" />
                       </a>
                     </td>
                   </tr>
@@ -211,13 +212,28 @@ export async function syncSubscriberEmail(input: SyncEmailInput) {
         campaignIcon: input.icon || 'mail',
       })
       sentCount = result.count
+      if (result.count === 0 && result.error) {
+        return {
+          success: false,
+          sentCount: 0,
+          error: `Email dispatch failed: ${result.error}`,
+        }
+      }
     } catch (smtpErr) {
       console.warn('SMTP Broadcast error:', smtpErr)
       revalidatePath('/admin/marketing-subscribers')
       return {
-        success: true,
+        success: false,
         sentCount: 0,
-        warning: `Campaign saved! (Email dispatch paused: SMTP authentication failed for ${process.env.SMTP_USER || 'support@movodream.com'}. Please check your SMTP password / App Password in .env).`,
+        error: `Email dispatch error: ${smtpErr instanceof Error ? smtpErr.message : 'SMTP delivery failed'}. Please verify your SMTP settings in Vercel.`,
+      }
+    }
+
+    if (sentCount === 0 && subscriberEmails.length > 0) {
+      return {
+        success: false,
+        sentCount: 0,
+        error: `Campaign saved, but 0 emails were delivered (out of ${subscriberEmails.length} subscribers). Please verify your SMTP credentials on Vercel.`,
       }
     }
 
@@ -241,6 +257,15 @@ export async function sendSubscriberCampaign(input: { subject: string; text?: st
       html: input.html || `<p>${input.text}</p>`,
       subscriberEmails,
     })
+
+    if (result.count === 0 && subscriberEmails.length > 0) {
+      return {
+        success: false,
+        count: 0,
+        sentCount: 0,
+        error: result.error || 'SMTP delivery failed. Please verify your SMTP settings in Vercel.',
+      }
+    }
 
     return { success: true, count: result.count, sentCount: result.count }
   } catch (err) {

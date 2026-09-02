@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button'
 import { columns } from './columns'
 import { CampaignComposer } from './campaign-composer'
 
+export const maxDuration = 60
+
 export default async function SubscribersPage() {
   await requirePagePermission('subscribers', ['read'])
   const subscribers = await listSubscribers()

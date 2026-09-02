@@ -89,6 +89,8 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com" />
+        <link rel="preload" href="/assets/images/phone-poster.webp" as="image" type="image/webp" />
+        <link rel="prefetch" href="/assets/model/iphone16pro.glb" as="fetch" crossOrigin="anonymous" />
         <link
           rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"

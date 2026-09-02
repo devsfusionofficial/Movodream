@@ -2,7 +2,7 @@ import nodemailer from 'nodemailer'
 import path from 'path'
 import fs from 'fs'
 
-let transporter: ReturnType<typeof nodemailer.createTransport> | null = null
+let transporter: any = null
 
 function getTransporter() {
   if (transporter) return transporter
@@ -12,12 +12,18 @@ function getTransporter() {
 
   const port = Number(SMTP_PORT) || 465
   const isSecure = port === 465
+  const cleanPass = SMTP_PASS.replace(/^["']|["']$/g, '').trim()
 
   transporter = nodemailer.createTransport({
-    host: SMTP_HOST,
+    host: SMTP_HOST.trim(),
     port,
     secure: isSecure,
-    auth: { user: SMTP_USER, pass: SMTP_PASS },
+    auth: { user: SMTP_USER.trim(), pass: cleanPass },
+    pool: true,
+    maxConnections: 3,
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 15000,
     ...(port === 587 ? { tls: { rejectUnauthorized: false } } : {}),
   })
   return transporter
@@ -68,38 +74,28 @@ export async function sendApplicationNotification(input: {
     from,
     to,
     replyTo: input.email,
-    subject: `New application — ${input.jobTitle} — ${input.name}`,
+    subject: `New application: ${input.jobTitle} — ${input.name}`,
     text: [
-      `Role: ${input.jobTitle}`,
-      `Name: ${input.name}`,
+      `Job: ${input.jobTitle}`,
+      `Applicant: ${input.name}`,
       `Email: ${input.email}`,
       `Phone: ${input.phone}`,
-      input.location ? `Location: ${input.location}` : null,
-      input.experience ? `Experience: ${input.experience}` : null,
-      input.qualification ? `Qualification: ${input.qualification}` : null,
+      `Location: ${input.location || 'N/A'}`,
+      `Experience: ${input.experience || 'N/A'}`,
+      `Qualification: ${input.qualification || 'N/A'}`,
       '',
-      input.coverLetter || '(no cover letter)',
+      'Cover Letter:',
+      input.coverLetter || '(none)',
       '',
-      // Links to the admin screen rather than embedding a presigned resume
-      // URL. A presigned link expires in 5 minutes, so it was almost always
-      // dead by the time anyone opened the email — and it put a
-      // no-login-required URL to someone's CV in an inbox that can be
-      // forwarded. The admin page requires a session and never goes stale.
-      `Resume on file: ${input.resumeFileName}`,
-      `View application: ${input.applicationUrl}`,
-    ]
-      .filter((line) => line !== null)
-      .join('\n'),
+      `Resume: ${input.applicationUrl}`,
+    ].join('\n'),
   })
   return true
 }
 
-// Most SMTP providers cap recipients per message — batching keeps each send
-// well under that instead of one call with a large BCC list.
-const BROADCAST_BATCH_SIZE = 50
-
 export async function sendPostPublishedBroadcast(input: {
   postTitle: string
+  postSlug?: string
   postExcerpt?: string
   postUrl: string
   subscriberEmails: string[]
@@ -107,32 +103,29 @@ export async function sendPostPublishedBroadcast(input: {
   const transport = getTransporter()
   if (!transport || input.subscriberEmails.length === 0) return false
 
-  const fromAddress = process.env.EMAIL_FROM_ADDRESS || process.env.SMTP_USER || 'support@movodream.com'
-  const from = `"Movodream" <${fromAddress}>`
-  const CONCURRENCY = 5
+  const from = process.env.EMAIL_FROM_ADDRESS || process.env.SMTP_USER
 
-  for (let i = 0; i < input.subscriberEmails.length; i += CONCURRENCY) {
-    const chunk = input.subscriberEmails.slice(i, i + CONCURRENCY)
-    await Promise.allSettled(
-      chunk.map(async (email) => {
-        try {
-          await transport.sendMail({
-            from,
-            to: email,
-            subject: `New on the Movodream blog: ${input.postTitle}`,
-            text: [
-              input.postTitle,
-              '',
-              input.postExcerpt || '',
-              '',
-              `Read more: ${input.postUrl}`,
-            ].join('\n'),
-          })
-        } catch (err) {
-          console.error(`Failed to send blog notification to ${email}:`, err)
-        }
+  // Send in BCC batches to keep execution fast and protect subscriber privacy
+  const BATCH_SIZE = 40
+  for (let i = 0; i < input.subscriberEmails.length; i += BATCH_SIZE) {
+    const chunk = input.subscriberEmails.slice(i, i + BATCH_SIZE)
+    try {
+      await transport.sendMail({
+        from: `"Movodream" <${from}>`,
+        to: from,
+        bcc: chunk,
+        subject: `New on Movodream: ${input.postTitle}`,
+        text: [
+          `We just published: ${input.postTitle}`,
+          '',
+          input.postExcerpt || '',
+          '',
+          `Read more: ${input.postUrl}`,
+        ].join('\n'),
       })
-    )
+    } catch (err) {
+      console.error(`Failed to send blog notification batch:`, err)
+    }
   }
   return true
 }
@@ -168,41 +161,47 @@ export async function sendMarketingBroadcast(input: {
   html: string
   subscriberEmails: string[]
   campaignIcon?: string
-}) {
+}): Promise<{ sent: boolean; count: number; error?: string }> {
   const transport = getTransporter()
-  if (!transport) return { sent: false, count: 0 }
+  if (!transport) {
+    const errorMsg = 'SMTP transport unavailable. Please verify SMTP_HOST, SMTP_USER, and SMTP_PASS in your deployment environment variables.'
+    console.error(errorMsg)
+    return { sent: false, count: 0, error: errorMsg }
+  }
   if (input.subscriberEmails.length === 0) return { sent: true, count: 0 }
 
   const fromAddress = process.env.EMAIL_FROM_ADDRESS || process.env.SMTP_USER || 'support@movodream.com'
-  const from = `"Movodream" <${fromAddress}>`
-  const socialAttachments = input.html?.includes('cid:social-') ? getSocialAttachments() : []
-  const campaignAttachments = input.html?.includes('cid:campaign-icon') ? getCampaignIconAttachment(input.campaignIcon) : []
-  const attachments = [...socialAttachments, ...campaignAttachments]
+  const from = `"Movodream" <${fromAddress.trim()}>`
 
+  // Send in BCC batches (up to 40 per batch) to avoid multiple sequential round-trips
+  // that would exceed Vercel serverless function timeouts (10-15s).
+  const BATCH_SIZE = 40
   let successCount = 0
-  const CONCURRENCY = 5
+  const errors: string[] = []
 
-  for (let i = 0; i < input.subscriberEmails.length; i += CONCURRENCY) {
-    const chunk = input.subscriberEmails.slice(i, i + CONCURRENCY)
-    await Promise.allSettled(
-      chunk.map(async (email) => {
-        try {
-          await transport.sendMail({
-            from,
-            to: email,
-            subject: input.subject,
-            text: input.text,
-            html: input.html,
-            attachments: attachments.length > 0 ? attachments : undefined,
-          })
-          successCount++
-        } catch (err) {
-          console.error(`Failed to send marketing broadcast to ${email}:`, err)
-        }
+  for (let i = 0; i < input.subscriberEmails.length; i += BATCH_SIZE) {
+    const bccChunk = input.subscriberEmails.slice(i, i + BATCH_SIZE)
+    try {
+      await transport.sendMail({
+        from,
+        to: from,
+        bcc: bccChunk,
+        subject: input.subject,
+        text: input.text,
+        html: input.html,
       })
-    )
+      successCount += bccChunk.length
+    } catch (err: any) {
+      console.error(`Failed to send marketing broadcast chunk (${bccChunk.length} recipients):`, err)
+      errors.push(err.message || 'SMTP delivery failed')
+    }
   }
-  return { sent: successCount > 0, count: successCount }
+
+  return {
+    sent: successCount > 0,
+    count: successCount,
+    error: errors.length > 0 ? errors.join('; ') : undefined,
+  }
 }
 
 export async function sendDirectEnquiryReply(input: {
