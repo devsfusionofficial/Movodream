@@ -172,7 +172,7 @@ export async function syncSubscriberEmail(input: SyncEmailInput) {
                 </table>
 
                 <div style="border-top: 1px solid rgba(255,255,255,0.12); padding-top: 20px; font-size: 12px; color: #9c91a5; line-height: 1.7;">
-                  <p style="margin: 0;">Email Sent by <strong>Movodream Technologies</strong> • Support: support@movodream.com</p>
+                  <p style="margin: 0;">Email Sent by <strong>Movodream</strong> • Support: support@movodream.com</p>
                   <p style="margin: 6px 0 0 0;">New Delhi, India • You opted into marketing updates from Movodream.</p>
                   <p style="margin: 6px 0 0 0;">© ${new Date().getFullYear()} Movodream. All rights reserved.</p>
                 </div>

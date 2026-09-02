@@ -2,7 +2,7 @@ import { NextResponse, after } from 'next/server'
 import { connectDB } from '@/lib/db'
 import { ContactSubmission } from '@/models/ContactSubmission'
 import { contactSchema } from '@/lib/validation/contact'
-import { sendContactNotification } from '@/lib/mailer'
+import { sendContactNotification, sendContactConfirmationEmail } from '@/lib/mailer'
 
 export async function POST(request: Request) {
   // Safe JSON parsing & schema validation
@@ -25,17 +25,24 @@ export async function POST(request: Request) {
       emailSent: false,
     })
 
-    // 4. Dispatch email notification safely using Next.js after()
-    // This keeps the serverless runtime alive on Vercel until the email sends
+    // 4. Dispatch email notification and user confirmation email safely using Next.js after()
+    // This keeps the serverless runtime alive on Vercel until both emails finish sending
     after(async () => {
       try {
-        const sent = await sendContactNotification(parsed.data)
-        if (sent) {
+        const [supportResult, userResult] = await Promise.allSettled([
+          sendContactNotification(parsed.data),
+          sendContactConfirmationEmail(parsed.data),
+        ])
+
+        const supportSent = supportResult.status === 'fulfilled' && supportResult.value
+        const userSent = userResult.status === 'fulfilled' && userResult.value
+
+        if (supportSent || userSent) {
           await connectDB()
           await ContactSubmission.updateOne({ _id: submission._id }, { emailSent: true }).catch(() => {})
         }
       } catch (err) {
-        console.error('Background contact notification error:', err)
+        console.error('Background contact email delivery error:', err)
       }
     })
 

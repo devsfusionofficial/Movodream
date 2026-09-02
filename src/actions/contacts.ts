@@ -42,6 +42,15 @@ export async function replyToContactSubmission(input: {
   subject: string
   message: string
   recipientName?: string
+  heading?: string
+  preheader?: string
+  icon?: string
+  theme?: string
+  imageUrl?: string
+  ctaText?: string
+  ctaUrl?: string
+  infoBoxTitle?: string
+  infoBoxContent?: string
 }): Promise<ActionResult> {
   await requirePermission('contacts', ['read'])
   if (!input.to || !input.to.includes('@')) {
@@ -56,6 +65,15 @@ export async function replyToContactSubmission(input: {
     subject: input.subject.trim() || 'Re: Movodream Enquiry',
     message: input.message.trim(),
     recipientName: input.recipientName,
+    heading: input.heading?.trim(),
+    preheader: input.preheader?.trim(),
+    icon: input.icon,
+    theme: input.theme,
+    imageUrl: input.imageUrl?.trim(),
+    ctaText: input.ctaText?.trim(),
+    ctaUrl: input.ctaUrl?.trim(),
+    infoBoxTitle: input.infoBoxTitle?.trim(),
+    infoBoxContent: input.infoBoxContent?.trim(),
   })
 
   if (!res.success) {

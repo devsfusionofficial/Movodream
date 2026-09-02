@@ -498,7 +498,7 @@ export function MarketingCompose({ activeCount }: { activeCount: number }) {
 
                   <div className="border-t border-white/10 pt-3 text-[10px] text-[#9c91a5] leading-relaxed">
                     <p>Support: support@movodream.com • New Delhi, India</p>
-                    <p className="mt-0.5">© {new Date().getFullYear()} Movodream Technologies. All rights reserved.</p>
+                    <p className="mt-0.5">© {new Date().getFullYear()} Movodream. All rights reserved.</p>
                   </div>
                 </div>
               </div>

@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { Copy, Check, Eye, Mail, Phone, MessageSquare, Trash2, Calendar, ExternalLink, Send, Loader2 } from 'lucide-react'
+import Link from 'next/link'
+import { Copy, Check, Eye, Mail, Phone, MessageSquare, Trash2, Calendar, ExternalLink } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -13,7 +14,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog'
-import { deleteContactSubmission, replyToContactSubmission } from '@/actions/contacts'
+import { deleteContactSubmission } from '@/actions/contacts'
 import { DeleteConfirmDialog } from '@/components/admin/delete-confirm-dialog'
 import { formatAdminDate } from '@/lib/date-format'
 
@@ -67,53 +68,10 @@ export function ContactRowActions({
     }
   }
 
-  const [replyOpen, setReplyOpen] = useState(false)
-  const [replySubject, setReplySubject] = useState('Re: Movodream Enquiry')
-  const [replyMessage, setReplyMessage] = useState('')
-
-  function handleSendReply(e: React.FormEvent) {
-    e.preventDefault()
-    if (!email) {
-      toast.error('No recipient email available.')
-      return
-    }
-    if (!replyMessage.trim()) {
-      toast.error('Please enter a message to send.')
-      return
-    }
-
-    startTransition(async () => {
-      const res = await replyToContactSubmission({
-        to: email,
-        subject: replySubject.trim() || 'Re: Movodream Enquiry',
-        message: replyMessage.trim(),
-        recipientName: name,
-      })
-
-      if (!res.success) {
-        toast.error(res.error || 'Failed to send email')
-      } else {
-        toast.success(`Reply successfully sent from support@movodream.com to ${email}!`)
-        setReplyOpen(false)
-        setReplyMessage('')
-      }
-    })
-  }
-
-  function handleReplyGmail() {
-    if (!email) return
-    const subject = encodeURIComponent(replySubject || 'Re: Movodream Enquiry')
-    toast.success('Opening Gmail composer...')
-    window.open(
-      `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(email)}&su=${subject}`,
-      '_blank',
-      'noopener,noreferrer'
-    )
-  }
 
   function handleReplyDefault() {
     if (!email) return
-    const subject = encodeURIComponent(replySubject || 'Re: Movodream Enquiry')
+    const subject = encodeURIComponent(`Re: Movodream Enquiry${name ? ` - ${name}` : ''}`)
     toast.success('Opening default mail client...')
     window.location.href = `mailto:${email}?subject=${subject}`
   }
@@ -136,6 +94,18 @@ export function ContactRowActions({
           <Eye className="h-3.5 w-3.5" />
           View
         </Button>
+        {email && (
+          <Button
+            variant="outline"
+            size="sm"
+            render={<Link href={`/admin/contacts/${id}/reply`} />}
+            className="gap-1 border-[#f7d4e5] bg-[#fdf5f9] text-[#d71789] hover:bg-[#fce8f2] hover:border-[#d71789] font-medium"
+            title="Compose email reply with live preview"
+          >
+            <Mail className="h-3.5 w-3.5" />
+            Reply
+          </Button>
+        )}
         <Button
           variant="ghost"
           size="sm"
@@ -279,9 +249,8 @@ export function ContactRowActions({
                   Mail App
                 </Button>
                 <Button
-                  type="button"
                   size="sm"
-                  onClick={() => setReplyOpen(true)}
+                  render={<Link href={`/admin/contacts/${id}/reply`} />}
                   className="gap-2 bg-gradient-to-r from-[#d71789] to-[#ff7294] text-white shadow-[0_6px_18px_rgba(215,23,137,0.25)] hover:opacity-95 border-0 font-medium cursor-pointer"
                   title="Compose and send reply directly from support@movodream.com"
                 >
@@ -291,130 +260,6 @@ export function ContactRowActions({
               </div>
             )}
           </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* DIRECT REPLY MODAL (Sent from support@movodream.com) */}
-      <Dialog open={replyOpen} onOpenChange={setReplyOpen}>
-        <DialogContent className="w-full max-w-[calc(100vw-2rem)] sm:max-w-lg max-h-[90vh] flex flex-col overflow-hidden rounded-2xl border border-[#ebe6ee] bg-white p-5 sm:p-6 shadow-2xl min-w-0">
-          <DialogHeader className="border-b border-[#f0edf1] pb-3.5 shrink-0 pr-8 min-w-0">
-            <div className="flex items-center gap-3 min-w-0">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#fce8f2] text-[#d71789]">
-                <Mail className="h-5 w-5" />
-              </span>
-              <div className="min-w-0 flex-1">
-                <DialogTitle className="text-lg font-bold tracking-tight text-[#21182a] truncate">
-                  Reply to Enquiry
-                </DialogTitle>
-                <DialogDescription className="text-xs text-[#857c8b] mt-0.5 truncate" title={`Sending reply to ${name || email}`}>
-                  Sending official email to <span className="font-semibold text-[#21182a]">{email}</span>
-                </DialogDescription>
-              </div>
-            </div>
-          </DialogHeader>
-
-          <form onSubmit={handleSendReply} className="flex-1 min-h-0 overflow-y-auto space-y-3.5 py-3 text-xs min-w-0 pr-1">
-            {/* Sender confirmation banner */}
-            <div className="rounded-xl border border-[#f7d4e5] bg-[#fdf5f9] p-3 flex items-center justify-between gap-3 shrink-0">
-              <div className="flex items-center gap-2 text-xs">
-                <span className="font-bold text-[#857c8b] uppercase tracking-wider text-[10px]">From:</span>
-                <span className="font-semibold text-[#d71789] font-mono">support@movodream.com</span>
-              </div>
-              <span className="rounded-full bg-[#fce8f2] px-2 py-0.5 text-[10px] font-semibold text-[#d71789] border border-[#f7d4e5] shrink-0">
-                Official Movodream ID
-              </span>
-            </div>
-
-            {/* Recipient */}
-            <div className="shrink-0">
-              <label className="block text-xs font-semibold text-[#21182a] mb-1.5">
-                Recipient (To)
-              </label>
-              <Input
-                value={name ? `${name} <${email}>` : email}
-                disabled
-                className="h-10 rounded-xl border-[#ebe6ee] bg-[#faf8fb] text-xs text-[#6d6174] truncate"
-                title={name ? `${name} <${email}>` : email}
-              />
-            </div>
-
-            {/* Subject */}
-            <div className="shrink-0">
-              <label className="block text-xs font-semibold text-[#21182a] mb-1.5">
-                Subject
-              </label>
-              <Input
-                value={replySubject}
-                onChange={(e) => setReplySubject(e.target.value)}
-                placeholder="Re: Movodream Enquiry"
-                className="h-10 rounded-xl border-[#ebe6ee] text-xs focus:border-[#d71789]"
-                required
-              />
-            </div>
-
-            {/* Message Body */}
-            <div>
-              <label className="block text-xs font-semibold text-[#21182a] mb-1.5">
-                Message Body
-              </label>
-              <Textarea
-                value={replyMessage}
-                onChange={(e) => setReplyMessage(e.target.value)}
-                placeholder="Write your email reply here..."
-                rows={6}
-                className="rounded-xl border-[#ebe6ee] text-xs leading-relaxed focus:border-[#d71789] resize-none"
-                required
-              />
-              <p className="mt-1 text-[11px] text-[#887f8e]">
-                This email will be delivered to the customer directly from <strong>support@movodream.com</strong>.
-              </p>
-            </div>
-
-            <div className="shrink-0 flex flex-wrap items-center justify-between gap-3 border-t border-[#f0edf1] pt-4 mt-auto">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => setReplyOpen(false)}
-                disabled={isPending}
-                className="border-[#e6e1e9] text-[#21182a] hover:bg-[#f8f3f8]"
-              >
-                Cancel
-              </Button>
-
-              <div className="flex items-center gap-2">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleReplyGmail}
-                  className="text-xs text-[#857c8b] hover:text-[#21182a]"
-                  title="Alternatively open in Gmail web client"
-                >
-                  Open Gmail
-                </Button>
-
-                <Button
-                  type="submit"
-                  size="sm"
-                  disabled={isPending}
-                  className="gap-2 bg-gradient-to-r from-[#d71789] to-[#ff7294] text-white shadow-[0_6px_18px_rgba(215,23,137,0.25)] hover:opacity-95 border-0 font-medium cursor-pointer"
-                >
-                  {isPending ? (
-                    <>
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      Sending...
-                    </>
-                  ) : (
-                    <>
-                      <Send className="h-4 w-4" />
-                      Send from support@movodream.com
-                    </>
-                  )}
-                </Button>
-              </div>
-            </div>
-          </form>
         </DialogContent>
       </Dialog>
     </>
