@@ -3,9 +3,9 @@
  *
  * Requirements:
  * - Compares the deadline in the user's browser local timezone.
- * - A deadline of e.g. "2026-09-03" is valid until 12:00 PM (Noon) on that date
+ * - A deadline of e.g. "2026-09-03" is valid until 11:59:59 PM (End of Day) on that date
  *   in the user's local timezone.
- * - If the current local browser time exceeds 12:00 PM on the deadline date,
+ * - If the current local browser time exceeds 11:59:59 PM on the deadline date,
  *   or if status is 'closed', the job is considered expired / fulfilled.
  */
 
@@ -40,15 +40,15 @@ export function extractCalendarDate(
 
 /**
  * Returns the exact cutoff Date in the candidate's browser local time.
- * Standard cutoff: 12:00:00 PM (Noon) on the specified calendar date.
+ * Standard cutoff: 11:59:59 PM (End of Day) on the specified calendar date.
  */
 export function getLocalDeadlineCutoff(
   deadline: string | Date | null | undefined
 ): Date | null {
   const parts = extractCalendarDate(deadline)
   if (!parts) return null
-  // In the candidate's browser local timezone, set cutoff to 12:00 PM (Noon)
-  return new Date(parts.year, parts.month, parts.day, 12, 0, 0, 0)
+  // In the candidate's browser local timezone, set cutoff to 11:59:59 PM (End of Day)
+  return new Date(parts.year, parts.month, parts.day, 23, 59, 59, 999)
 }
 
 /**

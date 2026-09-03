@@ -43,7 +43,8 @@ function CustomSelect({
     }
   }, [isOpen])
 
-  const selectedText = value || defaultLabel
+  const cleanVal = (value || '').trim()
+  const selectedText = cleanVal || defaultLabel
 
   return (
     <div className={`career-custom-select-wrap ${isOpen ? 'is-open z-50' : 'z-10'}`} ref={dropdownRef}>
@@ -52,7 +53,7 @@ function CustomSelect({
         onClick={() => setIsOpen(!isOpen)}
         aria-expanded={isOpen}
         aria-label={label}
-        className={`career-custom-select-btn ${value ? 'has-value' : ''}`}
+        className={`career-custom-select-btn ${cleanVal ? 'has-value' : ''}`}
       >
         <span className="flex items-center gap-2 truncate">
           {Icon && <Icon className="h-3.5 w-3.5 text-[#ec2a8b] shrink-0" />}
@@ -74,25 +75,27 @@ function CustomSelect({
                 onChange('')
                 setIsOpen(false)
               }}
-              className={`career-custom-select-item ${!value ? 'active' : ''}`}
+              className={`career-custom-select-item ${!cleanVal ? 'active' : ''}`}
             >
               <span>{defaultLabel}</span>
-              {!value && <Check className="h-3.5 w-3.5 text-[#ec2a8b]" />}
+              {!cleanVal && <Check className="h-3.5 w-3.5 text-[#ec2a8b]" />}
             </button>
             <div className="career-select-divider" />
             {options.map((opt) => {
-              const isSelected = value.toLowerCase() === opt.toLowerCase()
+              const optClean = (opt || '').trim()
+              if (!optClean) return null
+              const isSelected = cleanVal.toLowerCase() === optClean.toLowerCase()
               return (
                 <button
-                  key={opt}
+                  key={optClean}
                   type="button"
                   onClick={() => {
-                    onChange(opt)
+                    onChange(optClean)
                     setIsOpen(false)
                   }}
                   className={`career-custom-select-item ${isSelected ? 'active' : ''}`}
                 >
-                  <span className="truncate">{opt}</span>
+                  <span className="truncate">{optClean}</span>
                   {isSelected && <Check className="h-3.5 w-3.5 text-[#ec2a8b] shrink-0" />}
                 </button>
               )
@@ -112,25 +115,29 @@ export function JobFilters({
 }: JobFiltersProps) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
-  const [selectedDept, setSelectedDept] = useState(initialDepartment)
-  const [selectedLoc, setSelectedLoc] = useState(initialLocation)
+  const [selectedDept, setSelectedDept] = useState(initialDepartment.trim())
+  const [selectedLoc, setSelectedLoc] = useState(initialLocation.trim())
 
   // Keep state synced with URL searchParams
   useEffect(() => {
-    setSelectedDept(initialDepartment)
-    setSelectedLoc(initialLocation)
+    setSelectedDept(initialDepartment.trim())
+    setSelectedLoc(initialLocation.trim())
   }, [initialDepartment, initialLocation])
 
   const isFiltered = Boolean(selectedDept || selectedLoc)
 
   const applyFilterImmediately = (newDept: string, newLoc: string) => {
-    setSelectedDept(newDept)
-    setSelectedLoc(newLoc)
+    const trimmedDept = newDept.trim()
+    const trimmedLoc = newLoc.trim()
+    setSelectedDept(trimmedDept)
+    setSelectedLoc(trimmedLoc)
 
     const params = new URLSearchParams()
-    if (newDept.trim()) params.set('department', newDept.trim())
-    if (newLoc.trim()) params.set('location', newLoc.trim())
-    params.set('page', '1')
+    if (trimmedDept) params.set('department', trimmedDept)
+    if (trimmedLoc) params.set('location', trimmedLoc)
+    if (trimmedDept || trimmedLoc) {
+      params.set('page', '1')
+    }
 
     const queryStr = params.toString()
     const targetUrl = queryStr ? `/careers?${queryStr}` : '/careers'

@@ -1,6 +1,6 @@
 'use server'
 
-import { revalidatePath } from 'next/cache'
+import { revalidatePath, revalidateTag } from 'next/cache'
 import type { HydratedDocument } from 'mongoose'
 import { requirePermission } from '@/lib/auth-guard'
 import { connectDB } from '@/lib/db'
@@ -38,12 +38,12 @@ export async function getJob(id: string) {
 function applyJobInput(doc: HydratedDocument<JobDoc>, input: JobInput) {
   doc.title = input.title.trim()
   doc.slug = input.slug?.trim() ? slugify(input.slug) : slugify(input.title)
-  doc.department = input.department
-  doc.location = input.location
+  doc.department = input.department?.trim() || undefined
+  doc.location = input.location.trim()
   doc.employmentType = input.employmentType
-  doc.experience = input.experience
-  doc.qualification = input.qualification
-  doc.skills = input.skills
+  doc.experience = input.experience?.trim() || undefined
+  doc.qualification = input.qualification?.trim() || undefined
+  doc.skills = input.skills.map((s) => s.trim()).filter(Boolean)
   doc.shortDescription = input.shortDescription?.trim() ?? ''
   doc.markModified('shortDescription')
   doc.descriptionJson = input.descriptionJson
@@ -74,6 +74,11 @@ export async function createJob(rawInput: JobInput): Promise<ActionResult> {
 
   revalidatePath('/admin/jobs')
   revalidatePath('/careers')
+  try {
+    revalidateTag('jobs', 'max')
+  } catch {
+    // Ignore in non-edge contexts
+  }
   return { success: true }
 }
 
@@ -102,6 +107,11 @@ export async function updateJob(id: string, rawInput: JobInput): Promise<ActionR
   revalidatePath(`/admin/jobs/${id}/edit`)
   revalidatePath('/careers')
   if (slug) revalidatePath(`/careers/${slug}`)
+  try {
+    revalidateTag('jobs', 'max')
+  } catch {
+    // Ignore in non-edge contexts
+  }
   return { success: true }
 }
 
@@ -116,5 +126,10 @@ export async function deleteJob(id: string): Promise<ActionResult> {
 
   revalidatePath('/admin/jobs')
   revalidatePath('/careers')
+  try {
+    revalidateTag('jobs', 'max')
+  } catch {
+    // Ignore in non-edge contexts
+  }
   return { success: true }
 }

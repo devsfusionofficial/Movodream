@@ -20,10 +20,10 @@ export async function getPublishedJobs({ department, location }: { department?: 
     await connectDB()
     const query: Record<string, unknown> = { status: 'published' }
     if (department && department.trim()) {
-      query.department = { $regex: new RegExp(`^${escapeRegex(department.trim())}$`, 'i') }
+      query.department = { $regex: new RegExp(`^\\s*${escapeRegex(department.trim())}\\s*$`, 'i') }
     }
     if (location && location.trim()) {
-      query.location = { $regex: new RegExp(`^${escapeRegex(location.trim())}$`, 'i') }
+      query.location = { $regex: new RegExp(`^\\s*${escapeRegex(location.trim())}\\s*$`, 'i') }
     }
 
     const jobs = await Job.find(query).sort({ createdAt: -1 }).lean()
@@ -69,10 +69,10 @@ export async function getPublishedJobsPaginated({
     await connectDB()
     const query: Record<string, unknown> = { status: 'published' }
     if (department && department.trim()) {
-      query.department = { $regex: new RegExp(`^${escapeRegex(department.trim())}$`, 'i') }
+      query.department = { $regex: new RegExp(`^\\s*${escapeRegex(department.trim())}\\s*$`, 'i') }
     }
     if (location && location.trim()) {
-      query.location = { $regex: new RegExp(`^${escapeRegex(location.trim())}$`, 'i') }
+      query.location = { $regex: new RegExp(`^\\s*${escapeRegex(location.trim())}\\s*$`, 'i') }
     }
 
     const startOfToday = new Date()
@@ -161,21 +161,43 @@ async function fetchJobFilterOptions() {
       {
         $facet: {
           departments: [
-            { $group: { _id: '$department' } },
-            { $match: { _id: { $nin: [null, ''] } } },
+            { $project: { dept: { $trim: { input: '$department' } } } },
+            { $match: { dept: { $nin: [null, ''] } } },
+            { $group: { _id: '$dept' } },
             { $sort: { _id: 1 } },
           ],
           locations: [
-            { $group: { _id: '$location' } },
-            { $match: { _id: { $nin: [null, ''] } } },
+            { $project: { loc: { $trim: { input: '$location' } } } },
+            { $match: { loc: { $nin: [null, ''] } } },
+            { $group: { _id: '$loc' } },
             { $sort: { _id: 1 } },
           ],
         },
       },
     ])
+
+    const rawDepts: string[] = result?.departments?.map((d: any) => String(d._id).trim()) ?? []
+    const rawLocs: string[] = result?.locations?.map((l: any) => String(l._id).trim()) ?? []
+
+    const uniqueDepts = Array.from(
+      rawDepts.reduce((map, item) => {
+        const key = item.toLowerCase()
+        if (!map.has(key)) map.set(key, item)
+        return map
+      }, new Map<string, string>()).values()
+    ).sort((a, b) => a.localeCompare(b))
+
+    const uniqueLocs = Array.from(
+      rawLocs.reduce((map, item) => {
+        const key = item.toLowerCase()
+        if (!map.has(key)) map.set(key, item)
+        return map
+      }, new Map<string, string>()).values()
+    ).sort((a, b) => a.localeCompare(b))
+
     return {
-      departments: (result?.departments?.map((d: any) => d._id) ?? []) as string[],
-      locations: (result?.locations?.map((l: any) => l._id) ?? []) as string[],
+      departments: uniqueDepts,
+      locations: uniqueLocs,
     }
   } catch (error) {
     console.error('Failed to fetch job filter options:', error)

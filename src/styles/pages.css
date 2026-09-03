@@ -58,7 +58,8 @@
 }
 
 .page-eyebrow {
-  display: block;
+  display: inline-block;
+  width: fit-content;
   font-size: 0.74rem;
   font-weight: 700;
   letter-spacing: 0.12em;
@@ -1984,9 +1985,37 @@ p.job-tile-desc.is-muted:not(.job-tile-desc-box p) {
 /* ---------- Job Detail Closed States & Banners ---------- */
 
 .page-eyebrow.is-closed {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 6px;
+  width: fit-content !important;
+  max-width: 100%;
+  padding: 5px 14px !important;
+  border-radius: 99px !important;
   background: rgba(220, 38, 38, 0.08) !important;
-  border-color: rgba(220, 38, 38, 0.24) !important;
+  border: 1px solid rgba(220, 38, 38, 0.24) !important;
   color: #dc2626 !important;
+  font-size: 0.72rem !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.06em;
+  margin-bottom: 8px;
+}
+
+.page-eyebrow.is-open {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 6px;
+  width: fit-content !important;
+  max-width: 100%;
+  padding: 5px 14px !important;
+  border-radius: 99px !important;
+  background: rgba(16, 185, 129, 0.08) !important;
+  border: 1px solid rgba(16, 185, 129, 0.22) !important;
+  color: #059669 !important;
+  font-size: 0.72rem !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.06em;
+  margin-bottom: 8px;
 }
 
 .job-closed-alert-banner {
@@ -2210,10 +2239,28 @@ p.job-tile-desc.is-muted:not(.job-tile-desc-box p) {
     align-items: stretch;
     gap: 14px;
     transition: all 0.2s ease;
+    overflow: hidden;
   }
 
   .job-tile:active {
     transform: scale(0.985);
+  }
+
+  .job-tile-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .title-with-status {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    flex: 1;
+    min-width: 0;
   }
 
   .job-tile h3 {
@@ -2222,6 +2269,25 @@ p.job-tile-desc.is-muted:not(.job-tile-desc-box p) {
     color: var(--pg-navy);
     letter-spacing: -0.015em;
     margin: 0;
+    line-height: 1.3;
+  }
+
+  .job-dept-badge {
+    font-size: 0.74rem;
+    padding: 4px 10px;
+    flex-shrink: 0;
+  }
+
+  .job-tile-specs {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .spec-tag {
+    font-size: 0.74rem;
+    padding: 4px 10px;
   }
 
   .job-tile-meta {
@@ -2251,31 +2317,37 @@ p.job-tile-desc.is-muted:not(.job-tile-desc-box p) {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    flex-wrap: nowrap;
-    gap: 6px;
-    padding-top: 10px;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    padding-top: 12px;
     border-top: 1px solid rgba(168, 85, 247, 0.08);
     width: 100%;
+    box-sizing: border-box;
   }
 
   .deadline-badge,
   .job-status-tag {
-    font-size: 0.68rem;
-    padding: 5px 9px;
-    height: 28px;
+    font-size: 0.72rem;
+    padding: 5px 11px;
+    min-height: 28px;
+    height: auto;
     box-sizing: border-box;
     display: inline-flex;
     align-items: center;
-    white-space: nowrap;
-    flex-shrink: 0;
+    gap: 5px;
+    white-space: normal;
+    word-break: break-word;
+    max-width: 100%;
   }
 
   .job-tile-action {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 4px;
-    padding: 5px 12px;
-    height: 28px;
+    padding: 6px 14px;
+    min-height: 28px;
+    height: auto;
     box-sizing: border-box;
     border-radius: 99px;
     background: linear-gradient(105.63deg, #ec2a8b 0%, #a855f7 100%);
@@ -2284,8 +2356,58 @@ p.job-tile-desc.is-muted:not(.job-tile-desc-box p) {
     font-weight: 800;
     box-shadow: 0 4px 14px rgba(236, 42, 139, 0.2);
     white-space: nowrap;
-    flex-shrink: 0;
     margin-left: auto;
+  }
+
+  @media (max-width: 480px) {
+    .job-tile {
+      padding: 16px 14px;
+      border-radius: 18px;
+      gap: 12px;
+    }
+
+    .job-tile-footer {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 10px;
+      padding-top: 12px;
+    }
+
+    .deadline-badge,
+    .job-status-tag {
+      align-self: flex-start;
+      font-size: 0.72rem;
+      padding: 5px 12px;
+    }
+
+    .job-tile-action {
+      width: 100%;
+      height: 38px;
+      font-size: 0.82rem;
+      margin-left: 0;
+      justify-content: center;
+    }
+
+    .job-tile-action.is-closed {
+      width: 100%;
+      height: 38px;
+      font-size: 0.78rem;
+      margin-left: 0;
+      justify-content: center;
+    }
+
+    .past-jobs-heading-box {
+      padding: 5px 14px;
+    }
+
+    .past-jobs-title {
+      font-size: 0.8rem;
+    }
+
+    .past-jobs-note {
+      font-size: 0.76rem;
+      padding: 0 6px;
+    }
   }
 
   /* Mobile Pagination Controls */
@@ -2323,6 +2445,41 @@ p.job-tile-desc.is-muted:not(.job-tile-desc-box p) {
   .job-sticky-panel {
     padding: 20px 16px;
     border-radius: 22px;
+  }
+
+  .job-closed-alert-banner {
+    padding: 14px 16px;
+    gap: 12px;
+    border-radius: 18px;
+    margin-bottom: 20px;
+  }
+
+  .job-closed-alert-banner .banner-icon {
+    font-size: 1.3rem;
+  }
+
+  .job-closed-alert-banner .banner-content h4 {
+    font-size: 0.94rem;
+  }
+
+  .job-closed-alert-banner .banner-content p {
+    font-size: 0.82rem;
+    line-height: 1.5;
+  }
+
+  .job-closed-card {
+    padding: 24px 16px;
+    border-radius: 20px;
+    gap: 12px;
+  }
+
+  .job-closed-card h2 {
+    font-size: 1.25rem;
+  }
+
+  .job-closed-card .closed-desc {
+    font-size: 0.84rem;
+    line-height: 1.5;
   }
 
   .job-spec-list {

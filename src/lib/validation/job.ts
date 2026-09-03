@@ -10,14 +10,14 @@ export const jobSchema = z.object({
     .regex(/^[a-z0-9-]*$/, 'Lowercase letters, numbers, and hyphens only')
     .optional()
     .or(z.literal('')),
-  department: z.string().optional(),
+  department: z.string().trim().optional(),
   location: z
     .string()
     .trim()
     .min(2, 'Location is required (e.g. Delhi, Remote, India)'),
   employmentType: z.enum(['Full-time', 'Part-time', 'Contract', 'Internship', 'Remote']),
-  experience: z.string().optional(),
-  qualification: z.string().optional(),
+  experience: z.string().trim().optional(),
+  qualification: z.string().trim().optional(),
   skills: z.array(z.string()),
   shortDescription: z
     .string()

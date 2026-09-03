@@ -24,6 +24,8 @@ export default async function CareersPage({ searchParams }: PageProps) {
     getJobFilterOptions(),
   ])
 
+  const isFiltered = Boolean((department && department.trim()) || (location && location.trim()))
+
   return (
     <div className="page-shell">
       <Suspense fallback={null}>
@@ -54,25 +56,46 @@ export default async function CareersPage({ searchParams }: PageProps) {
 
         {jobs.length === 0 ? (
           <div className="career-empty-container">
-            <div className="career-empty-card">
-              <div className="career-glow-backdrop" />
-              <div className="career-empty-badge">
-                <span className="badge-star">✨</span>
-                <span>Hiring Status Update</span>
-              </div>
-              <h2>All Positions Are Currently Filled</h2>
-              <p>
-                Our team is currently fully staffed, and we are not actively reviewing new applications at this time.
-                We periodically publish new opportunities here as our engineering, product, and AI teams expand. Thank you
-                for your interest in Movodream.
-              </p>
-              <div className="career-empty-actions">
-                <div className="career-status-pill">
-                  <span className="pulse-dot" />
-                  <span>Check Back Soon For Future Openings</span>
+            {isFiltered ? (
+              <div className="career-empty-card">
+                <div className="career-glow-backdrop" />
+                <div className="career-empty-badge">
+                  <span className="badge-star">🔍</span>
+                  <span>Filter Results</span>
+                </div>
+                <h2>No Openings Found For Selected Filter{department && location ? 's' : ''}</h2>
+                <p>
+                  We currently do not have any published openings matching{' '}
+                  <strong>{[department?.trim(), location?.trim()].filter(Boolean).join(' • ')}</strong>.
+                  Try selecting a different department or location, or clear your filters to explore all available roles.
+                </p>
+                <div className="career-empty-actions">
+                  <Link href="/careers" className="career-clear-btn" style={{ textDecoration: 'none', display: 'inline-flex' }}>
+                    <span>View All Open Positions</span>
+                  </Link>
                 </div>
               </div>
-            </div>
+            ) : (
+              <div className="career-empty-card">
+                <div className="career-glow-backdrop" />
+                <div className="career-empty-badge">
+                  <span className="badge-star">✨</span>
+                  <span>Hiring Status Update</span>
+                </div>
+                <h2>All Positions Are Currently Filled</h2>
+                <p>
+                  Our team is currently fully staffed, and we are not actively reviewing new applications at this time.
+                  We periodically publish new opportunities here as our engineering, product, and AI teams expand. Thank you
+                  for your interest in Movodream.
+                </p>
+                <div className="career-empty-actions">
+                  <div className="career-status-pill">
+                    <span className="pulse-dot" />
+                    <span>Check Back Soon For Future Openings</span>
+                  </div>
+                </div>
+              </div>
+            )}
 
             <div className="career-perks-section">
               <h2 className="perks-title">Why Build at Movodream?</h2>

@@ -3,19 +3,19 @@ import { slugify } from '@/lib/utils'
 
 const jobSchema = new Schema(
   {
-    title: { type: String, required: true },
-    slug: { type: String, required: true, unique: true, index: true },
-    department: { type: String },
-    location: { type: String },
+    title: { type: String, required: true, trim: true },
+    slug: { type: String, required: true, unique: true, index: true, trim: true },
+    department: { type: String, trim: true },
+    location: { type: String, trim: true },
     employmentType: {
       type: String,
       enum: ['Full-time', 'Part-time', 'Contract', 'Internship', 'Remote'],
       default: 'Full-time',
     },
-    experience: { type: String },
-    qualification: { type: String },
-    skills: [{ type: String }],
-    shortDescription: { type: String, default: '' },
+    experience: { type: String, trim: true },
+    qualification: { type: String, trim: true },
+    skills: [{ type: String, trim: true }],
+    shortDescription: { type: String, default: '', trim: true },
     descriptionJson: { type: Schema.Types.Mixed },
     descriptionHtml: { type: String, default: '' },
     responsibilitiesJson: { type: Schema.Types.Mixed },
@@ -32,6 +32,8 @@ type JobDocument = HydratedDocument<InferSchemaType<typeof jobSchema>>
 // validation runs, so this is pre('validate'), not pre('save').
 jobSchema.pre<JobDocument>('validate', function () {
   if (!this.slug && this.title) this.slug = slugify(this.title)
+  if (this.department) this.department = this.department.trim()
+  if (this.location) this.location = this.location.trim()
 })
 
 // Every admin list sorts by createdAt. Without this index MongoDB does an

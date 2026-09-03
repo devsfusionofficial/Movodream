@@ -83,6 +83,9 @@ export function PlatformSlides() {
       })
 
       let activeIndex = -1
+      let isProgrammaticScroll = false
+      let lastTransitionTime = 0
+      const COOLDOWN_MS = 340
 
       function showSlide(targetIdx: number) {
         if (targetIdx === activeIndex) return
@@ -101,11 +104,18 @@ export function PlatformSlides() {
               gsap.set(slide, { opacity: 1, y: 0 })
             } else {
               const movingDown = targetIdx > prevIdx
-              gsap.fromTo(
-                slide,
-                { opacity: 0, y: movingDown ? 28 : -28 },
-                { opacity: 1, y: 0, duration: 0.45, ease: 'power2.out' }
-              )
+              const currentOpacity = Number(gsap.getProperty(slide, 'opacity')) || 0
+              // Only apply initial offset if card was completely invisible; avoid flash
+              if (currentOpacity < 0.1) {
+                gsap.set(slide, { opacity: 0, y: movingDown ? 18 : -18 })
+              }
+              gsap.to(slide, {
+                opacity: 1,
+                y: 0,
+                duration: 0.32,
+                ease: 'power2.out',
+                overwrite: 'auto',
+              })
             }
           } else if (idx === prevIdx && prevIdx !== -1) {
             slide.classList.remove('is-active')
@@ -114,9 +124,10 @@ export function PlatformSlides() {
 
             gsap.to(slide, {
               opacity: 0,
-              y: movingDown ? -24 : 24,
-              duration: 0.32,
+              y: movingDown ? -14 : 14,
+              duration: 0.24,
               ease: 'power2.in',
+              overwrite: 'auto',
               onComplete: () => {
                 if (idx !== activeIndex) {
                   slide.style.visibility = 'hidden'
@@ -162,49 +173,147 @@ export function PlatformSlides() {
       ScrollTrigger.addEventListener('refreshInit', applySectionHeight)
       window.addEventListener('resize', applySectionHeight)
 
-      const pinST = ScrollTrigger.create({
+      let pinST: ScrollTrigger
+
+      function goToSlide(targetIdx: number) {
+        if (!pinST || targetIdx === activeIndex) return
+        if (isProgrammaticScroll) return
+        const now = Date.now()
+        if (now - lastTransitionTime < COOLDOWN_MS) return
+
+        // Strictly enforce step-by-step: never allow jumping directly between 0 and 2
+        let safeTarget = targetIdx
+        if (activeIndex === 0 && targetIdx > 1) safeTarget = 1
+        if (activeIndex === 2 && targetIdx < 1) safeTarget = 1
+
+        lastTransitionTime = now
+        isProgrammaticScroll = true
+        showSlide(safeTarget)
+
+        const pinStart = pinST.start
+        const pinDist = pinST.end - pinST.start
+        // Anchor positions: Card 1 -> 0.0, Card 2 -> 0.50, Card 3 -> 0.82 (safely inside pin, avoids unpin edge)
+        const targetProgress = safeTarget === 0 ? 0.0 : safeTarget === 1 ? 0.50 : 0.82
+        const targetScroll = pinStart + pinDist * targetProgress
+
+        const unlock = () => {
+          isProgrammaticScroll = false
+        }
+
+        if (lenisRef.current) {
+          lenisRef.current.scrollTo(targetScroll, {
+            duration: 0.32,
+            easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            onComplete: unlock,
+          })
+        } else {
+          gsap.to(window, {
+            duration: 0.32,
+            scrollTo: targetScroll,
+            ease: 'power2.out',
+            onComplete: unlock,
+          })
+        }
+
+        setTimeout(unlock, COOLDOWN_MS + 20)
+      }
+
+      pinST = ScrollTrigger.create({
         trigger: '.section-4',
         start: 'top top',
-        end: '+=160%',
+        end: '+=200%',
         pin: true,
         pinSpacing: true,
         anticipatePin: 1,
-        onUpdate(self) {
-          if (navClickGuard.current) return
-          const p = self.progress
-          const dir = self.direction
-
-          let targetIdx = activeIndex
-          if (dir >= 0) {
-            if (activeIndex === 0 && p > 0.25) targetIdx = 1
-            else if (activeIndex === 1 && p > 0.60) targetIdx = 2
-          } else {
-            if (activeIndex === 2 && p < 0.68) targetIdx = 1
-            else if (activeIndex === 1 && p < 0.32) targetIdx = 0
-          }
-
-          if (targetIdx !== activeIndex) {
-            showSlide(targetIdx)
-          }
+        onEnter() {
+          lastTransitionTime = Date.now()
+          showSlide(0)
+        },
+        onEnterBack() {
+          lastTransitionTime = Date.now()
+          showSlide(2)
         },
         onRefresh(self) {
           applySectionHeight()
+          if (isProgrammaticScroll) return
           const p = self.progress
           let targetIdx = 0
-          if (p > 0.60) targetIdx = 2
+          if (p > 0.68) targetIdx = 2
           else if (p > 0.25) targetIdx = 1
           showSlide(targetIdx)
         },
         invalidateOnRefresh: true,
       })
 
+      // Wheel event interceptor: absorbs trackpad momentum & ensures ONE swipe = ONE slide
+      const onWheel = (e: WheelEvent) => {
+        if (navClickGuard.current || !pinST) return
+
+        const scrollY = window.scrollY || document.documentElement.scrollTop
+        const pinStart = pinST.start
+        const pinEnd = pinST.end
+
+        // Section is active strictly while pinned between pinStart and pinEnd
+        const isWithinPin = pinST.isActive || (scrollY >= pinStart && scrollY <= pinEnd)
+        if (!isWithinPin) return
+
+        const now = Date.now()
+        // If transitioning or within cooldown, consume and absorb all remaining trackpad momentum
+        if (isProgrammaticScroll || now - lastTransitionTime < COOLDOWN_MS) {
+          e.preventDefault()
+          e.stopPropagation()
+          return
+        }
+
+        // Sensitive threshold so gentle upward swipes trigger on the very first gesture
+        if (Math.abs(e.deltaY) < 6) return
+
+        const isDown = e.deltaY > 0
+
+        if (isDown) {
+          // Scrolling DOWN
+          if (activeIndex === 0) {
+            // Card 1 -> Card 2 ONLY
+            e.preventDefault()
+            e.stopPropagation()
+            goToSlide(1)
+          } else if (activeIndex === 1) {
+            // Card 2 -> Card 3 ONLY
+            e.preventDefault()
+            e.stopPropagation()
+            goToSlide(2)
+          } else {
+            // Already at Card 3: let page naturally scroll down to Section 5
+          }
+        } else {
+          // Scrolling UP
+          if (activeIndex === 2) {
+            // Card 3 -> Card 2 ONLY (immediate on first swipe)
+            e.preventDefault()
+            e.stopPropagation()
+            goToSlide(1)
+          } else if (activeIndex === 1) {
+            // Card 2 -> Card 1 ONLY
+            e.preventDefault()
+            e.stopPropagation()
+            goToSlide(0)
+          } else {
+            // Already at Card 1: let page naturally scroll up to Section 2
+          }
+        }
+      }
+
+      window.addEventListener('wheel', onWheel, { passive: false })
+
       // Immediately sync slide on mount/desktop switch based on current scroll
       const initP = pinST.progress
-      if (initP > 0.60) showSlide(2)
+      if (initP > 0.68) showSlide(2)
       else if (initP > 0.25) showSlide(1)
       else showSlide(0)
 
       return () => {
+        window.removeEventListener('wheel', onWheel)
+        isProgrammaticScroll = false
         pinST.kill()
         idleTilts.forEach((t) => t.kill())
         cardCleanups.forEach((c) => c())

@@ -16,10 +16,10 @@ export function JobDetailEyebrow({ job }: { job: JobInfo }) {
   const state = useMemo(() => getJobPresentationState(job), [job])
 
   if (state.isExpired) {
-    return <span className="page-eyebrow is-closed">Applications Closed</span>
+    return <span className="page-eyebrow is-closed">🔒 Applications Closed</span>
   }
 
-  return <span className="page-eyebrow">Open role</span>
+  return <span className="page-eyebrow is-open">🟢 Open role</span>
 }
 
 export function JobClosedBanner({ job }: { job: JobInfo }) {
@@ -34,7 +34,7 @@ export function JobClosedBanner({ job }: { job: JobInfo }) {
         <h4>Position Fulfilled / Deadline Over</h4>
         <p>
           The application deadline for this position was{' '}
-          <strong>{state.formattedDate || 'in the past'} at 12:00 PM</strong>. We are no longer
+          <strong>{state.formattedDate || 'in the past'} at 11:59 PM</strong>. We are no longer
           accepting new applications for this opening.
         </p>
       </div>
@@ -52,7 +52,7 @@ export function JobApplySection({ job }: { job: JobInfo }) {
         <h2>Applications Are Closed</h2>
         <p className="closed-desc">
           The deadline for <strong>{job.title}</strong> has passed (
-          {state.formattedDate ? `ended ${state.formattedDate} at 12:00 PM` : 'deadline over'}). This role is fulfilled
+          {state.formattedDate ? `ended ${state.formattedDate} at 11:59 PM` : 'deadline over'}). This role is fulfilled
           or no longer reviewing new candidates.
         </p>
         <div className="closed-status-pill">
