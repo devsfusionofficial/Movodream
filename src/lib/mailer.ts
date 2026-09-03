@@ -259,27 +259,27 @@ export function generateContactConfirmationHtml(
               <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin: 0 auto 22px auto;">
                 <tr>
                   <td style="padding: 0 6px;" align="center">
-                    <a href="https://x.com/movodream" target="_blank" style="display: inline-block; width: 34px; height: 34px; background-color: rgba(255,255,255,0.08); border-radius: 50%; text-align: center; text-decoration: none; line-height: 34px;">
+                    <a href="https://x.com/movodream" target="_blank" style="display: inline-block; width: 34px; height: 34px; background-color: #151f30; border: 1px solid rgba(255,255,255,0.14); border-radius: 50%; text-align: center; text-decoration: none; line-height: 34px;">
                       <img src="cid:social-x" alt="X" width="16" height="16" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle; border: 0;" />
                     </a>
                   </td>
                   <td style="padding: 0 6px;" align="center">
-                    <a href="https://www.instagram.com/movodreamofficial/" target="_blank" style="display: inline-block; width: 34px; height: 34px; background-color: rgba(255,255,255,0.08); border-radius: 50%; text-align: center; text-decoration: none; line-height: 34px;">
+                    <a href="https://www.instagram.com/movodreamofficial/" target="_blank" style="display: inline-block; width: 34px; height: 34px; background-color: #151f30; border: 1px solid rgba(255,255,255,0.14); border-radius: 50%; text-align: center; text-decoration: none; line-height: 34px;">
                       <img src="cid:social-instagram" alt="Instagram" width="16" height="16" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle; border: 0;" />
                     </a>
                   </td>
                   <td style="padding: 0 6px;" align="center">
-                    <a href="https://www.linkedin.com/company/movodream" target="_blank" style="display: inline-block; width: 34px; height: 34px; background-color: rgba(255,255,255,0.08); border-radius: 50%; text-align: center; text-decoration: none; line-height: 34px;">
+                    <a href="https://www.linkedin.com/company/movodream" target="_blank" style="display: inline-block; width: 34px; height: 34px; background-color: #151f30; border: 1px solid rgba(255,255,255,0.14); border-radius: 50%; text-align: center; text-decoration: none; line-height: 34px;">
                       <img src="cid:social-linkedin" alt="LinkedIn" width="16" height="16" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle; border: 0;" />
                     </a>
                   </td>
                   <td style="padding: 0 6px;" align="center">
-                    <a href="https://www.facebook.com/movodreamofficial/" target="_blank" style="display: inline-block; width: 34px; height: 34px; background-color: rgba(255,255,255,0.08); border-radius: 50%; text-align: center; text-decoration: none; line-height: 34px;">
+                    <a href="https://www.facebook.com/movodreamofficial/" target="_blank" style="display: inline-block; width: 34px; height: 34px; background-color: #151f30; border: 1px solid rgba(255,255,255,0.14); border-radius: 50%; text-align: center; text-decoration: none; line-height: 34px;">
                       <img src="cid:social-facebook" alt="Facebook" width="16" height="16" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle; border: 0;" />
                     </a>
                   </td>
                   <td style="padding: 0 6px;" align="center">
-                    <a href="https://youtube.com/@movodream" target="_blank" style="display: inline-block; width: 34px; height: 34px; background-color: rgba(255,255,255,0.08); border-radius: 50%; text-align: center; text-decoration: none; line-height: 34px;">
+                    <a href="https://youtube.com/@movodream" target="_blank" style="display: inline-block; width: 34px; height: 34px; background-color: #151f30; border: 1px solid rgba(255,255,255,0.14); border-radius: 50%; text-align: center; text-decoration: none; line-height: 34px;">
                       <img src="cid:social-youtube" alt="YouTube" width="16" height="16" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle; border: 0;" />
                     </a>
                   </td>
@@ -559,6 +559,11 @@ export async function sendMarketingBroadcast(input: {
   let successCount = 0
   const errors: string[] = []
 
+  const attachments = [
+    ...getSocialAttachments(),
+    ...getCampaignIconAttachment(input.campaignIcon),
+  ]
+
   for (let i = 0; i < input.subscriberEmails.length; i += BATCH_SIZE) {
     const bccChunk = input.subscriberEmails.slice(i, i + BATCH_SIZE)
     try {
@@ -569,6 +574,7 @@ export async function sendMarketingBroadcast(input: {
         subject: input.subject,
         text: input.text,
         html: input.html,
+        attachments,
       })
       successCount += bccChunk.length
     } catch (err: any) {
@@ -743,27 +749,27 @@ export async function sendDirectEnquiryReply(input: {
               <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin: 0 auto 20px auto;">
                 <tr>
                   <td style="padding: 0 5px;" align="center">
-                    <a href="https://x.com/movodream" target="_blank" style="display: inline-block; width: 32px; height: 32px; background-color: rgba(255,255,255,0.08); border-radius: 50%; text-align: center; text-decoration: none; line-height: 32px;">
+                    <a href="https://x.com/movodream" target="_blank" style="display: inline-block; width: 32px; height: 32px; background-color: #151f30; border: 1px solid rgba(255,255,255,0.14); border-radius: 50%; text-align: center; text-decoration: none; line-height: 32px;">
                       <img src="cid:social-x" alt="X" width="15" height="15" style="width: 15px; height: 15px; display: inline-block; vertical-align: middle; border: 0;" />
                     </a>
                   </td>
                   <td style="padding: 0 5px;" align="center">
-                    <a href="https://www.instagram.com/movodreamofficial/" target="_blank" style="display: inline-block; width: 32px; height: 32px; background-color: rgba(255,255,255,0.08); border-radius: 50%; text-align: center; text-decoration: none; line-height: 32px;">
+                    <a href="https://www.instagram.com/movodreamofficial/" target="_blank" style="display: inline-block; width: 32px; height: 32px; background-color: #151f30; border: 1px solid rgba(255,255,255,0.14); border-radius: 50%; text-align: center; text-decoration: none; line-height: 32px;">
                       <img src="cid:social-instagram" alt="Instagram" width="15" height="15" style="width: 15px; height: 15px; display: inline-block; vertical-align: middle; border: 0;" />
                     </a>
                   </td>
                   <td style="padding: 0 5px;" align="center">
-                    <a href="https://www.linkedin.com/company/movodream" target="_blank" style="display: inline-block; width: 32px; height: 32px; background-color: rgba(255,255,255,0.08); border-radius: 50%; text-align: center; text-decoration: none; line-height: 32px;">
+                    <a href="https://www.linkedin.com/company/movodream" target="_blank" style="display: inline-block; width: 32px; height: 32px; background-color: #151f30; border: 1px solid rgba(255,255,255,0.14); border-radius: 50%; text-align: center; text-decoration: none; line-height: 32px;">
                       <img src="cid:social-linkedin" alt="LinkedIn" width="15" height="15" style="width: 15px; height: 15px; display: inline-block; vertical-align: middle; border: 0;" />
                     </a>
                   </td>
                   <td style="padding: 0 5px;" align="center">
-                    <a href="https://www.facebook.com/movodreamofficial/" target="_blank" style="display: inline-block; width: 32px; height: 32px; background-color: rgba(255,255,255,0.08); border-radius: 50%; text-align: center; text-decoration: none; line-height: 32px;">
+                    <a href="https://www.facebook.com/movodreamofficial/" target="_blank" style="display: inline-block; width: 32px; height: 32px; background-color: #151f30; border: 1px solid rgba(255,255,255,0.14); border-radius: 50%; text-align: center; text-decoration: none; line-height: 32px;">
                       <img src="cid:social-facebook" alt="Facebook" width="15" height="15" style="width: 15px; height: 15px; display: inline-block; vertical-align: middle; border: 0;" />
                     </a>
                   </td>
                   <td style="padding: 0 5px;" align="center">
-                    <a href="https://youtube.com/@movodream" target="_blank" style="display: inline-block; width: 32px; height: 32px; background-color: rgba(255,255,255,0.08); border-radius: 50%; text-align: center; text-decoration: none; line-height: 32px;">
+                    <a href="https://youtube.com/@movodream" target="_blank" style="display: inline-block; width: 32px; height: 32px; background-color: #151f30; border: 1px solid rgba(255,255,255,0.14); border-radius: 50%; text-align: center; text-decoration: none; line-height: 32px;">
                       <img src="cid:social-youtube" alt="YouTube" width="15" height="15" style="width: 15px; height: 15px; display: inline-block; vertical-align: middle; border: 0;" />
                     </a>
                   </td>

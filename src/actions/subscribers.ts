@@ -96,7 +96,7 @@ export async function syncSubscriberEmail(input: SyncEmailInput) {
             <div style="width:100%; background-color: ${themeHex}14; padding: 52px 24px; text-align: center; border-bottom: 1px solid #f0edf1; box-sizing: border-box;">
               <div style="max-width: 900px; margin: 0 auto;">
                 <div style="display: inline-block; width: 52px; height: 52px; background-color: ${themeHex}; border-radius: 14px; line-height: 52px; text-align: center; margin-bottom: 18px; box-shadow: 0 4px 14px ${themeHex}40; vertical-align: middle;">
-                  <img src="${baseUrl}/assets/icons/campaign/${iconSlug}.png" width="26" height="26" alt="${input.icon || 'mail'}" style="width: 26px; height: 26px; display: inline-block; vertical-align: middle; border: 0;" />
+                  <img src="cid:campaign-icon" width="26" height="26" alt="${input.icon || 'mail'}" style="width: 26px; height: 26px; display: inline-block; vertical-align: middle; border: 0;" />
                 </div>
                 <h1 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em; color: #21182a; line-height: 1.25;">${input.heading || input.subject || 'Movodream Marketing Update'}</h1>
                 ${input.description ? `<p style="margin: 16px auto 0 auto; max-width: 760px; font-size: 16px; line-height: 1.7; color: #554a5c; white-space: pre-line;">${input.description}</p>` : ''}
@@ -140,32 +140,32 @@ export async function syncSubscriberEmail(input: SyncEmailInput) {
                   <tr>
                     <!-- X (Twitter) -->
                     <td style="padding: 0 6px;" align="center">
-                      <a href="https://x.com/movodream" target="_blank" style="display: inline-block; width: 36px; height: 36px; background-color: rgba(255,255,255,0.12); border-radius: 50%; text-align: center; text-decoration: none; line-height: 36px;">
-                        <img src="${baseUrl}/assets/icons/social/x.png" width="16" height="16" alt="X" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle; border: 0;" />
+                      <a href="https://x.com/movodream" target="_blank" style="display: inline-block; width: 36px; height: 36px; background-color: #151f30; border: 1px solid rgba(255,255,255,0.14); border-radius: 50%; text-align: center; text-decoration: none; line-height: 36px;">
+                        <img src="cid:social-x" width="16" height="16" alt="X" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle; border: 0;" />
                       </a>
                     </td>
                     <!-- Instagram -->
                     <td style="padding: 0 6px;" align="center">
-                      <a href="https://www.instagram.com/movodreamofficial/" target="_blank" style="display: inline-block; width: 36px; height: 36px; background-color: rgba(255,255,255,0.12); border-radius: 50%; text-align: center; text-decoration: none; line-height: 36px;">
-                        <img src="${baseUrl}/assets/icons/social/instagram.png" width="16" height="16" alt="Instagram" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle; border: 0;" />
+                      <a href="https://www.instagram.com/movodreamofficial/" target="_blank" style="display: inline-block; width: 36px; height: 36px; background-color: #151f30; border: 1px solid rgba(255,255,255,0.14); border-radius: 50%; text-align: center; text-decoration: none; line-height: 36px;">
+                        <img src="cid:social-instagram" width="16" height="16" alt="Instagram" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle; border: 0;" />
                       </a>
                     </td>
                     <!-- LinkedIn -->
                     <td style="padding: 0 6px;" align="center">
-                      <a href="https://www.linkedin.com/company/movodream" target="_blank" style="display: inline-block; width: 36px; height: 36px; background-color: rgba(255,255,255,0.12); border-radius: 50%; text-align: center; text-decoration: none; line-height: 36px;">
-                        <img src="${baseUrl}/assets/icons/social/linkedin.png" width="16" height="16" alt="LinkedIn" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle; border: 0;" />
+                      <a href="https://www.linkedin.com/company/movodream" target="_blank" style="display: inline-block; width: 36px; height: 36px; background-color: #151f30; border: 1px solid rgba(255,255,255,0.14); border-radius: 50%; text-align: center; text-decoration: none; line-height: 36px;">
+                        <img src="cid:social-linkedin" width="16" height="16" alt="LinkedIn" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle; border: 0;" />
                       </a>
                     </td>
                     <!-- Facebook -->
                     <td style="padding: 0 6px;" align="center">
-                      <a href="https://www.facebook.com/movodreamofficial/" target="_blank" style="display: inline-block; width: 36px; height: 36px; background-color: rgba(255,255,255,0.12); border-radius: 50%; text-align: center; text-decoration: none; line-height: 36px;">
-                        <img src="${baseUrl}/assets/icons/social/facebook.png" width="16" height="16" alt="Facebook" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle; border: 0;" />
+                      <a href="https://www.facebook.com/movodreamofficial/" target="_blank" style="display: inline-block; width: 36px; height: 36px; background-color: #151f30; border: 1px solid rgba(255,255,255,0.14); border-radius: 50%; text-align: center; text-decoration: none; line-height: 36px;">
+                        <img src="cid:social-facebook" width="16" height="16" alt="Facebook" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle; border: 0;" />
                       </a>
                     </td>
                     <!-- YouTube -->
                     <td style="padding: 0 6px;" align="center">
-                      <a href="https://youtube.com/@movodream" target="_blank" style="display: inline-block; width: 36px; height: 36px; background-color: rgba(255,255,255,0.12); border-radius: 50%; text-align: center; text-decoration: none; line-height: 36px;">
-                        <img src="${baseUrl}/assets/icons/social/youtube.png" width="16" height="16" alt="YouTube" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle; border: 0;" />
+                      <a href="https://youtube.com/@movodream" target="_blank" style="display: inline-block; width: 36px; height: 36px; background-color: #151f30; border: 1px solid rgba(255,255,255,0.14); border-radius: 50%; text-align: center; text-decoration: none; line-height: 36px;">
+                        <img src="cid:social-youtube" width="16" height="16" alt="YouTube" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle; border: 0;" />
                       </a>
                     </td>
                   </tr>

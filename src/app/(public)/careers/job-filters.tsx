@@ -67,8 +67,16 @@ function CustomSelect({
       </button>
 
       {isOpen && (
-        <div className="career-custom-select-menu">
-          <div className="career-custom-select-list">
+        <div
+          className="career-custom-select-menu"
+          data-lenis-prevent
+          onWheel={(e) => e.stopPropagation()}
+        >
+          <div
+            className="career-custom-select-list"
+            data-lenis-prevent
+            onWheel={(e) => e.stopPropagation()}
+          >
             <button
               type="button"
               onClick={() => {

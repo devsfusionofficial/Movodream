@@ -654,6 +654,7 @@ p.job-tile-desc.is-muted:not(.job-tile-desc-box p) {
   box-shadow: 0 20px 45px -8px rgba(27, 13, 39, 0.25), 0 4px 16px rgba(236, 42, 139, 0.1);
   animation: dropdownFadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   transform-origin: top center;
+  overscroll-behavior: contain;
 }
 
 .career-custom-select-list {
@@ -663,6 +664,8 @@ p.job-tile-desc.is-muted:not(.job-tile-desc-box p) {
   padding-right: 4px;
   scrollbar-width: thin;
   scrollbar-color: rgba(236, 42, 139, 0.3) transparent;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 .career-custom-select-list::-webkit-scrollbar {
