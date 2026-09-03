@@ -46,6 +46,7 @@ export function JobRowActions({
     experience?: string
     qualification?: string
     skills?: string[]
+    shortDescription?: string
     descriptionHtml?: string
     responsibilitiesHtml?: string
     applicationDeadline?: string | Date
@@ -227,6 +228,17 @@ export function JobRowActions({
                 <p className="text-xs text-[#857c8b] italic">No specific skills listed for this position.</p>
               )}
             </div>
+
+            {/* Short Description */}
+            {job?.shortDescription && (
+              <div className="rounded-xl border border-[#ebe6ee] bg-[#faf8fb] p-4 text-xs min-w-0">
+                <div className="mb-2 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#857c8b]">
+                  <Sparkles className="h-3.5 w-3.5 text-[#d71789]" />
+                  <span>Short Summary (Teaser)</span>
+                </div>
+                <p className="text-xs leading-relaxed text-[#382b40]">{job.shortDescription}</p>
+              </div>
+            )}
 
             {/* Description */}
             <div className="rounded-xl border border-[#ebe6ee] bg-[#faf8fb] p-4 text-xs min-w-0">

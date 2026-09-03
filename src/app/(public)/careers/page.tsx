@@ -5,7 +5,7 @@ import { getPublishedJobsPaginated, getJobFilterOptions } from '@/lib/queries/jo
 import { Pagination } from '@/components/ui/Pagination'
 import { JobFilters } from './job-filters'
 import { ApplicationSuccessToast } from './application-success-toast'
-import { formatDate } from '@/lib/date-format'
+import { CareerJobList, CareerRoleCount } from './career-job-list'
 
 export const metadata: Metadata = {
   title: 'Careers | Movodream',
@@ -49,9 +49,7 @@ export default async function CareersPage({ searchParams }: PageProps) {
             initialLocation={location ?? ''}
           />
 
-          <span className="post-tile-meta">
-            {totalJobs} open role{totalJobs === 1 ? '' : 's'}
-          </span>
+          <CareerRoleCount jobs={jobs} />
         </div>
 
         {jobs.length === 0 ? (
@@ -104,38 +102,7 @@ export default async function CareersPage({ searchParams }: PageProps) {
           </div>
         ) : (
           <>
-            <div className="job-list">
-              {jobs.map((job) => (
-                <Link key={job._id} href={`/careers/${job.slug}`} className="job-tile">
-                  <div className="job-tile-content">
-                    <div className="job-tile-header">
-                      <h3>{job.title}</h3>
-                      {job.department && <span className="job-dept-badge">{job.department}</span>}
-                    </div>
-
-                    <div className="job-tile-specs">
-                      {job.location && <span className="spec-tag">📍 {job.location}</span>}
-                      {job.employmentType && <span className="spec-tag">💼 {job.employmentType}</span>}
-                      {job.experience && <span className="spec-tag">⚡ {job.experience}</span>}
-                    </div>
-
-                    <div className="job-tile-footer">
-                      {job.applicationDeadline ? (
-                        <span className="deadline-badge">
-                          ⏳ Apply by {formatDate(job.applicationDeadline)}
-                        </span>
-                      ) : (
-                        <span className="job-status-tag">🟢 Open Role</span>
-                      )}
-                      <span className="job-tile-action">
-                        Apply Now <span className="arrow">→</span>
-                      </span>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-
+            <CareerJobList jobs={jobs} />
             <Pagination currentPage={currentPage} totalPages={totalPages} />
           </>
         )}

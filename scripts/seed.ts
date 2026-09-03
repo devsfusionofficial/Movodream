@@ -187,11 +187,11 @@ const PARTNERS = [
   { name: 'AviationStack', logoFile: 'aviationstack-v2.webp' },
   { name: 'CleverTap', logoFile: 'clevertap-v2.webp' },
   { name: 'Embark', logoFile: 'embark-v2.webp' },
-  { name: 'Equence', logoFile: 'equence-v2.webp' },
+  { name: 'Equence', logoFile: 'equence-v3.webp' },
   { name: 'Gozo Cabs', logoFile: 'gozo-v2.webp' },
-  { name: 'NetworkTechLab', logoFile: 'networktechlab-v2.webp' },
+  { name: 'NetworkTechLab', logoFile: 'networktechlab-v3.webp' },
   { name: 'Novus Loyalty', logoFile: 'novus-v2.webp' },
-  { name: 'Razorpay', logoFile: 'razorpay-v2.webp' },
+  { name: 'Razorpay', logoFile: 'razorpay-v3.webp' },
   { name: 'Lepton', logoFile: 'lepton-v2.webp' },
 ]
 

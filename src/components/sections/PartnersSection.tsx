@@ -111,8 +111,9 @@ export async function PartnersSection() {
 
         <div className="partners-logos">
           {partners.map((partner) => {
+            const partnerSlug = partner.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')
             const content = partner.logo?.url ? (
-              <span className="partners-logo-box">
+              <span className={`partners-logo-box partner-logo-${partnerSlug}`}>
                 <Image
                   src={partner.logo.url}
                   alt={partner.name}
@@ -125,11 +126,11 @@ export async function PartnersSection() {
             )
 
             return partner.url ? (
-              <a key={partner._id} className="partner-card" href={partner.url} target="_blank" rel="noopener noreferrer">
+              <a key={partner._id} className={`partner-card partner-card-${partnerSlug}`} href={partner.url} target="_blank" rel="noopener noreferrer">
                 {content}
               </a>
             ) : (
-              <div key={partner._id} className="partner-card">
+              <div key={partner._id} className={`partner-card partner-card-${partnerSlug}`}>
                 {content}
               </div>
             )

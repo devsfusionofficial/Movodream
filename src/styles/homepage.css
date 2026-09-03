@@ -6534,6 +6534,32 @@ a.partner-card:hover {
 
 .partners-logo-box img {
   object-fit: contain;
+  transition: transform 0.25s ease;
+}
+
+/* Individual optical balancing for specific partner logos */
+.partner-card-equence {
+  padding: 16px 14px;
+}
+
+.partner-logo-equence {
+  height: 52px;
+}
+
+.partner-card-razorpay {
+  padding: 16px 16px;
+}
+
+.partner-logo-razorpay {
+  height: 56px;
+}
+
+.partner-card-networktechlab {
+  padding: 14px 14px;
+}
+
+.partner-logo-networktechlab {
+  height: 64px;
 }
 
 .partner-name-fallback {

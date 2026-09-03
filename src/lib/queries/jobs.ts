@@ -44,6 +44,7 @@ export type PublishedJobItem = {
   experience?: string
   qualification?: string
   skills?: string[]
+  shortDescription?: string
   applicationDeadline?: string
   status?: string
   createdAt?: string
@@ -74,13 +75,37 @@ export async function getPublishedJobsPaginated({
       query.location = { $regex: new RegExp(`^${escapeRegex(location.trim())}$`, 'i') }
     }
 
+    const startOfToday = new Date()
+    startOfToday.setUTCHours(0, 0, 0, 0)
+
     const [result] = await Job.aggregate([
       { $match: query },
+      {
+        $addFields: {
+          isExpired: {
+            $cond: [
+              {
+                $or: [
+                  { $eq: ['$status', 'closed'] },
+                  {
+                    $and: [
+                      { $gt: ['$applicationDeadline', null] },
+                      { $lt: ['$applicationDeadline', startOfToday] },
+                    ],
+                  },
+                ],
+              },
+              1,
+              0,
+            ],
+          },
+        },
+      },
       {
         $facet: {
           metadata: [{ $count: 'total' }],
           jobs: [
-            { $sort: { createdAt: -1 } },
+            { $sort: { isExpired: 1, createdAt: -1 } },
             { $skip: skip },
             { $limit: safeLimit },
             {
@@ -94,6 +119,7 @@ export async function getPublishedJobsPaginated({
                 experience: 1,
                 qualification: 1,
                 skills: 1,
+                shortDescription: 1,
                 applicationDeadline: 1,
                 status: 1,
                 createdAt: 1,

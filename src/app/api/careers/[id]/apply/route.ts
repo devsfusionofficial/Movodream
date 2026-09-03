@@ -7,6 +7,7 @@ import { uploadBuffer } from '@/lib/r2'
 import { isAllowedResumeFile } from '@/lib/file-validation'
 import { applyFormSchema } from '@/lib/validation/application'
 import { sendApplicationNotification } from '@/lib/mailer'
+import { isJobDeadlinePassed } from '@/lib/job-status'
 
 type RouteParams = { params: Promise<{ id: string }> }
 
@@ -51,13 +52,20 @@ export async function POST(request: Request, { params }: RouteParams) {
       resume.arrayBuffer().then((ab) => Buffer.from(ab)),
       Job.findOne(
         mongoose.isValidObjectId(id) ? { $or: [{ _id: id }, { slug: id }] } : { slug: id }
-      ).select('_id title status').lean<{ _id: mongoose.Types.ObjectId; title?: string; status: string } | null>(),
+      ).select('_id title status applicationDeadline').lean<{ _id: mongoose.Types.ObjectId; title?: string; status: string; applicationDeadline?: Date } | null>(),
     ])
 
     if (!job || job.status !== 'published') {
       return NextResponse.json(
         { success: false, error: 'This role is not accepting applications.' },
         { status: 404, headers: { 'Cache-Control': 'no-store' } }
+      )
+    }
+
+    if (isJobDeadlinePassed(job.applicationDeadline)) {
+      return NextResponse.json(
+        { success: false, error: 'The application deadline for this position has passed. This role is no longer accepting applications.' },
+        { status: 400, headers: { 'Cache-Control': 'no-store' } }
       )
     }
 

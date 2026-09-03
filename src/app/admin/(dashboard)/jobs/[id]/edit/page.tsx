@@ -20,6 +20,7 @@ export default async function EditJobPage({ params }: { params: Promise<{ id: st
           experience: job.experience,
           qualification: job.qualification,
           skills: job.skills ?? [],
+          shortDescription: job.shortDescription ?? '',
           descriptionJson: job.descriptionJson,
           descriptionHtml: job.descriptionHtml,
           responsibilitiesJson: job.responsibilitiesJson,

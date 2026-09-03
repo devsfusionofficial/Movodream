@@ -15,6 +15,7 @@ const jobSchema = new Schema(
     experience: { type: String },
     qualification: { type: String },
     skills: [{ type: String }],
+    shortDescription: { type: String, default: '' },
     descriptionJson: { type: Schema.Types.Mixed },
     descriptionHtml: { type: String, default: '' },
     responsibilitiesJson: { type: Schema.Types.Mixed },
@@ -41,5 +42,9 @@ jobSchema.index({ status: 1, createdAt: -1 })
 jobSchema.index({ status: 1, department: 1, location: 1 })
 
 export type JobDoc = InferSchemaType<typeof jobSchema>
+
+if (models.Job && !models.Job.schema.paths.shortDescription) {
+  delete (models as any).Job
+}
 
 export const Job = models.Job ?? model('Job', jobSchema)

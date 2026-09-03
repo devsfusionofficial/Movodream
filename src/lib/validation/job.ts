@@ -19,6 +19,12 @@ export const jobSchema = z.object({
   experience: z.string().optional(),
   qualification: z.string().optional(),
   skills: z.array(z.string()),
+  shortDescription: z
+    .string()
+    .trim()
+    .max(500, 'Short description must not exceed 500 characters')
+    .optional()
+    .or(z.literal('')),
   descriptionJson: z.any().optional(),
   descriptionHtml: z
     .string()

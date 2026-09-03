@@ -20,6 +20,6 @@ async function fetchPartners() {
 
 export const getPublicPartners = unstable_cache(
   fetchPartners,
-  ['public-partners'],
-  { revalidate: 3600, tags: ['partners'] }
+  ['public-partners-v3'],
+  { revalidate: 60, tags: ['partners'] }
 )

@@ -2,8 +2,8 @@ import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { getJobBySlug } from '@/lib/queries/jobs'
-import { ApplicationForm } from './application-form'
 import { formatDate } from '@/lib/date-format'
+import { JobDetailEyebrow, JobClosedBanner, JobApplySection } from './job-detail-client'
 
 type PageProps = { params: Promise<{ slug: string }> }
 
@@ -62,14 +62,24 @@ export default async function JobDetailPage({ params }: PageProps) {
       </section>
 
       <section className="page-head">
-        <span className="page-eyebrow">Open role</span>
+        <JobDetailEyebrow job={job} />
         <h1>{job.title}</h1>
       </section>
 
       <main className="page-main job-detail-main">
+        <JobClosedBanner job={job} />
         <div className="job-detail-grid">
           {/* Left Column: Specifications & Content */}
           <div className="job-detail-left">
+            {job.shortDescription && (
+              <div className="job-summary-callout">
+                <span className="callout-icon">✨</span>
+                <div className="callout-text">
+                  <span className="callout-label">Role Summary</span>
+                  <p>{job.shortDescription}</p>
+                </div>
+              </div>
+            )}
             <div className="job-overview-card">
               <h3>📌 Role Specifications</h3>
               <div className="job-spec-list">
@@ -167,19 +177,9 @@ export default async function JobDetailPage({ params }: PageProps) {
             )}
           </div>
 
-          {/* Right Column: Sticky Application Panel */}
+          {/* Right Column: Sticky Application Panel or Closed Notice */}
           <div className="job-detail-right">
-            <div className="job-sticky-panel" id="apply">
-              <div className="panel-header">
-                <h2>Apply for this role</h2>
-                <p>Tell us about yourself and attach your CV — we review every application.</p>
-              </div>
-              {isOpen ? (
-                <ApplicationForm jobId={job._id} />
-              ) : (
-                <div className="job-closed-box">This role is no longer accepting applications.</div>
-              )}
-            </div>
+            <JobApplySection job={job} />
           </div>
         </div>
       </main>

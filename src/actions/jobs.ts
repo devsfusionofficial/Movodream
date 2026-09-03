@@ -22,7 +22,7 @@ export async function listJobs() {
   // — including the full article/JD HTML and editor JSON. Detail screens
   // use their own get<X>(id) and still receive everything.
   const jobs = await Job.find()
-    .select('title slug department location employmentType experience qualification skills descriptionHtml responsibilitiesHtml applicationDeadline status createdAt')
+    .select('title slug department location employmentType experience qualification skills shortDescription descriptionHtml responsibilitiesHtml applicationDeadline status createdAt')
     .sort({ createdAt: -1 })
     .lean()
   return serialize(jobs)
@@ -44,6 +44,8 @@ function applyJobInput(doc: HydratedDocument<JobDoc>, input: JobInput) {
   doc.experience = input.experience
   doc.qualification = input.qualification
   doc.skills = input.skills
+  doc.shortDescription = input.shortDescription?.trim() ?? ''
+  doc.markModified('shortDescription')
   doc.descriptionJson = input.descriptionJson
   doc.descriptionHtml = input.descriptionHtml ?? ''
   doc.responsibilitiesJson = input.responsibilitiesJson
@@ -97,6 +99,7 @@ export async function updateJob(id: string, rawInput: JobInput): Promise<ActionR
   }
 
   revalidatePath('/admin/jobs')
+  revalidatePath(`/admin/jobs/${id}/edit`)
   revalidatePath('/careers')
   if (slug) revalidatePath(`/careers/${slug}`)
   return { success: true }

@@ -9,6 +9,7 @@ import { toast } from 'sonner'
 import { Briefcase, Building2, MapPin, Calendar, Wrench, FileText, CheckCircle2, ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import { Field, FieldLabel, FieldError, FieldDescription } from '@/components/ui/field'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { RichTextEditor } from '@/components/admin/rich-text-editor'
@@ -30,11 +31,25 @@ export function JobForm({ jobId, defaultValues }: JobFormProps) {
     setValue,
     watch,
     control,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm<JobInput>({
     resolver: zodResolver(jobSchema),
-    defaultValues: { status: 'draft', employmentType: 'Full-time', skills: [], ...defaultValues },
+    defaultValues: { status: 'draft', employmentType: 'Full-time', skills: [], shortDescription: '', ...defaultValues },
   })
+
+  // Sync form values when defaultValues update (e.g. navigation or dynamic load)
+  useEffect(() => {
+    if (defaultValues) {
+      reset({
+        status: 'draft',
+        employmentType: 'Full-time',
+        skills: [],
+        shortDescription: '',
+        ...defaultValues,
+      })
+    }
+  }, [defaultValues, reset])
 
   // Restore draft if a deployment occurred while the user was filling out the form
   useEffect(() => {
@@ -149,6 +164,24 @@ export function JobForm({ jobId, defaultValues }: JobFormProps) {
                 Auto-generated from title if left blank.
               </FieldDescription>
               <FieldError errors={[errors.slug]} />
+            </Field>
+
+            <Field>
+              <FieldLabel htmlFor="shortDescription" className="text-xs font-semibold text-[#21182a]">
+                Short Description / Teaser (2–3 lines)
+              </FieldLabel>
+              <Textarea
+                id="shortDescription"
+                rows={3}
+                placeholder="e.g. Join Movodream to build cutting-edge travel companion technology, leading full-stack Next.js features and high-performance booking flows..."
+                className="rounded-xl border-[#dedede] bg-white text-xs leading-relaxed focus:border-[#d71789]"
+                defaultValue={defaultValues?.shortDescription ?? ''}
+                {...register('shortDescription')}
+              />
+              <FieldDescription className="text-[11px] text-[#887f8e]">
+                A concise 2–3 line summary displayed on candidate listing cards and at the top of the job detail page.
+              </FieldDescription>
+              <FieldError errors={[errors.shortDescription]} />
             </Field>
           </div>
 
@@ -382,27 +415,27 @@ export function JobForm({ jobId, defaultValues }: JobFormProps) {
               )}
             </Field>
           </div>
-
-          {/* Action Buttons Container */}
-          <div className="flex items-center justify-end gap-3 pt-2">
-            <Button
-              type="button"
-              variant="outline"
-              render={<Link href="/admin/jobs" />}
-              className="border-[#e6e1e9] text-[#21182a] hover:bg-[#f8f3f8]"
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              disabled={isSubmitting}
-              className="gap-2 bg-gradient-to-r from-[#d71789] to-[#ff7294] px-6 text-white shadow-[0_6px_20px_rgba(215,23,137,0.25)] hover:opacity-95 border-0 font-semibold"
-            >
-              {isSubmitting ? 'Saving...' : jobId ? 'Save Job Changes' : 'Create Job Listing'}
-              <ArrowRight className="h-4 w-4" />
-            </Button>
-          </div>
         </div>
+      </div>
+
+      {/* Action Buttons Container - At the bottom of the entire form */}
+      <div className="mt-8 flex items-center justify-end gap-3 border-t border-[#f0edf1] pt-6">
+        <Button
+          type="button"
+          variant="outline"
+          render={<Link href="/admin/jobs" />}
+          className="border-[#e6e1e9] text-[#21182a] hover:bg-[#f8f3f8]"
+        >
+          Cancel
+        </Button>
+        <Button
+          type="submit"
+          disabled={isSubmitting}
+          className="gap-2 bg-gradient-to-r from-[#d71789] to-[#ff7294] px-7 py-2.5 text-white shadow-[0_6px_20px_rgba(215,23,137,0.25)] hover:opacity-95 border-0 font-semibold"
+        >
+          {isSubmitting ? 'Saving...' : jobId ? 'Save Job Changes' : 'Create Job Listing'}
+          <ArrowRight className="h-4 w-4" />
+        </Button>
       </div>
     </form>
   )
