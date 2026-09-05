@@ -55,7 +55,7 @@ export function Header() {
       >
         <Link href="/">
           <Image
-            src="/assets/images/logo-header.webp"
+            src="/assets/images/logo-header-opt.webp"
             alt="Movodream logo"
             width={160}
             height={32}
@@ -115,7 +115,7 @@ export function Header() {
             <div className="mobile-menu-header">
               <Link href="/" onClick={() => setMobileOpen(false)}>
                 <Image
-                  src="/assets/images/logo-header.webp"
+                  src="/assets/images/logo-header-opt.webp"
                   alt="Movodream logo"
                   width={140}
                   height={28}

@@ -315,7 +315,7 @@ export function HeroCards() {
         </span>
         <Image
           data-atropos-offset="-2"
-          src="/assets/images/ar-guide.jpeg.webp"
+          src="/assets/images/ar-guide-opt.webp"
           draggable={false}
           alt="Travel Planner AI Lake"
           width={288}

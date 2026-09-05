@@ -173,6 +173,10 @@ export function PlatformSlides() {
       ScrollTrigger.addEventListener('refreshInit', applySectionHeight)
       window.addEventListener('resize', applySectionHeight)
 
+      // Assigned once below (line ~221), but goToSlide and other closures defined
+      // before that point need to close over this binding by reference, so it
+      // can't be a `const` initialized inline.
+      // eslint-disable-next-line prefer-const
       let pinST: ScrollTrigger
 
       function goToSlide(targetIdx: number) {
@@ -460,7 +464,7 @@ export function PlatformSlides() {
                 <rect x="1" y="1" width="calc(100% - 2px)" height="calc(100% - 2px)" rx="25" ry="25" fill="none" stroke="#D71789" strokeWidth="1.5" strokeDasharray="8 6" strokeLinecap="round" />
               </svg>
               <div className="photo-card">
-                <Image src="/assets/images/brain-tourist-places.webp" className="card-img slide2-img" alt="Brain Indian Tourist Places" width={320} height={420} style={{ width: '100%', height: '100%' }} />
+                <Image src="/assets/images/brain-tourist-places-opt.webp" className="card-img slide2-img" alt="Brain Indian Tourist Places" width={320} height={420} style={{ width: '100%', height: '100%' }} />
               </div>
               <div className="city-badge city-badge2">
                 <span className="imgs">
@@ -533,12 +537,12 @@ export function PlatformSlides() {
               <img className="dashed-circle3" width="76%" src="/assets/icons/s4-dashed-circle-3.svg" alt="" />
 
               <div className="circle-images-container">
-                <Image src="/assets/images/slider-msg-2.svg" alt="" width={190} height={80} style={{ width: 'auto', height: 'auto' }} />
+                <Image src="/assets/images/slider-msg-2.webp" alt="" width={190} height={80} style={{ width: 'auto', height: 'auto' }} />
                 <Image src="/assets/images/circle-loc-2.png" alt="" width={76} height={76} style={{ width: 'auto', height: 'auto' }} />
-                <Image src="/assets/images/slider-bali-loc.svg" alt="" width={165} height={70} style={{ width: 'auto', height: 'auto' }} />
-                <Image src="/assets/images/899-more-locations.svg" alt="" width={145} height={60} style={{ width: 'auto', height: 'auto' }} />
-                <Image src="/assets/images/slider-msg1.svg" alt="" width={175} height={70} style={{ width: 'auto', height: 'auto' }} />
-                <Image src="/assets/images/slider-eiffil-tag.svg" alt="" width={165} height={60} style={{ width: 'auto', height: 'auto' }} />
+                <Image src="/assets/images/slider-bali-loc.webp" alt="" width={165} height={70} style={{ width: 'auto', height: 'auto' }} />
+                <Image src="/assets/images/899-more-locations.webp" alt="" width={145} height={60} style={{ width: 'auto', height: 'auto' }} />
+                <Image src="/assets/images/slider-msg1.webp" alt="" width={175} height={70} style={{ width: 'auto', height: 'auto' }} />
+                <Image src="/assets/images/slider-eiffil-tag.webp" alt="" width={165} height={60} style={{ width: 'auto', height: 'auto' }} />
                 <Image src="/assets/images/star-loc.png" alt="" width={64} height={64} style={{ width: 'auto', height: 'auto' }} />
               </div>
             </div>

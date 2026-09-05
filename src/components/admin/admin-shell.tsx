@@ -94,7 +94,7 @@ export function AdminShell({ role = 'admin', name, email, children }: AdminShell
         <div className="flex h-16 items-center justify-between border-b border-white/10 px-4">
           <Link href="/admin" onClick={() => setSidebarOpen(false)} className="flex items-center gap-2 min-w-0">
             <Image
-              src="/assets/images/logo2.webp"
+              src="/assets/images/logo2-opt.webp"
               alt="Movodream"
               width={110}
               height={28}

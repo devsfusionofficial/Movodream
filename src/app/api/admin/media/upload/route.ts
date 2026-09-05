@@ -30,13 +30,13 @@ export async function POST(request: Request) {
     const arrayBuffer = await file.arrayBuffer()
     const buffer = Buffer.from(arrayBuffer)
 
-    const { key, publicUrl } = await uploadMediaBuffer('media', file.name, file.type, buffer)
+    const { key, publicUrl, contentType, size } = await uploadMediaBuffer('media', file.name, file.type, buffer)
 
     await createMediaRecord({
       key,
       url: publicUrl,
-      mimeType: file.type,
-      size: file.size,
+      mimeType: contentType,
+      size,
     })
 
     return NextResponse.json({

@@ -4,6 +4,7 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import { randomUUID } from 'crypto'
 import fs from 'fs'
 import path from 'path'
+import sharp from 'sharp'
 
 const R2_BUCKET = process.env.R2_BUCKET
 const R2_ENDPOINT = process.env.R2_ENDPOINT
@@ -32,6 +33,41 @@ function getClient(): S3Client | null {
 function buildKey(prefix: string, fileName: string) {
   const ext = fileName.includes('.') ? fileName.slice(fileName.lastIndexOf('.')) : ''
   return `${prefix}/${randomUUID()}${ext}`
+}
+
+const MAX_IMAGE_DIMENSION = 2000
+const IMAGE_WEBP_QUALITY = 82
+// GIF is skipped so animation isn't flattened to a static frame; SVG is
+// skipped so a vector logo/icon isn't rasterized and locked to one size.
+const SKIP_OPTIMIZE_TYPES = new Set(['image/gif', 'image/svg+xml'])
+
+function withExtension(fileName: string, ext: string) {
+  const dot = fileName.lastIndexOf('.')
+  const base = dot === -1 ? fileName : fileName.slice(0, dot)
+  return `${base}${ext}`
+}
+
+/**
+ * Downsizes and re-encodes raster uploads (blog hero images, author/office
+ * photos, etc.) to WebP before they reach storage, so a photo uploaded at
+ * full camera/screenshot resolution doesn't ship a multi-MB original to
+ * every visitor. Falls back to the original buffer untouched if sharp can't
+ * process it (corrupt file, unsupported format) or the type is excluded.
+ */
+async function optimizeImage(fileName: string, contentType: string, body: Buffer) {
+  if (!contentType.startsWith('image/') || SKIP_OPTIMIZE_TYPES.has(contentType)) {
+    return { fileName, contentType, body }
+  }
+  try {
+    const optimized = await sharp(body)
+      .resize({ width: MAX_IMAGE_DIMENSION, withoutEnlargement: true })
+      .webp({ quality: IMAGE_WEBP_QUALITY })
+      .toBuffer()
+    return { fileName: withExtension(fileName, '.webp'), contentType: 'image/webp', body: optimized }
+  } catch (err) {
+    console.warn('Image optimization failed, uploading original:', err instanceof Error ? err.message : err)
+    return { fileName, contentType, body }
+  }
 }
 
 function saveLocalBuffer(prefix: string, fileName: string, body: Buffer): { key: string; publicUrl: string } {
@@ -72,24 +108,30 @@ export async function createPresignedUpload(prefix: string, fileName: string, co
  * Server-buffered upload for media images & assets with automatic local fallback.
  */
 export async function uploadMediaBuffer(prefix: string, fileName: string, contentType: string, body: Buffer) {
+  const optimized = await optimizeImage(fileName, contentType, body)
   try {
     const client = getClient()
     if (!client || !R2_BUCKET) {
-      return saveLocalBuffer(prefix, fileName, body)
+      return { ...saveLocalBuffer(prefix, optimized.fileName, optimized.body), contentType: optimized.contentType, size: optimized.body.length }
     }
-    const key = buildKey(prefix, fileName)
+    const key = buildKey(prefix, optimized.fileName)
     await client.send(
       new PutObjectCommand({
         Bucket: R2_BUCKET,
         Key: key,
-        Body: body,
-        ContentType: contentType,
+        Body: optimized.body,
+        ContentType: optimized.contentType,
+        // Each key is a fresh randomUUID (buildKey), so it never gets
+        // reused for different content — safe to cache as immutable so the
+        // CDN in front of R2_PUBLIC_URL doesn't re-fetch the origin on
+        // every cold cache / redeploy.
+        CacheControl: 'public, max-age=31536000, immutable',
       })
     )
-    return { key, publicUrl: `${R2_PUBLIC_URL}/${key}` }
+    return { key, publicUrl: `${R2_PUBLIC_URL}/${key}`, contentType: optimized.contentType, size: optimized.body.length }
   } catch (err) {
     console.warn('R2 media upload failed, saving to local storage fallback:', err instanceof Error ? err.message : err)
-    return saveLocalBuffer(prefix, fileName, body)
+    return { ...saveLocalBuffer(prefix, optimized.fileName, optimized.body), contentType: optimized.contentType, size: optimized.body.length }
   }
 }
 

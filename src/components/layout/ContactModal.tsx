@@ -341,7 +341,7 @@ export function ContactModalProvider({ children }: { children: React.ReactNode }
               <div className="qzv-leftrail">
                 <div>
                   <div className="qzv-logo-wrap">
-                    <Image src="/assets/images/logo-header.webp" alt="Movodream Logo" width={170} height={34} className="h-9 w-auto object-contain" style={{ width: 'auto', height: '36px' }} priority />
+                    <Image src="/assets/images/logo-header-opt.webp" alt="Movodream Logo" width={170} height={34} className="h-9 w-auto object-contain" style={{ width: 'auto', height: '36px' }} priority />
                   </div>
 
                   <div className="qzv-story">

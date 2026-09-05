@@ -70,7 +70,7 @@ function HelpArt() {
       <div className="mascot-glow-backdrop" />
       <div className="mascot-img-wrapper">
         <Image
-          src="/assets/support/help-mascot.webp"
+          src="/assets/support/help-mascot-opt.webp"
           alt="Movodream Support Avatar"
           width={220}
           height={240}
