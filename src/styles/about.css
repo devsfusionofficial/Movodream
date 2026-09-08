@@ -436,6 +436,13 @@
   line-height: 0.7;
 }
 
+.about-stat-globe {
+  width: clamp(30px, 3.2vw, 36px);
+  height: clamp(30px, 3.2vw, 36px);
+  color: var(--ab-pink);
+  stroke: var(--ab-pink);
+}
+
 .about-heart {
   color: #f2295f;
 }

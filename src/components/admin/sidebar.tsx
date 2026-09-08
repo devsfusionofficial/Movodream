@@ -53,6 +53,7 @@ export function Sidebar({ role }: { role: AppRole }) {
               width={110}
               height={28}
               priority
+              style={{ width: 'auto' }}
               className="h-[22px] w-auto brightness-[1.35] contrast-[1.05] shrink-0"
             />
             <span className="hidden sm:block border-l border-white/15 pl-2 text-[8px] font-medium uppercase leading-tight tracking-[0.16em] text-white/45 shrink-0">

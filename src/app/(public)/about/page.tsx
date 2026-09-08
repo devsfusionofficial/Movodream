@@ -11,6 +11,7 @@ import {
   VictoriaMemorial,
   VidhanaSoudha,
 } from '@/components/about/Monuments'
+import { Globe2 } from 'lucide-react'
 import {
   GlobeIcon,
   HeartIcon,
@@ -122,8 +123,12 @@ export default async function AboutPage() {
     },
   }
 
-  const STATS: { value: string; glyph?: boolean; label: string; sub: React.ReactNode }[] = [
-    { value: `${offices.length}+`, label: 'Cities', sub: cityNames || 'Across India' },
+  const STATS: { value: React.ReactNode; glyph?: boolean; label: string; sub: React.ReactNode }[] = [
+    {
+      value: <Globe2 size={36} strokeWidth={2.2} className="about-stat-globe" aria-hidden="true" />,
+      label: 'Located in Cities',
+      sub: cityNames || 'Across India',
+    },
     { value: '24/7', label: 'AI Assistance', sub: 'Always here for you' },
     {
       value: '100%',

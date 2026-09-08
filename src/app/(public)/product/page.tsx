@@ -122,11 +122,41 @@ export default async function ProductPage() {
           <div className="product-trustedby">
             <p>TRUSTED BY TRAVELERS & LEADING PARTNERS</p>
             <div className="product-trustedby-text-strip">
-              <span className="trustedby-brand">Aviationstack</span>
-              <span className="trustedby-brand">CleverTap</span>
-              <span className="trustedby-brand">EMBARK</span>
-              <span className="trustedby-brand">EQUENCE</span>
-              <span className="trustedby-brand">Gozo Cabs</span>
+              {partners && partners.length > 0 ? (
+                partners.map((partner) => {
+                  const partnerSlug = partner.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')
+                  return partner.url ? (
+                    <a
+                      key={partner._id || partner.name}
+                      href={partner.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`trustedby-brand trustedby-brand-${partnerSlug}`}
+                    >
+                      {partner.name}
+                    </a>
+                  ) : (
+                    <span
+                      key={partner._id || partner.name}
+                      className={`trustedby-brand trustedby-brand-${partnerSlug}`}
+                    >
+                      {partner.name}
+                    </span>
+                  )
+                })
+              ) : (
+                <>
+                  <span className="trustedby-brand">CleverTap</span>
+                  <span className="trustedby-brand">Embark</span>
+                  <span className="trustedby-brand">Equence</span>
+                  <span className="trustedby-brand">Gozo Cabs</span>
+                  <span className="trustedby-brand">NetworkTechLab</span>
+                  <span className="trustedby-brand">Novus Loyalty</span>
+                  <span className="trustedby-brand">Razorpay</span>
+                  <span className="trustedby-brand">Lepton</span>
+                  <span className="trustedby-brand">TBO</span>
+                </>
+              )}
             </div>
           </div>
         </div>

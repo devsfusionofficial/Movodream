@@ -183,8 +183,7 @@ async function seedJobSamples() {
 // filenames had to change so browsers and CDNs holding the old bitmaps at
 // the previous URLs pick up the new ones. Bump the suffix again if these
 // files are ever re-cropped.
-const PARTNERS = [
-  { name: 'AviationStack', logoFile: 'aviationstack-v2.webp' },
+const PARTNERS: Array<{ name: string; logoFile: string; url?: string }> = [
   { name: 'CleverTap', logoFile: 'clevertap-v2.webp' },
   { name: 'Embark', logoFile: 'embark-v2.webp' },
   { name: 'Equence', logoFile: 'equence-v3.webp' },
@@ -193,11 +192,12 @@ const PARTNERS = [
   { name: 'Novus Loyalty', logoFile: 'novus-v2.webp' },
   { name: 'Razorpay', logoFile: 'razorpay-v3.webp' },
   { name: 'Lepton', logoFile: 'lepton-v2.webp' },
+  { name: 'TBO', logoFile: 'tbo-v1.webp', url: 'https://www.tbo.com' },
 ]
 
 async function seedPartners() {
   for (const [index, partner] of PARTNERS.entries()) {
-    const existing = await Partner.findOne({ name: partner.name })
+    const existing = await Partner.findOne({ name: { $regex: new RegExp(`^${partner.name}$`, 'i') } })
     if (existing) {
       console.log(`Partner "${partner.name}" already exists — skipping.`)
       continue
@@ -205,6 +205,7 @@ async function seedPartners() {
     await Partner.create({
       name: partner.name,
       logo: { url: `/assets/partners/${partner.logoFile}` },
+      url: partner.url,
       order: index + 1,
     })
     console.log(`Created partner: ${partner.name}`)

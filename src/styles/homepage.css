@@ -6180,6 +6180,7 @@ a.office-card:hover {
   padding-top: 16px;
   border-top: 1px solid rgba(90, 45, 215, 0.12);
   text-align: left;
+  max-width: 580px;
 }
 
 .product-trustedby p {
@@ -6201,6 +6202,7 @@ a.office-card:hover {
 .trustedby-brand {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   padding: 6px 14px;
   border-radius: 99px;
   background: rgba(255, 255, 255, 0.85);
@@ -6212,6 +6214,8 @@ a.office-card:hover {
   color: #3b3a62;
   box-shadow: 0 2px 8px rgba(90, 45, 215, 0.04);
   transition: all 0.2s ease;
+  text-decoration: none;
+  white-space: nowrap;
 }
 
 .trustedby-brand:hover {
@@ -6989,20 +6993,26 @@ a.office-card:hover {
     display: flex !important;
     flex-wrap: wrap !important;
     justify-content: center !important;
-    gap: 8px 6px !important;
-    max-width: 360px !important;
+    align-items: center !important;
+    gap: 8px 8px !important;
+    max-width: 100% !important;
     margin: 0 auto !important;
+    padding: 0 4px !important;
   }
 
   .trustedby-brand {
-    flex: 0 0 calc(33.333% - 6px) !important;
-    max-width: calc(33.333% - 6px) !important;
-    min-width: 0 !important;
+    flex: 0 0 auto !important;
+    width: auto !important;
+    max-width: 100% !important;
+    display: inline-flex !important;
+    align-items: center !important;
     justify-content: center !important;
     text-align: center !important;
-    padding: 7px 4px !important;
-    font-size: 0.74rem !important;
+    padding: 6px 12px !important;
+    font-size: 0.76rem !important;
+    font-weight: 800 !important;
     box-sizing: border-box !important;
+    white-space: nowrap !important;
   }
 
   .product-steps-section {

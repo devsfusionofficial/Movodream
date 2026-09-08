@@ -4,7 +4,6 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import { randomUUID } from 'crypto'
 import fs from 'fs'
 import path from 'path'
-import sharp from 'sharp'
 
 const R2_BUCKET = process.env.R2_BUCKET
 const R2_ENDPOINT = process.env.R2_ENDPOINT
@@ -59,13 +58,15 @@ async function optimizeImage(fileName: string, contentType: string, body: Buffer
     return { fileName, contentType, body }
   }
   try {
+    const sharpModule = await import('sharp')
+    const sharp = sharpModule.default || sharpModule
     const optimized = await sharp(body)
       .resize({ width: MAX_IMAGE_DIMENSION, withoutEnlargement: true })
       .webp({ quality: IMAGE_WEBP_QUALITY })
       .toBuffer()
     return { fileName: withExtension(fileName, '.webp'), contentType: 'image/webp', body: optimized }
   } catch (err) {
-    console.warn('Image optimization failed, uploading original:', err instanceof Error ? err.message : err)
+    console.warn('Image optimization skipped or failed, uploading original:', err instanceof Error ? err.message : err)
     return { fileName, contentType, body }
   }
 }
