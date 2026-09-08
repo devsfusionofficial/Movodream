@@ -473,6 +473,10 @@
   display: inline !important;
 }
 
+.hero-section h1 .changing-text span {
+  will-change: transform, opacity;
+}
+
 .hero-section h1 svg {
   font-size: 53px;
   color: #d71789;
@@ -920,7 +924,14 @@
   }
 
   .hero-section h1 {
-    font-size: 2.5rem;
+    font-size: clamp(2.05rem, 6.2vw, 2.35rem);
+    letter-spacing: -0.035em;
+    line-height: 1.22;
+    word-spacing: 2px;
+  }
+
+  .hero-section h1 svg {
+    font-size: 0.95em;
   }
 
   .hero-right .cards-wrapper,

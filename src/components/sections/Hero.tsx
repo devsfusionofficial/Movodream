@@ -34,12 +34,20 @@ export function Hero() {
       if (cancelled) return
 
       try {
+        const changingEl = headline.querySelector<HTMLElement>('.changing-text')
+        if (changingEl) changingEl.innerHTML = ''
+
         splitAll = SplitText.create(headline, { type: 'lines,chars', linesClass: 'split-hero-line' })
         gsap.set('.split-hero-line', { overflow: 'hidden' })
         gsap.set(headline, { opacity: 1 })
         gsap.set(splitAll.chars, { opacity: 0, xPercent: 45 })
 
-        const master = gsap.timeline({ delay: 0.04 })
+        const master = gsap.timeline({
+          delay: 0.04,
+          onComplete: () => {
+            gsap.set('.split-hero-line', { overflow: 'visible' })
+          },
+        })
         const CHAR_STAGGER = 0.035
         const LINE_GAP = 0.08
         let timeOffset = 0
@@ -119,8 +127,9 @@ export function Hero() {
             journeys. Our platform unify fragmented data streams into seamless, context-aware travel experiences.
           </p>
           <p style={{ paddingTop: 6, paddingBottom: 6 }}>
-            Movodream plans, books, and guides your entire travel. A global network of local experts verifies every
-            place you visit. No guesswork. No bad meals. No lost hours.
+            Movodream architects iZhinga, an AI travel companion platform that plans, books, and guides your entire
+            travel. A global network of local experts verifies every place you visit. No guesswork. No bad meals. No lost
+            hours.
           </p>
           <p>
             <strong style={{ fontSize: '0.8em', color: '#0181FF' }}>
