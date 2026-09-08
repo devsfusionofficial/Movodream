@@ -194,6 +194,18 @@ export function PlatformSlides() {
         isProgrammaticScroll = true
         showSlide(safeTarget)
 
+        // Lenis has its own wheel listener on `window` (independent of this
+        // component's onWheel below) and processes every wheel event itself
+        // — preventDefault/stopPropagation on the event here does nothing to
+        // stop it, only lenis.stop() does. Without this, Lenis kept advancing
+        // scrollY off its own raw wheel deltas at the same time this snap-to
+        // -anchor animation ran, so the two fought over the scroll position
+        // and the visible slide could end up out of sync with which one
+        // ScrollTrigger's progress-based onRefresh thought was active
+        // (root cause of a slide — most often card 3 — getting stuck showing
+        // after repeated scroll-up/down on desktop).
+        lenisRef.current?.stop()
+
         const pinStart = pinST.start
         const pinDist = pinST.end - pinST.start
         // Anchor positions: Card 1 -> 0.0, Card 2 -> 0.50, Card 3 -> 0.82 (safely inside pin, avoids unpin edge)
@@ -202,6 +214,7 @@ export function PlatformSlides() {
 
         const unlock = () => {
           isProgrammaticScroll = false
+          lenisRef.current?.start()
         }
 
         if (lenisRef.current) {
@@ -209,6 +222,10 @@ export function PlatformSlides() {
             duration: 0.32,
             easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
             onComplete: unlock,
+            // lenis.stop() above makes scrollTo a no-op unless forced —
+            // programmatic snaps must still move the page while native
+            // wheel/touch input is suppressed.
+            force: true,
           })
         } else {
           gsap.to(window, {
@@ -222,6 +239,19 @@ export function PlatformSlides() {
         setTimeout(unlock, COOLDOWN_MS + 20)
       }
 
+      // Same fix as goToSlide's lenis.stop()/start() above, for the other
+      // moment lastTransitionTime starts a cooldown window: onEnter/onEnterBack
+      // below (re-entering the pin by scrolling). Guards against a later call
+      // (e.g. goToSlide firing partway through this cooldown) racing the resume
+      // by only resuming if nothing has bumped lastTransitionTime since.
+      function stopLenisDuringCooldown() {
+        lenisRef.current?.stop()
+        const startedAt = lastTransitionTime
+        setTimeout(() => {
+          if (lastTransitionTime === startedAt) lenisRef.current?.start()
+        }, COOLDOWN_MS + 20)
+      }
+
       pinST = ScrollTrigger.create({
         trigger: '.section-4',
         start: 'top top',
@@ -232,10 +262,12 @@ export function PlatformSlides() {
         onEnter() {
           lastTransitionTime = Date.now()
           showSlide(0)
+          stopLenisDuringCooldown()
         },
         onEnterBack() {
           lastTransitionTime = Date.now()
           showSlide(2)
+          stopLenisDuringCooldown()
         },
         onRefresh(self) {
           applySectionHeight()
@@ -318,6 +350,13 @@ export function PlatformSlides() {
       return () => {
         window.removeEventListener('wheel', onWheel)
         isProgrammaticScroll = false
+        // In case a transition was mid-flight (lenis.stop() called, not yet
+        // resumed) when this branch tore down — e.g. a resize crossing the
+        // 769px breakpoint, or navigating away — mid-transition. The pending
+        // unlock()/stopLenisDuringCooldown() timers would self-heal this a
+        // moment later anyway, but don't leave scrolling suppressed even
+        // briefly if we're already cleaning up here.
+        lenisRef.current?.start()
         pinST.kill()
         idleTilts.forEach((t) => t.kill())
         cardCleanups.forEach((c) => c())
@@ -388,7 +427,7 @@ export function PlatformSlides() {
                 <rect x="1" y="1" width="calc(100% - 2px)" height="calc(100% - 2px)" rx="25" ry="25" fill="none" stroke="#D71789" strokeWidth="1.5" strokeDasharray="8 6" strokeLinecap="round" />
               </svg>
               <div className="photo-card">
-                <Image src="/assets/images/taj2.webp" className="card-img" alt="Movodream" width={320} height={420} style={{ width: '100%', height: '100%' }} />
+                <Image src="/assets/images/taj2.webp" className="card-img" alt="Movodream" width={320} height={420} style={{ width: '100%', height: '100%' }} priority />
                 <div className="action-buttons">
                   <div className="action-btn">
                     <Image src="/assets/icons/s4-action-ai.svg" alt="" width={22} height={22} />
@@ -464,7 +503,7 @@ export function PlatformSlides() {
                 <rect x="1" y="1" width="calc(100% - 2px)" height="calc(100% - 2px)" rx="25" ry="25" fill="none" stroke="#D71789" strokeWidth="1.5" strokeDasharray="8 6" strokeLinecap="round" />
               </svg>
               <div className="photo-card">
-                <Image src="/assets/images/brain-tourist-places-opt.webp" className="card-img slide2-img" alt="Brain Indian Tourist Places" width={320} height={420} style={{ width: '100%', height: '100%' }} />
+                <Image src="/assets/images/brain-tourist-places-opt.webp" className="card-img slide2-img" alt="Brain Indian Tourist Places" width={320} height={420} style={{ width: '100%', height: '100%' }} priority />
               </div>
               <div className="city-badge city-badge2">
                 <span className="imgs">
