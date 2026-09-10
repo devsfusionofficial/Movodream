@@ -19,7 +19,8 @@ import {
   ShieldIcon,
   SparkleIcon,
 } from '@/components/about/icons'
-import { LeadershipSection } from '@/components/about/LeadershipSection'
+// Leadership section is currently hidden on all screens — keep the import ready for re-enabling.
+// import { LeadershipSection } from '@/components/about/LeadershipSection'
 
 export const metadata: Metadata = {
   title: 'About Us | Movodream',
@@ -51,41 +52,42 @@ const VALUES = [
   },
 ]
 
-const FOUNDERS = [
-  {
-    name: 'Harpreet Singh',
-    role: 'Founder, CEO',
-    image: '/assets/team/harpreet.webp',
-    linkedin: 'https://www.linkedin.com/in/harpreet-movodream',
-  },
-  {
-    name: 'Dhiraj Ramjiyani',
-    role: 'Co-Founder, CTO',
-    image: '/assets/team/dhiraj-ramjiyani.webp',
-    linkedin: 'https://www.linkedin.com/in/dhirajramjiyani-movodream/',
-  },
-]
+// Leadership data — retained for when the section is brought back.
+// const FOUNDERS = [
+//   {
+//     name: 'Harpreet Singh',
+//     role: 'Founder, CEO',
+//     image: '/assets/team/harpreet.webp',
+//     linkedin: 'https://www.linkedin.com/in/harpreet-movodream',
+//   },
+//   {
+//     name: 'Dhiraj Ramjiyani',
+//     role: 'Co-Founder, CTO',
+//     image: '/assets/team/dhiraj-ramjiyani.webp',
+//     linkedin: 'https://www.linkedin.com/in/dhirajramjiyani-movodream/',
+//   },
+// ]
 
-const MANAGEMENT_TEAM = [
-  {
-    name: 'Harmanpreet Singh',
-    role: 'Lead Marketing & Design',
-    image: '/assets/team/harman.webp',
-    linkedin: 'https://www.linkedin.com/in/-harmanpreet-singh/',
-  },
-  {
-    name: 'Dr. Manjot Singh',
-    role: 'Head of Local Guru & Operations',
-    image: '/assets/team/manjot-singh.webp',
-    linkedin: 'https://www.linkedin.com/company/movodream/',
-  },
-  {
-    name: 'Arjun Bali',
-    role: 'VP Product Quality',
-    image: '/assets/team/arjun.webp',
-    linkedin: 'https://www.linkedin.com/in/arjun-bali-movodream',
-  },
-]
+// const MANAGEMENT_TEAM = [
+//   {
+//     name: 'Harmanpreet Singh',
+//     role: 'Lead Marketing & Design',
+//     image: '/assets/team/harman.webp',
+//     linkedin: 'https://www.linkedin.com/in/-harmanpreet-singh/',
+//   },
+//   {
+//     name: 'Dr. Manjot Singh',
+//     role: 'Head of Local Guru & Operations',
+//     image: '/assets/team/manjot-singh.webp',
+//     linkedin: 'https://www.linkedin.com/company/movodream/',
+//   },
+//   {
+//     name: 'Arjun Bali',
+//     role: 'VP Product Quality',
+//     image: '/assets/team/arjun.webp',
+//     linkedin: 'https://www.linkedin.com/in/arjun-bali-movodream',
+//   },
+// ]
 
 // Landmark art and the short role line are keyed by city slug. Anything not
 // listed still renders — it just gets no artwork — so adding an office in the
@@ -263,8 +265,8 @@ export default async function AboutPage() {
         </section>
       )}
 
-      {/* Leadership & Management Team */}
-      <LeadershipSection founders={FOUNDERS} managementTeam={MANAGEMENT_TEAM} />
+      {/* Leadership & Management Team — hidden on all screens per request */}
+      {/* <LeadershipSection founders={FOUNDERS} managementTeam={MANAGEMENT_TEAM} /> */}
 
       {/* Team */}
       <section className="about-team">
