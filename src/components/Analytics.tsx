@@ -12,6 +12,13 @@ const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID
 export function Analytics() {
   return (
     <>
+      {/* HubSpot Embed Code */}
+      <Script
+        id="hs-script-loader"
+        src="//js-na2.hs-scripts.com/247507872.js"
+        strategy="afterInteractive"
+      />
+
       {GTM_ID && (
         <>
           <Script id="gtm" strategy="afterInteractive">

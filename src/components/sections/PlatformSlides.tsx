@@ -85,7 +85,7 @@ export function PlatformSlides() {
       let activeIndex = -1
       let isProgrammaticScroll = false
       let lastTransitionTime = 0
-      const COOLDOWN_MS = 340
+      const COOLDOWN_MS = 650
 
       function showSlide(targetIdx: number) {
         if (targetIdx === activeIndex) return
@@ -105,14 +105,13 @@ export function PlatformSlides() {
             } else {
               const movingDown = targetIdx > prevIdx
               const currentOpacity = Number(gsap.getProperty(slide, 'opacity')) || 0
-              // Only apply initial offset if card was completely invisible; avoid flash
               if (currentOpacity < 0.1) {
-                gsap.set(slide, { opacity: 0, y: movingDown ? 18 : -18 })
+                gsap.set(slide, { opacity: 0, y: movingDown ? 20 : -20 })
               }
               gsap.to(slide, {
                 opacity: 1,
                 y: 0,
-                duration: 0.32,
+                duration: 0.38,
                 ease: 'power2.out',
                 overwrite: 'auto',
               })
@@ -124,8 +123,8 @@ export function PlatformSlides() {
 
             gsap.to(slide, {
               opacity: 0,
-              y: movingDown ? -14 : 14,
-              duration: 0.24,
+              y: movingDown ? -16 : 16,
+              duration: 0.28,
               ease: 'power2.in',
               overwrite: 'auto',
               onComplete: () => {
@@ -173,9 +172,6 @@ export function PlatformSlides() {
       ScrollTrigger.addEventListener('refreshInit', applySectionHeight)
       window.addEventListener('resize', applySectionHeight)
 
-      // Assigned once below (line ~221), but goToSlide and other closures defined
-      // before that point need to close over this binding by reference, so it
-      // can't be a `const` initialized inline.
       // eslint-disable-next-line prefer-const
       let pinST: ScrollTrigger
 
@@ -194,22 +190,12 @@ export function PlatformSlides() {
         isProgrammaticScroll = true
         showSlide(safeTarget)
 
-        // Lenis has its own wheel listener on `window` (independent of this
-        // component's onWheel below) and processes every wheel event itself
-        // — preventDefault/stopPropagation on the event here does nothing to
-        // stop it, only lenis.stop() does. Without this, Lenis kept advancing
-        // scrollY off its own raw wheel deltas at the same time this snap-to
-        // -anchor animation ran, so the two fought over the scroll position
-        // and the visible slide could end up out of sync with which one
-        // ScrollTrigger's progress-based onRefresh thought was active
-        // (root cause of a slide — most often card 3 — getting stuck showing
-        // after repeated scroll-up/down on desktop).
         lenisRef.current?.stop()
 
         const pinStart = pinST.start
         const pinDist = pinST.end - pinST.start
-        // Anchor positions: Card 1 -> 0.0, Card 2 -> 0.50, Card 3 -> 0.82 (safely inside pin, avoids unpin edge)
-        const targetProgress = safeTarget === 0 ? 0.0 : safeTarget === 1 ? 0.50 : 0.82
+        // Anchor positions: Card 1 -> 0.0, Card 2 -> 0.50, Card 3 -> 0.85
+        const targetProgress = safeTarget === 0 ? 0.0 : safeTarget === 1 ? 0.50 : 0.85
         const targetScroll = pinStart + pinDist * targetProgress
 
         const unlock = () => {
@@ -219,43 +205,35 @@ export function PlatformSlides() {
 
         if (lenisRef.current) {
           lenisRef.current.scrollTo(targetScroll, {
-            duration: 0.32,
+            duration: 0.38,
             easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
             onComplete: unlock,
-            // lenis.stop() above makes scrollTo a no-op unless forced —
-            // programmatic snaps must still move the page while native
-            // wheel/touch input is suppressed.
             force: true,
           })
         } else {
           gsap.to(window, {
-            duration: 0.32,
+            duration: 0.38,
             scrollTo: targetScroll,
             ease: 'power2.out',
             onComplete: unlock,
           })
         }
 
-        setTimeout(unlock, COOLDOWN_MS + 20)
+        setTimeout(unlock, COOLDOWN_MS + 50)
       }
 
-      // Same fix as goToSlide's lenis.stop()/start() above, for the other
-      // moment lastTransitionTime starts a cooldown window: onEnter/onEnterBack
-      // below (re-entering the pin by scrolling). Guards against a later call
-      // (e.g. goToSlide firing partway through this cooldown) racing the resume
-      // by only resuming if nothing has bumped lastTransitionTime since.
       function stopLenisDuringCooldown() {
         lenisRef.current?.stop()
         const startedAt = lastTransitionTime
         setTimeout(() => {
           if (lastTransitionTime === startedAt) lenisRef.current?.start()
-        }, COOLDOWN_MS + 20)
+        }, COOLDOWN_MS + 50)
       }
 
       pinST = ScrollTrigger.create({
         trigger: '.section-4',
         start: 'top top',
-        end: '+=200%',
+        end: '+=250%',
         pin: true,
         pinSpacing: true,
         anticipatePin: 1,
@@ -269,13 +247,25 @@ export function PlatformSlides() {
           showSlide(2)
           stopLenisDuringCooldown()
         },
+        onUpdate(self) {
+          if (isProgrammaticScroll) return
+          const now = Date.now()
+          if (now - lastTransitionTime < COOLDOWN_MS) return
+          const p = self.progress
+          let targetIdx = 0
+          if (p >= 0.67) targetIdx = 2
+          else if (p >= 0.33) targetIdx = 1
+          if (targetIdx !== activeIndex) {
+            showSlide(targetIdx)
+          }
+        },
         onRefresh(self) {
           applySectionHeight()
           if (isProgrammaticScroll) return
           const p = self.progress
           let targetIdx = 0
-          if (p > 0.68) targetIdx = 2
-          else if (p > 0.25) targetIdx = 1
+          if (p >= 0.67) targetIdx = 2
+          else if (p >= 0.33) targetIdx = 1
           showSlide(targetIdx)
         },
         invalidateOnRefresh: true,
@@ -302,7 +292,7 @@ export function PlatformSlides() {
         }
 
         // Sensitive threshold so gentle upward swipes trigger on the very first gesture
-        if (Math.abs(e.deltaY) < 6) return
+        if (Math.abs(e.deltaY) < 8) return
 
         const isDown = e.deltaY > 0
 
@@ -339,7 +329,68 @@ export function PlatformSlides() {
         }
       }
 
+      let touchStartY = 0
+      let touchStartX = 0
+
+      const onTouchStart = (e: TouchEvent) => {
+        if (e.touches.length !== 1) return
+        touchStartY = e.touches[0].clientY
+        touchStartX = e.touches[0].clientX
+      }
+
+      const onTouchMove = (e: TouchEvent) => {
+        if (navClickGuard.current || !pinST || e.touches.length !== 1) return
+
+        const scrollY = window.scrollY || document.documentElement.scrollTop
+        const pinStart = pinST.start
+        const pinEnd = pinST.end
+        const isWithinPin = pinST.isActive || (scrollY >= pinStart && scrollY <= pinEnd)
+        if (!isWithinPin) return
+
+        const currentY = e.touches[0].clientY
+        const currentX = e.touches[0].clientX
+        const deltaY = touchStartY - currentY
+        const deltaX = touchStartX - currentX
+
+        // Only handle vertical swipes
+        if (Math.abs(deltaY) < Math.abs(deltaX)) return
+
+        const now = Date.now()
+        if (isProgrammaticScroll || now - lastTransitionTime < COOLDOWN_MS) {
+          if (e.cancelable) e.preventDefault()
+          return
+        }
+
+        if (Math.abs(deltaY) < 35) return
+
+        const isDown = deltaY > 0
+
+        if (isDown) {
+          if (activeIndex === 0) {
+            if (e.cancelable) e.preventDefault()
+            goToSlide(1)
+            touchStartY = currentY
+          } else if (activeIndex === 1) {
+            if (e.cancelable) e.preventDefault()
+            goToSlide(2)
+            touchStartY = currentY
+          }
+        } else {
+          if (activeIndex === 2) {
+            if (e.cancelable) e.preventDefault()
+            goToSlide(1)
+            touchStartY = currentY
+          } else if (activeIndex === 1) {
+            if (e.cancelable) e.preventDefault()
+            goToSlide(0)
+            touchStartY = currentY
+          }
+        }
+      }
+
       window.addEventListener('wheel', onWheel, { passive: false })
+      window.addEventListener('touchstart', onTouchStart, { passive: true })
+      window.addEventListener('touchmove', onTouchMove, { passive: false })
 
       // Immediately sync slide on mount/desktop switch based on current scroll
       const initP = pinST.progress
@@ -349,13 +400,9 @@ export function PlatformSlides() {
 
       return () => {
         window.removeEventListener('wheel', onWheel)
+        window.removeEventListener('touchstart', onTouchStart)
+        window.removeEventListener('touchmove', onTouchMove)
         isProgrammaticScroll = false
-        // In case a transition was mid-flight (lenis.stop() called, not yet
-        // resumed) when this branch tore down — e.g. a resize crossing the
-        // 769px breakpoint, or navigating away — mid-transition. The pending
-        // unlock()/stopLenisDuringCooldown() timers would self-heal this a
-        // moment later anyway, but don't leave scrolling suppressed even
-        // briefly if we're already cleaning up here.
         lenisRef.current?.start()
         pinST.kill()
         idleTilts.forEach((t) => t.kill())

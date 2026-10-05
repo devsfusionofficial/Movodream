@@ -1677,8 +1677,7 @@
   pointer-events: none;
 }
 
-.s4-slide.is-active,
-.s4-slide.slide1 {
+.s4-slide.is-active {
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
