@@ -1,0 +1,16 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.izhinga.travel",
+      "sha256_cert_fingerprints": [
+        "0E:F0:96:E8:0C:C0:3F:97:7D:86:3D:DD:10:4C:E1:A9:B2:1E:CA:66:F5:1B:54:95:0F:80:B1:D3:00:73:34:39",
+        "43:AF:C8:CC:65:15:CE:08:7E:0A:54:CE:E5:BE:4C:57:CF:B9:E2:A5:36:CD:D3:53:29:FE:A4:0C:17:88:72:22",
+        "EB:EB:4D:BD:33:81:B8:67:F7:77:1A:92:16:CC:E8:53:B2:3A:4E:AC:5D:BF:C4:59:A7:54:4E:CC:E7:B0:34:4B"
+      ]
+    }
+  }
+]
