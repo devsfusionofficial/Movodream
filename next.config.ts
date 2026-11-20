@@ -14,6 +14,21 @@ const nextConfig: NextConfig = {
     // randomUUID-named uploads (see src/lib/r2.ts), so the URL never gets
     // reused for different content — safe to cache as immutable for a year.
     return [
+      // Build output (JS/CSS chunks, fonts) is fetched by Googlebot for
+      // rendering and shows up in Search Console as "Crawled - currently not
+      // indexed". These are not pages, so tell Google not to index them. Do NOT
+      // block them in robots.txt: Google must still be able to fetch them to
+      // render the site. X-Robots-Tag: noindex leaves fetching untouched.
+      {
+        source: '/_next/static/:path*',
+        headers: [{ key: 'X-Robots-Tag', value: 'noindex' }],
+      },
+      // 3D model binaries (e.g. /assets/model/iphone16pro.glb) are also
+      // reported as "Crawled - currently not indexed"; same treatment.
+      {
+        source: '/assets/model/:path*',
+        headers: [{ key: 'X-Robots-Tag', value: 'noindex' }],
+      },
       {
         source: '/assets/:path*',
         headers: [
